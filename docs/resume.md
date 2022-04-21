@@ -1,3 +1,7 @@
+layout: page
+title: "Résumé"
+permalink: /resume/
+
 # Anna Allen
 
 ## Experience
