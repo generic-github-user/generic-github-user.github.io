@@ -23,3 +23,16 @@ a {
 a:hover {
       color: SteelBlue;
 }
+
+#main-content {
+      margin: 20px;
+}
+
+#main-text {
+      width: 30%;
+}
+
+/* #navigation a + a::after:not(:last-child) { */
+#navigation a + a:before {
+      content: " | ";
+}
