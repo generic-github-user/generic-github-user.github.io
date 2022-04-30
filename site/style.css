@@ -6,8 +6,13 @@ h2, h3, h4, h5 {
       font-family: Montserrat;
 }
 
-p, a, li {
+p, span, a, li {
       font-family: Roboto;
+      white-space: pre-wrap;
+}
+
+p {
+      /* text-align: justify; */
 }
 
 a {
