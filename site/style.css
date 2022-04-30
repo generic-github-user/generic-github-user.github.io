@@ -9,3 +9,12 @@ h2, h3, h4, h5 {
 p, a, li {
       font-family: Roboto;
 }
+
+a {
+      text-decoration: none;
+      color: DarkBlue;
+}
+
+a:hover {
+      color: SteelBlue;
+}
