@@ -36,3 +36,43 @@ a:hover {
 #navigation a + a:before {
       content: " | ";
 }
+
+/* .info1::before {
+      margin-bottom: 0px;
+} */
+
+.info {
+      display: flex;
+}
+
+.info1::after {
+      /* content: "&#8226;"; */
+      content: "—";
+      margin: 0 5px;
+      color: gray;
+}
+
+.info1, .info2, .info3 {
+      font-family: Oxygen;
+      /* font-weight: 300; */
+      font-style: italic;
+      font-size: 80%;
+      margin-top: 0px;
+}
+
+.info1, .info2 {
+      /* font: */
+      color: SteelBlue;
+}
+
+.info3 {
+      color: MidnightBlue;
+}
+
+.resume-block, .content {
+      margin-left: 20px;
+}
+
+.resume-block > h3 {
+      margin-bottom: 10px;
+}
