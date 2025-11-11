@@ -11,7 +11,7 @@ The classical implementation of this scheme is described in chapter 4.3 of the w
 [Haskell](https://www.haskell.org/) has what I would consider a somewhat more principled implementation of nondeterminism using monads. In particular, the built-in list type forms a monad, with `\xs, f -> concat (map f xs)` as the `>>=` (`bind`) operation (and the singleton list constructor, i.e., `return x = [x]`, as `return`/`pure`). This means that the resulting list will be constructed by passing each element in `xs` to `f` to yield a new list, then concatenating the results:
 
 ```hs
-ghci> [1, 2, 3] >>= (\x -> [x * 2, x *3])
+ghci> [1, 2, 3] >>= (\x -> [x * 2, x * 3])
 [2,3,4,6,6,9]
 ```
 
@@ -102,9 +102,11 @@ ghci> mapM print [((x, y), x * y) | x <- [1..10], y <- [1..10], even (x * y)]
 ((2,1),2)
 ```
 
+(There is a tremendous amount of fascinating monad/applicative/traversable/alternative machinery that works with almost all of Haskell's basic types, and which I would recommend having a look at if the above interests you at all; another example I'm fond of is `sequence [[1..2], [3..6]]`, which exploits the fact that lists are both `Traversable` and `Monad`.)
+
 It is important to note that -- unlike with naive implementations that iterate over all combinations of elements from a handful of statically known sets, and only check which combinations would have survived at the end -- this approach really does prune branches each time `guard` is invoked, avoiding much unnecessary work, and has all the execution semantics you would expect of a handwritten "iterate over items in source collections -> map transformations over each element and collect the results -> filter/prune -> ..." approach.
 
-(The main deficiency, aside from those mild to moderate performance concerns (cache locality, laziness) that apply to Haskell's execution model more generally, is that since `Data.Set` cannot be made into a monad (for any `Set a`, `a` carries an `Ord` constraint), we cannot use the obvious optimization strategy: "implement nondeterminism backed using a `Set` so that at each step, the universe is automatically collapsed down into unique values". There are some packages which claim to implement a performant, monad-compatible set datatype, the implementation details of which I know not.)
+(The main deficiency, aside from those mild to moderate performance concerns (cache locality, laziness) that apply to Haskell's execution model more generally, is that since `Data.Set` cannot be made into a monad (for any `Set a`, `a` carries an `Ord` constraint), we cannot use the obvious optimization strategy: "implement nondeterminism backed using a `Set` so that at each step/branching point, the universe is automatically collapsed down into unique values". There are some packages which claim to implement a performant, monad-compatible set datatype, the implementation details of which I know not.)
 
 Another very compelling feature of Haskell, which is a bit of a diversion from the main subject of this post but still worth bringing up, is that monad transformers can be used to mix and match nondeterminism with other kinds of effects -- for example, the early termination/short-circuiting behavior of the `Maybe` monad, or the hermetic state manipulation features of `State`. As a brief example, we can use `StateT` over the list monad to iterate over all combinations of some transformations (successively applied to an initial value) while maintaining a "history" of each transformation trace, then print them all out:
 
@@ -162,7 +164,7 @@ main = do
 
 Now that the basic idea has been motivated and demonstrated in a language more suited to it, we can get to the main question: can we implement a reasonably ergonomic and performant version of this in Python? It is clear enough that McCarthy's `amb` operator can be implemented in basically any programming language; [Rosetta Code](https://rosettacode.org/wiki/Amb#Python) contains several implementations that seem fairly clean and well-behaved, including a (somewhat impractical) transliteration of the list monad described above (as well as more [Haskell](https://rosettacode.org/wiki/Amb#Haskell) examples).
 
-Clearly, we would prefer to go beyond `amb`-like data structures -- we want to interleave Python's control flow with some amount of automated branching logic. Unless we want to either
+This is somewhat brittle, since we are forced to intermediate every operation in our code TODO. Clearly, we would prefer to go beyond `amb`-like data structures -- we want to interleave Python's control flow with some amount of automated branching logic. Unless we want to either
 
 - (a) build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
 - (b) perform AST-munging of the kind Python JIT compilers (JAX, Numba, etc.) have to do
@@ -209,6 +211,7 @@ We catch `StopIteration` to intercept the final return value from the generator.
 
 ```py
 import itertools
+from pprint import pprint
 
 def amb(f):
     def go(g, xs):
@@ -223,7 +226,26 @@ def amb(f):
     return r
 ```
 
-This does exactly what we described above; `go` merely sends the current "branch" (ordered list of values to pass to the `yield`s/`Amb`s) . If you squint, it might be clear that our two branches in `go` map directly onto the `bind` (concat) and `return` (singleton) methods of the list monad. Indeed, we could swap in the behavior of a different monad and get the results we expect:
+This does exactly what we described above; `go` merely sends the current "branch" (ordered list of values to pass to the `yield`s/`Amb`s) TODO.
+
+If we decorate our `test` function with `amb` and evaluate `pprint(list(test(5)))`, we get:
+
+```
+[((1, 5, 4), 24),
+ ((2, 4, 4), 24),
+ ((3, 2, 4), 20),
+ ((1, 2, 4), 12),
+ ((3, 4, 4), 28),
+ ((2, 5, 4), 28),
+ ((3, 5, 4), 32),
+ ((1, 4, 4), 20),
+ ((2, 2, 0), 0),
+ ((2, 2, 10), 40)]
+```
+
+Excellent!
+
+If you squint, it might be clear that our two branches in `go` map directly onto the `bind` (concat) and `return` (singleton) methods of the list monad. Indeed, we could swap in the behavior of a different monad and get the results we expect:
 
 ```py
 import itertools
@@ -285,7 +307,7 @@ print(7, test(7))
 7 Nothing
 ```
 
-When we look back at how do-notation desugars in Haskell, the correspondence is even more clear:
+When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even more clear:
 
 ```
 do { x1 <- action1
@@ -299,4 +321,54 @@ action1 >>= (\ x1 -> action2 >>= (\ x2 -> mk_action3 x1 x2 ))
 
 (example from https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_operator; CC BY-SA 4.0)
 
-Back to the list/set version.
+Back to the list/set version. This is a nice toy, but is it compatible with more complex control flow? TODO
+
+
+
+
+TODO: compare code with version saved on styx
+
+## Scaling it up
+
+This is certainly interesting, but even ignoring the efficiency loss from having to reconstruct the entire function state (by rewinding the generator) each time we follow a branch, the performance leaves much to be desired: Python is not a fast language. To illustrate, we'll try implementing a naive function that generates a list of [Pythagorean triples](https://en.wikipedia.org/wiki/Pythagorean_triple) with a, b, c in `1..200`:
+
+```py
+guard = lambda c: Amb([None]) if c else Amb([])
+
+@amb
+def pythagorean_triples(n: int) -> set[Tuple[int, int, int]]:
+    x = yield Amb(range(1, n+1))
+    y = yield Amb(range(x+1, n+1)) # avoid double-counting
+    z = yield Amb(range(y+1, n+1))
+    yield guard(x ** 2 + y ** 2 == z ** 2)
+    return (x, y, z)
+
+print(len(t := pythagorean_triples(200)))
+pprint(t)
+```
+
+`time python amb.py` gives:
+
+```
+127
+{(3, 4, 5),
+ (5, 12, 13),
+ (6, 8, 10),
+ (7, 24, 25),
+ (8, 15, 17),
+ (9, 12, 15),
+ (9, 40, 41),
+ (10, 24, 26),
+ (11, 60, 61),
+ (12, 16, 20),
+ (12, 35, 37),
+ (13, 84, 85),
+ (14, 48, 50),
+ (15, 20, 25),
+
+ ...
+
+ python amb.py  6.88s user 0.02s system 99% cpu 6.932 total
+```
+
+This is somewhat better than I expected, but still impractical for most real-world problems. The ideal case would be to somehow vectorize the annotated function with minimal input from the user, probably using NumPy or a similar library that provides Python bindings to efficient array operations. Unfortunately, just swapping NumPy arrays into the code we showed earlier probably wouldn't be of much use: we'd still end up iterating through every element in native Python. The other extreme involves full vectorization ignoring control flow; after each `Amb`, we could unroll all that had been encountered up to that point, take their cartesian product, and compute every relevant operation on every combination of inputs, accepting some wasted work in exchange for being able to forego extremely expensive native Python logic. In the case of our Pythagorean triple calculator, we don't lose much, since we need every combination of elements from our three `Amb` expressions (clearly, a simpler collection-based solution like some of the ones shown on Rosetta Code would also work for this problem).
