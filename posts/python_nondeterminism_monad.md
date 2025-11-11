@@ -207,7 +207,7 @@ def send_n(g, xs):
         return v.value
 ```
 
-We catch `StopIteration` to intercept the final return value from the generator. Now we can put together our `amb` decorator, which takes an `Amb`-annotated generator function and returns a function with the nondeterminism effects applied (note that a real-world version of this should probably use `functools.wraps` or similar to copy relevant metadata from the original function; its docstring, name, etc.):
+We catch `StopIteration` to intercept the final return value from the generator. Now we can put together our `amb` decorator, which takes an `Amb`-annotated generator function and returns a function with the nondeterminism effects applied (note that a real-world version of this should probably use `functools.wraps` or similar to copy relevant metadata from the original function: its docstring, name, etc.):
 
 ```py
 import itertools
@@ -245,7 +245,7 @@ If we decorate our `test` function with `amb` and evaluate `pprint(list(test(5))
 
 Excellent!
 
-If you squint, it might be clear that our two branches in `go` map directly onto the `bind` (concat) and `return` (singleton) methods of the list monad. Indeed, we could swap in the behavior of a different monad and get the results we expect:
+If you squint, it might be clear that our two branches in `go` map almost directly onto the `bind` (concat) and `return` (singleton) methods of the list monad. Indeed, we could swap in the behavior of a different monad and get the results we expect:
 
 ```py
 import itertools
@@ -264,13 +264,7 @@ class Maybe[T]:
             return "Nothing"
 
 def send_n(g, xs):
-    v = g.send(None)
-    try:
-        for x in xs:
-            v = g.send(x)
-        return v
-    except StopIteration as v:
-        return v.value
+    [elided]
 
 def run(f):
     def go(g, xs):
@@ -307,7 +301,7 @@ print(7, test(7))
 7 Nothing
 ```
 
-When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even more clear:
+When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even clearer:
 
 ```
 do { x1 <- action1
@@ -371,4 +365,85 @@ pprint(t)
  python amb.py  6.88s user 0.02s system 99% cpu 6.932 total
 ```
 
-This is somewhat better than I expected, but still impractical for most real-world problems. The ideal case would be to somehow vectorize the annotated function with minimal input from the user, probably using NumPy or a similar library that provides Python bindings to efficient array operations. Unfortunately, just swapping NumPy arrays into the code we showed earlier probably wouldn't be of much use: we'd still end up iterating through every element in native Python. The other extreme involves full vectorization ignoring control flow; after each `Amb`, we could unroll all that had been encountered up to that point, take their cartesian product, and compute every relevant operation on every combination of inputs, accepting some wasted work in exchange for being able to forego extremely expensive native Python logic. In the case of our Pythagorean triple calculator, we don't lose much, since we need every combination of elements from our three `Amb` expressions (clearly, a simpler collection-based solution like some of the ones shown on Rosetta Code would also work for this problem).
+This is somewhat better than I expected, but still impractical for most real-world problems. For performing e.g., monte carlo simulations, we want something with performance within an order of magnitude of C/C++ code (or at least Haskell). The ideal case would be to somehow vectorize the annotated function with minimal input from the user, probably using NumPy or a similar library that provides Python bindings to efficient array operations. In particular, if each step (or bind operation) in our function can be represented by `f(a, b, ...)`, with each argument being some (nondeterministic) expression derived from an `Amb` term, we want to implicitly generate the cartesian product of all `a_i, b_j, ...` and pass it to a vectorized version of `f`. For now, we'll impose the constraint that our decorated function only takes as inputs, computes using, or returns integers or floats.
+
+Unfortunately, just swapping NumPy arrays into the code we showed earlier (instead of lists/sets) probably wouldn't be of much use: we'd still end up iterating through every element in native Python. The other extreme involves full vectorization ignoring control flow; after each `Amb`, we could unroll all that had been encountered up to that point, take their cartesian product, and compute every relevant operation on every combination of inputs, accepting some wasted work in exchange for being able to forego extremely expensive native Python logic. In the case of our Pythagorean triple calculator, we don't lose much, since we need to conider every combination of elements from our three `Amb` expressions (clearly, a simpler collection-based solution like some of the ones shown on Rosetta Code would also work for this problem).
+
+It is however somewhat nonobvious how this translation should occur. If we willing to temporarily dispense with some more complex control flow, we may as well just replace the generator-based interceptor with a special object that broadcasts over common arithmetic operations; if we do something like `Wrapped([1, 2]) + Wrapped([3, 4])`, for example, we would expect to get `Wrapped([1 + 3, 2 + 3, 1 + 4, 2 + 4]) == Wrapped([4, 5, 5, 6])`. This is certainly cleaner than with the generator approach; we only traverse the code once, instead of once per branch. The main trouble is with if-statements -- we must follow *both* branches at different places in the array, ideally rewriting the `if` as an `np.where` or similar (we can perform this translation manually, but figuring out how to avoid this is an interesting exercise). We'll come back to that.
+
+Let's create a wrapper class that stands in for scalar values in our program and automatically performs the broadcasting described above:
+
+```py
+import numpy as np
+import operator
+
+class Amb2:
+    def __init__(self, data):
+        if not isinstance(data, np.ndarray):
+            data = np.array(data)
+        self.data = data
+
+def makeop(name: str):
+    def tmp(xs: Amb2, ys: Amb2) -> Amb2:
+        a, b = np.meshgrid(xs.data, ys.data, indexing='ij')
+        prod = np.stack([a.ravel(), b.ravel()], axis=-1)
+        return Amb2(getattr(operator, name)(prod[:, 0], prod[:, 1]))
+
+    setattr(Amb2, f'__{name}__', tmp)
+
+for f in ['add', 'mul', 'sub', 'truediv', 'floordiv', 'pow', 'and_', 'or_', 'xor']:
+    makeop(f)
+
+def amb(f):
+    def r(*args, **kwargs):
+        return f(*args, **kwargs).data
+    return r
+
+@amb
+def test() -> np.ndarray:
+    a = Amb2([1, 3, 5])
+    b = Amb2([2, 4, 6])
+    return a + b
+
+print(test())
+```
+
+```
+[ 3  5  7  5  7  9  7  9 11]
+```
+
+It's probably also worthwhile to support scalar types mixed into our code without additional effort from the programmer:
+
+```py
+def makeop(name: str):
+    def tmp(xs: Amb2 | int | float, ys: Amb2 | int | float) -> Amb2:
+        if not isinstance(xs, Amb2):
+            assert isinstance(xs, (int, float))
+            xs = Amb2([xs])
+        if not isinstance(ys, Amb2):
+            assert isinstance(ys, (int, float))
+            ys = Amb2([ys])
+
+        a, b = np.meshgrid(xs.data, ys.data, indexing='ij')
+        prod = np.stack([a.ravel(), b.ravel()], axis=-1)
+        return Amb2(getattr(operator, name)(prod[:, 0], prod[:, 1]))
+
+    setattr(Amb2, f'__{name}__', tmp)
+    setattr(Amb2, f'__r{name}__', tmp)
+
+...
+
+@amb
+def test() -> np.ndarray:
+    a = Amb2([1, 3, 5])
+    b = Amb2([2, 4, 6])
+    return 1.5 * (a + b + 2)
+
+print(test())
+```
+
+```
+[ 7.5 10.5 13.5 10.5 13.5 16.5 13.5 16.5 19.5]
+```
+
+In lieu of `guard`, let's add a trivial filtering function (and a restricted variant for concision), and use it to re-implement our Pythagorean triple example from earlier:
