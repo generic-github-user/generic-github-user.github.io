@@ -8,6 +8,8 @@ One self-contained and useful tool from this paradigm is "nondeterminism" (this 
 
 The classical implementation of this scheme is described in chapter 4.3 of the well-known *Structure and Interpretation of Computer Programs*: McCarthy's `amb` ("ambiguous") operator, usually implemented in Lisp. I will omit the details of the implementation since there are [decent](https://rosettacode.org/wiki/Amb) [explanations](https://www.randomhacks.net/2005/10/11/amb-operator/) [elsewhere](https://ds26gte.github.io/tyscheme/index-Z-H-16.html), but the idea rhymes with what I've described above: we consider "splitting" execution into different paths corresponding to available combinations of initial values, and return results only from the path (or paths) where execution "succeeded" (some specified criteria was met).
 
+## Nondeterminism in the list monad
+
 [Haskell](https://www.haskell.org/) has what I would consider a somewhat more principled implementation of nondeterminism using monads. In particular, the built-in list type forms a monad, with `\xs, f -> concat (map f xs)` as the `>>=` (`bind`) operation (and the singleton list constructor, i.e., `return x = [x]`, as `return`/`pure`). This means that the resulting list will be constructed by passing each element in `xs` to `f` to yield a new list, then concatenating the results:
 
 ```hs
@@ -161,6 +163,8 @@ main = do
 (The initial value is 1; the three transforms are "add 4", "multiply by 2", and "take the remainder mod 3"; we do three transformations in a row. As you would expect, we get `3^3 = 27` results.)
 
 [This page](http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0) has some nice illustrations of the control flow implied by various stacks of monad transformers. Finding the correct ordering of monad transformers in the stack, and mentally modeling the relevant types, is sometimes nontrivial; nevertheless, they can certainly improve concision in situations that call for them.
+
+## General nondeterminism with generators
 
 Now that the basic idea has been motivated and demonstrated in a language more suited to it (I think this is actually a fairly good illustration of the utility of monads as "programmable semicolons" in languages with good syntax/compiler support for them), we can get to the main question: can we implement a reasonably ergonomic and performant version of this in Python? It is clear enough that McCarthy's `amb` operator can be implemented in basically any programming language; [Rosetta Code](https://rosettacode.org/wiki/Amb#Python) contains several implementations that seem fairly clean and well-behaved, including a (somewhat impractical) transliteration of the list monad described above (as well as more [Haskell](https://rosettacode.org/wiki/Amb#Haskell) examples).
 
