@@ -1,5 +1,7 @@
 # Nondeterminism monad in Python
 
+**Also in this post: Haskell and parsing-free execution tracers**
+
 *This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to `## Nondeterminism in Python`*
 
 Many of the most curious and useful features of functional programming languages like Haskell derive from their ability (often unencumbered by the norms and constraints of industrial software engineering) to restate common algorithmic problems in novel ways -- to perform a change of basis into a domain more suited to the problem. One such frame shift (or rather, category of such) is widely known as [*declarative programming*](https://en.wikipedia.org/wiki/Declarative_programming) (as opposed to imperative or functional programming, for example), and concerns programming languages, libraries, and techniques based on stating the problem domain or constraint system, as well as the desired objective or target (the "what"), at a high level and leaving the low-level algorithmic details to the optimizer or runtime (the "how"). In some cases this may take the form of a domain-specific optimization or constraint solving library; other times it is integrated more tightly with a language's semantics and execution model.
@@ -305,6 +307,8 @@ print(7, test(7))
 7 Nothing
 ```
 
+(in the first example, the `x == a` evaluates to `False` and the "monadic state" is set to `Some(x + y - 5)`; in the second, it evaluates to `True` and the state is `Nothing`, which short-circuits evaluation)
+
 When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even clearer:
 
 ```
@@ -369,11 +373,13 @@ pprint(t)
  python amb.py  6.88s user 0.02s system 99% cpu 6.932 total
 ```
 
-This is somewhat better than I expected, but still impractical for most real-world problems. For performing e.g., monte carlo simulations, we want something with performance within an order of magnitude of C/C++ code (or at least Haskell). The ideal case would be to somehow vectorize the annotated function with minimal input from the user, probably using NumPy or a similar library that provides Python bindings to efficient array operations. In particular, if each step (or bind operation) in our function can be represented by `f(a, b, ...)`, with each argument being some (nondeterministic) expression derived from an `Amb` term, we want to implicitly generate the cartesian product of all `a_i, b_j, ...` and pass it to a vectorized version of `f`. This will inevitably require some syntactic and semantic tradeoffs over the generator-based version. For now, we'll impose the constraint that our decorated function only takes as inputs, computes using, or returns integers or floats.
+### Vectorized combinatorial sugar
 
-Unfortunately, just swapping NumPy arrays into the code we showed earlier (instead of lists/sets) probably wouldn't be of much use: we'd still end up iterating through every element in native Python. We will inevitably need to have a vectorized version of every operation involved in the code so that we could process many branches in parallel. The other extreme involves full vectorization ignoring control flow; after each `Amb`, we could unroll all that had been encountered up to that point, take their cartesian product, and compute every relevant operation on every combination of inputs, accepting some wasted work in exchange for being able to forego extremely expensive native Python logic. In the case of our Pythagorean triple calculator, we don't lose much, since we need to conider every combination of elements from our three `Amb` expressions (clearly, a simpler collection-based solution like some of the ones shown on Rosetta Code would also work for this problem).
+This is somewhat better than I expected, but still impractical for most real-world problems. For performing e.g., Monte Carlo simulations, we want something with performance within an order of magnitude of C/C++ code (or at least Haskell). The ideal case would be to somehow vectorize the annotated function with minimal input from the user, probably using NumPy or a similar library that provides Python bindings to efficient array operations. In particular, if each step (or bind operation) in our function can be represented by `f(a, b, ...)`, with each argument being some (nondeterministic) expression derived from an `Amb` term, we want to implicitly generate the Cartesian product of all `a_i, b_j, ...` and pass it to a vectorized version of `f`. This will inevitably require some syntactic and semantic tradeoffs over the generator-based version. For now, we'll impose the constraint that our decorated function only takes as inputs, computes using, or returns integers or floats.
 
-If we willing to temporarily dispense with some more complex control flow, we may as well just replace the generator-based interceptor with a special object that broadcasts over common arithmetic operations; if we do something like `Wrapped([1, 2]) + Wrapped([3, 4])`, for example, we would expect to get `Wrapped([1 + 3, 2 + 3, 1 + 4, 2 + 4]) == Wrapped([4, 5, 5, 6])`. This is certainly cleaner than with the generator approach; we only traverse the code once, instead of once per branch/combination. The main trouble is with if-statements -- we must follow *both* branches at different places in the array, ideally rewriting the `if` as an `np.where` or similar (we can perform this translation manually, but figuring out how to avoid this is an interesting exercise). We'll come back to that.
+Unfortunately, just swapping NumPy arrays into the code we showed earlier (instead of lists/sets) probably wouldn't be of much use: we'd still end up iterating through every element in native Python. We would inevitably need to have a vectorized version of every operation involved in the code so that we could process many branches in parallel. The other extreme involves full vectorization ignoring control flow; after each `Amb`, we could unroll all that had been encountered up to that point, take their Cartesian product, and compute every relevant operation on every combination of inputs, accepting some wasted work in exchange for being able to forego extremely expensive native Python logic. In the case of our Pythagorean triple calculator, we don't lose much, since we need to consider every combination of elements from our three `Amb` expressions (clearly, a simpler collection-based solution like some of the ones shown on Rosetta Code would also work for this problem).
+
+If we are willing to dispense for the moment with some more complex control flow, we may as well just replace the generator-based interceptor with a special object that broadcasts over common arithmetic operations; if we do something like `Wrapped([1, 2]) + Wrapped([3, 4])`, for example, we would expect to get `Wrapped([1 + 3, 2 + 3, 1 + 4, 2 + 4]) == Wrapped([4, 5, 5, 6])`. This is certainly cleaner than with the generator approach; we only traverse the code once, instead of once per branch/combination. The main trouble is with if-statements -- we must follow *both* branches at different places in the array, ideally rewriting the `if` as an `np.where` or similar (we can perform this translation manually, but figuring out how to avoid this is an interesting exercise). We'll come back to that.
 
 Let's create a wrapper class that stands in for scalar values in our program and automatically performs the broadcasting described above:
 
@@ -450,9 +456,26 @@ print(test())
 [ 7.5 10.5 13.5 10.5 13.5 16.5 13.5 16.5 19.5]
 ```
 
+Mutation is also supported, even if the left-hand side is not (yet) `Amb`:
+
+```py
+@amb
+def test2() -> np.ndarray:
+    a = 1
+    for i in range(3):
+        a += Amb2([2, 3])
+    return a
+```
+
+```
+[ 7  8  8  9  8  9  9 10]
+```
+
+For/while loops however only work when the loop condition is "primitive" and does not contain any `Amb`-expressions. For example, a while-loop with a condition derived from an `Amb` would likely not behave as expected; one could imagine a way to make this work by detecting when we drop into a loop, overriding the behavior of `bool`-coercion to keep the loop running until the condition is false for *all* values in the `Amb`, and "masking" assignment operations so that they only affect members of the target value for which corresponding values of any ambiguous expressions in the context still make the loop condition evaluate to `True` (perhaps maintaining a stack of loop contexts for nested loops), all in an efficient vectorized fashion. This is nontrivial.
+
 In lieu of `guard`, let's add a trivial filtering function (and a restricted variant for concision), and use it to re-implement our Pythagorean triple example from earlier:
 
-
+TODO
 
 ### Basic execution tracing
 
@@ -462,16 +485,24 @@ To achieve this, we can build a simple tracer of the kind used in [JAX](https://
 
 Handling conditionals is somewhat harder; the recipe we'll go with is roughly:
 
-- detect any automatic coercion to `bool`; this expression is used as the switching condition
+- detect any automatic coercion to `bool` (which [happens when conditional statements are evaluated](https://docs.python.org/3/library/stdtypes.html#truth-value-testing)); this expression is used as the switching condition
 - once a conditional is detected, spoof the aforementioned expression to `True` to take the corresponding branch; continue tracing the rest of the code
-- once a conditional is detected, spoof the aforementioned expression to `False` to take; continue tracing the rest of the code
+- then, spoof the aforementioned expression to `False` to take the other branch; continue tracing the rest of the code
 - store the remaining trace segments for each of the above in some kind of tree structure
 - during execution, we'll evaluate the conditional expression with the actual values of its subexpressions and use this to branch whatever results are produced by the rest of the code
 
-The most obvious issue with this tactic (without further optimization) is that the time complexity of the tracing strategy is `O(2^n)` for `n` conditionals in a function, since we must independently trace everything following the conditional twice (once for the true branch and once for the false branch), since we don't know how they depend on each other structurally; however, we are not actually doing any nontrivial computation during this tracing step, so this is acceptable.
+The most obvious issue with this tactic (without further optimization) is that the time complexity of the tracing strategy is `O(2^n)` for `n` conditionals in a function, since we must independently trace everything following the conditional twice (once for the true branch and once for the false branch), as we don't know how they depend on each other structurally; however, we are not actually doing any nontrivial computation during this tracing step, so this is acceptable.
 
-The less obvious issue is that *execution* of the traced function has similar exponential blowup, since the entire universe must be split and evaluated in full each time we encounter a conditional. This is the cost of combining statefulness and arbitrary conditions with vectorization; we'll discuss some potential optimizations later.
+The less obvious issue is that *execution* of the traced function has similar exponential blowup, since the entire universe must be split and evaluated in full each time we encounter a conditional. This is the cost of combining statefulness and arbitrary conditions with vectorization, since it is quite possible for a later conditional to depend on which path *every* prior conditional took; we'll discuss some potential optimizations later.
 
 We will forego loop detection/unrolling, but it is in principle possible using e.g., `__next__`/`__iter__` interception and some of the tools from `sys.settrace`. Since we're demonstrating a tool explicitly targeted at abstracting away iteration/combination logic, this seems like an acceptable sacrifice. One other unfortunate issue is that Python does not allow `and` and `or` to be overridden; one can imagine handling these using a similar strategy to that described above, but for now we'll just use the logical `&` and `|` in their stead.
 
-Let's start with a basic functional tracer that builds up a simple expression tree (but does not handle state or conditionals). We don't want to regard an `Amb` expression used in different places as several different expressions, so we'll use `is` to compare their memory addresses, which should handle aliasing for us. Here it is:
+Let's start with a basic functional tracer that builds up a simple expression tree (but does not handle state or conditionals). To reiterate, we only care about the final return value of the function and are disregarding external side effects for now. We don't want to regard an `Amb` expression used in different places as several different expressions, so we'll use `is` to compare their memory addresses, which should handle aliasing for us. Scalar values will be traced by "infecting" the rest of our code with `radd`, `rmul`, etc. (same as with the earlier NumPy examples, but reified into a data structure). Here it is:
+
+
+
+(It is unclear that this actually involved less effort than an AST parser or `settrace`, but perhaps you will find it useful during a CTF or other situation where you don't have those tools available.)
+
+## End
+
+I hope you have learned something useful (or at least entertaining) from this post, or at least found some of the links therein interesting. Thanks for reading!
