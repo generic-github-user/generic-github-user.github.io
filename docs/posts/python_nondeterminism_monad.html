@@ -409,9 +409,8 @@ known sets, and only check which combinations would have survived at the
 end – this approach really does prune branches each time
 <code>guard</code> is invoked, avoiding much unnecessary work, and has
 all the execution semantics you would expect of a handwritten “iterate
-over items in source collections -&gt; map transformations over each
-element and collect the results -&gt; filter/prune -&gt; …”
-approach.</p>
+over items in source collections → map transformations over each element
+and collect the results → filter/prune → …” approach.</p>
 <p>(The main deficiency, aside from those mild to moderate performance
 concerns (cache locality, laziness) that apply to Haskell’s execution
 model more generally, is that since <code>Data.Set</code> cannot be made

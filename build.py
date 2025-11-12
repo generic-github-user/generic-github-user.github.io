@@ -21,6 +21,7 @@ POST_TEMPLATE_PATH = PAGES_DIR / "post.md"
 POST_OUTPUT_DIR = REPO_ROOT / "docs" / "posts"
 POST_HEADER_INCLUDE_PATH = PAGES_DIR / "post_head.html"
 H2_ANCHOR_FILTER_PATH = PAGES_DIR / "h2_anchors.lua"
+ARROW_FILTER_PATH = PAGES_DIR / "replace_arrows.lua"
 PAGES_OUTPUT_DIR = REPO_ROOT / "docs"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
@@ -214,7 +215,9 @@ def render_posts_to_html(
         metadata=metadata_obj,
     )
 
-    base_pandoc_args = _build_pandoc_base_args(pandoc_extra_args)
+    base_pandoc_args = _build_pandoc_base_args(
+        pandoc_extra_args, include_arrow_filter=True
+    )
 
     template_source = template_path.read_text(encoding="utf-8")
     template = JINJA_ENV.from_string(template_source)
@@ -421,12 +424,18 @@ def _markdown_to_html(
         ) from exc
 
 
-def _build_pandoc_base_args(extra_args: Iterable[str] | None = None) -> list[str]:
+def _build_pandoc_base_args(
+    extra_args: Iterable[str] | None = None,
+    *,
+    include_arrow_filter: bool = False,
+) -> list[str]:
     args: list[str] = []
     if POST_HEADER_INCLUDE_PATH.exists():
         args.append(f"--include-in-header={POST_HEADER_INCLUDE_PATH}")
     if H2_ANCHOR_FILTER_PATH.exists():
         args.append(f"--lua-filter={H2_ANCHOR_FILTER_PATH}")
+    if include_arrow_filter and ARROW_FILTER_PATH.exists():
+        args.append(f"--lua-filter={ARROW_FILTER_PATH}")
     args.append("--section-divs")
     if extra_args:
         args.extend(extra_args)
