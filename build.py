@@ -3,16 +3,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 from rich import print as rprint
 
 import yaml
 from git import Commit, Repo
+from jinja2 import Environment
 
 
 REPO_ROOT = Path(__file__).resolve().parent
 POSTS_DIR = REPO_ROOT / "posts"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
+HEADER_TEMPLATE_PATH = REPO_ROOT / "pages" / "header.md"
+JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 
 
 @dataclass(slots=True)
@@ -76,6 +79,21 @@ def load_posts(
         posts.append(post)
 
     return posts
+
+
+def render_site_header(
+    metadata_path: Path | None = None,
+    header_template_path: Path | None = None,
+) -> str:
+    """Render the header template populated with navigation links."""
+
+    metadata_file = Path(metadata_path or METADATA_PATH)
+    header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
+
+    metadata = _read_metadata(metadata_file)
+    navigation = _build_navigation(metadata.get("pages"))
+    template = JINJA_ENV.from_string(header_path.read_text(encoding="utf-8"))
+    return template.render(main_navigation=navigation)
 
 
 def _read_metadata(metadata_path: Path) -> dict[str, Any]:
@@ -144,4 +162,54 @@ def _resolve_post_timestamps(post_path: Path, commits: list[CommitInfo]) -> tupl
     return created_at, updated_at
 
 
-__all__ = ["CommitInfo", "Post", "load_posts"]
+def _build_navigation(pages_meta: Any) -> str:
+    links = list(_iter_navigation_items(pages_meta))
+    if not links:
+        return ""
+    return f"*{' | '.join(links)}*"
+
+
+def _iter_navigation_items(pages_meta: Any) -> Iterable[str]:
+    if pages_meta is None:
+        return []
+
+    entries: Iterable[Any]
+    if isinstance(pages_meta, list):
+        entries = pages_meta
+    else:
+        entries = [pages_meta]
+
+    links: list[str] = []
+    for entry in entries:
+        label: str | None
+        slug: str | None
+
+        if isinstance(entry, dict):
+            label = _first_non_empty(entry, "label", "title", "name", "slug", "path")
+            slug = _first_non_empty(entry, "slug", "path", "href", "url", "name")
+        else:
+            value = str(entry).strip()
+            label = value
+            slug = value
+
+        if not label or not slug:
+            continue
+
+        href = "/" + slug.lstrip("/")
+        links.append(f"[{label}]({href})")
+
+    return links
+
+
+def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
+    for key in keys:
+        value = entry.get(key)
+        if value is None:
+            continue
+        value_str = str(value).strip()
+        if value_str:
+            return value_str
+    return None
+
+
+__all__ = ["CommitInfo", "Post", "load_posts", "render_site_header"]

@@ -3,9 +3,6 @@ pages:
     slug: index
   - title: contact
     slug: contact
+
 posts:
   - python_nondeterminism_monad
-
-pages:
-  - home: index
-  - contact: contact
