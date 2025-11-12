@@ -170,11 +170,11 @@ main = do
 
 Now that the basic idea has been motivated and demonstrated in a language more suited to it (I think this is actually a fairly good illustration of the utility of monads as "programmable semicolons" in languages with good syntax/compiler support for them), we can get to the main question: can we implement a reasonably ergonomic and performant version of this in Python? It is clear enough that McCarthy's `amb` operator can be implemented in basically any programming language; [Rosetta Code](https://rosettacode.org/wiki/Amb#Python) contains several implementations that seem fairly clean and well-behaved, including a (somewhat impractical) transliteration of the list monad described above (as well as more [Haskell](https://rosettacode.org/wiki/Amb#Haskell) examples).
 
-This is somewhat brittle, since we are forced to intermediate every operation in our code TODO. Clearly, we would prefer to go beyond `amb`-like data structures -- we want to interleave Python's control flow with some amount of automated branching logic. Unless we want to either:
+This is somewhat brittle, since we are forced to intermediate every operation in our code with a set of predefined combinators. Clearly, we would prefer to go beyond `amb`-like data structures -- we want to interleave Python's control flow with some amount of automated branching logic. Unless we want to either:
 
 - (a) build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
 - (b) perform AST-munging of the kind certain Python JIT compilers (Numba, etc.) do
-- (c) perform runtime tracing of the branching structure (more on this later)
+- (c) perform runtime tracing of the branching structure (more on this in an in-progress future post)
 
 ...this seemingly requires some way to interrupt execution at specific points and backtrack/rewind to those points, modifying execution state each time before resuming to inject the state of the current "branch".
 
@@ -268,7 +268,7 @@ for r in statet_test(1):
     print(r)
 ```
 
-I've temporarily changed the backing type in `go` from a `set` to a `list`, for two reasons: we want to get our results in the same order and we cannot have a `set[list[int]]` since lists are non-hashable. Either one works fine. Here are the results:
+Surprisingly, this is as concise as the Haskell version (albeit much slower)! I've temporarily changed the backing type in `go` from a `set` to a `list`, for two reasons: we want to get our results in the same order and we cannot have a `set[list[int]]` since lists are non-hashable. Either one works fine. Here are the results (seemingly matching the ones from the original):
 
 ```
 [1, 5, 9, 13]
@@ -298,6 +298,46 @@ I've temporarily changed the backing type in `go` from a `set` to a `list`, for 
 [1, 1, 1, 5]
 [1, 1, 1, 2]
 [1, 1, 1, 1]
+```
+
+Just to round it out, here's a more interesting example using string manipulation:
+
+```py
+from random import shuffle
+
+@amb
+def string_test() -> list[str]:
+    a = yield Amb(["where [content] go", "what [content] do",
+                   f"{yield Amb(['how', 'why'])} [content] do it"])
+    content = (yield Amb(['will', 'did'])) + ' ' + (yield Amb(['you', 'she', 'he']))
+    return a.replace('[content]', content) + (yield Amb(["?", "...?"]))
+
+s = string_test()
+shuffle(s)
+pprint(s[:20])
+```
+
+```
+['where did he go?',
+ 'what will he do...?',
+ 'why did you do it?',
+ 'what did you do...?',
+ 'why will he do it...?',
+ 'what will you do...?',
+ 'where will you go...?',
+ 'how did he do it?',
+ 'why did he do it?',
+ 'where will you go...?',
+ 'where will she go...?',
+ 'where did she go?',
+ 'what did you do?',
+ 'why will you do it?',
+ 'why did he do it...?',
+ 'where did she go...?',
+ 'how will she do it?',
+ 'how did she do it?',
+ 'what did she do?',
+ 'what will he do?']
 ```
 
 If you squint at the definitions, it might be clear that our two branches in `go` map almost directly onto the `bind` (concat) and `return` (singleton) methods of the list monad. Indeed, we could swap in the behavior of a different monad and get the results we expect:
