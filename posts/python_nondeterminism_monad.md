@@ -402,7 +402,7 @@ print(7, test(7))
 
 In the first example, the `x == a` evaluates to `False` and the "monadic state" is set to `Some(x + y - 5)`; in the second, it evaluates to `True` and the state is `Nothing`, which short-circuits evaluation.
 
-(n.b.: this is just illustrative -- another, much better, way to implement something like this if you have a "scalar" short-circuiting monad like `Maybe`/`Option` or `Either`/`Result` is by using a custom exception handler that, for example, catches exceptions thrown by `.unwrap` calls on `Nothing`/`Err` values and transforms them back into the appropriate type, basically circumventing the need to actually thread handlers for the wrapper type through your function; this has the benefit of handling deeply nested call stacks with little additional effort)
+(n.b.: this is just illustrative -- another, much better, way to implement something like this if you have a "scalar" short-circuiting monad like `Maybe`/`Option` or `Either`/`Result` is by using a custom exception handler that, for example, catches exceptions thrown by `.unwrap` calls on `Nothing`/`Err` values and transforms them back into the appropriate type, basically circumventing the need to actually thread handlers for the wrapper type through your function; this has the benefit of handling deeply nested call stacks with little additional effort, and is almost surely faster)
 
 When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even clearer:
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>home</title>
+  <title>colophon</title>
   <style>
     html {
       color: #1a1a1a;
@@ -189,18 +189,39 @@
 <body>
 <section id="anna-a" class="level1">
 <h1>anna a</h1>
-<p><em><a href="/index">home</a> | <a
-href="/contact">contact</a></em></p>
-<p>I’m Anna Allen; this is my website. My interests include functional
-programming, programming language design, machine learning, and computer
-systems/infrastructure. I encourage you to peruse my <a
-href="./blog">blog</a>, or <a href="./contact">reach out to me</a> if
-you have questions or remarks, or a project that you feel my skills may
-be relevant to.</p>
-<section id="posts" class="level2">
-<h2>Posts <a href="#posts" class="heading-anchor"
-title="Link to this section">¶</a></h2>
-</section>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/colophon">colophon</a></em></p>
+<p>I run <a href="https://nixos.org/">NixOS</a> on a Lenovo ThinkPad
+T590 with a 500gb NVMe SSD and 32gb of RAM. I use a ZFS-based <a
+href="https://wiki.nixos.org/wiki/Impermanence">impermanence</a> setup
+to regularly erase my root directory[^1] and <code>/var</code>; only
+<code>/home</code>, <code>/nix</code>, and a handful of system state
+directories (bind-mounted to a persistent dataset) are retained on boot.
+My main desktop environment is a thoroughly un-riced <a
+href="https://swaywm.org/">Sway WM</a>.</p>
+<p>My terminal emulator of choice is <a
+href="https://sw.kovidgoyal.net/kitty/">kitty</a>, though I still use <a
+href="https://apps.kde.org/konsole/">konsole</a> from time to time. I
+use <a href="https://github.com/tmux/tmux/wiki">tmux</a> with <a
+href="https://mosh.org/">mosh</a> for persistent SSH sessions into
+remote machines. My server and other laptops also run NixOS. For
+development, I mainly use <a href="https://neovim.io/">neovim</a> with
+very few plugins or modifications.</p>
+<p>[^1] This may sound extreme, but it is essentially the only way to
+regain control over your system state and be confident you are
+storing/backing up exactly what you need (and no more) in a world rife
+with software that does not respect user data, cleanliness, or
+separation of concerns. Moreover (and as is more commonly advertised),
+it makes it much easier to ~guarantee reproducibility of a system, which
+is surprisingly pleasant to have even for personal laptops and the
+like.</p>
+<p>This site is generated statically from Markdown files using <a
+href="https://jinja.palletsprojects.com/en/stable/">jinja</a> and <a
+href="https://pandoc.org/">pandoc</a>, and served using <a
+href="https://docs.github.com/en/pages">GitHub Pages</a>. It is designed
+to be (at least in part) a wiki-style blog in which posts are updated
+and reorganized at my discretion, with no particular posting schedule or
+guarantees of completeness.</p>
 </section>
 </body>
 </html>
