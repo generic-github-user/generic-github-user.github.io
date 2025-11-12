@@ -18,10 +18,10 @@ PAGES_DIR = REPO_ROOT / "pages"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
 HEADER_TEMPLATE_PATH = PAGES_DIR / "header.md"
 POST_TEMPLATE_PATH = PAGES_DIR / "post.md"
-POST_OUTPUT_DIR = REPO_ROOT / "src" / "posts"
+POST_OUTPUT_DIR = REPO_ROOT / "docs" / "posts"
 POST_HEADER_INCLUDE_PATH = PAGES_DIR / "post_head.html"
 H2_ANCHOR_FILTER_PATH = PAGES_DIR / "h2_anchors.lua"
-PAGES_OUTPUT_DIR = REPO_ROOT / "src"
+PAGES_OUTPUT_DIR = REPO_ROOT / "docs"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 
