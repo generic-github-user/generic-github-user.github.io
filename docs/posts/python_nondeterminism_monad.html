@@ -263,8 +263,8 @@ href="/contact">contact</a></em></p>
 <strong>2025-11-11 at 22:48 EST</strong> | written in
 <strong>Maryland</strong></p>
 <p><em>This post contains some fairly lengthy exposition; if you want to
-skip right to the content promised by the title, go to
-<code>## Nondeterminism in Python</code></em></p>
+skip right to the content promised by the title, go to <a
+href="#general-nondeterminism-with-generators"><code>## General nondeterminism with generators</code></a></em></p>
 <p>Many of the most curious and useful features of functional
 programming languages like Haskell derive from their ability (often
 unencumbered by the norms and constraints of industrial software
@@ -396,7 +396,8 @@ and annotate them with those products:</p>
 ((1,6),6)
 ((1,8),8)
 ((1,10),10)
-((2,1),2)</code></pre>
+((2,1),2)
+...</code></pre>
 <p>(There is a tremendous amount of fascinating
 monad/applicative/traversable/alternative machinery that works with
 almost all of Haskell’s basic types, and which I would recommend having
@@ -418,9 +419,10 @@ into a monad (for any <code>Set a</code>, <code>a</code> carries an
 <code>Ord</code> constraint), we cannot use the obvious optimization
 strategy: “implement nondeterminism backed using a <code>Set</code> so
 that at each step/branching point, the universe is automatically
-collapsed down into unique values”. There are some packages which claim
-to implement a performant, monad-compatible set datatype, the
-implementation details of which I know not.)</p>
+collapsed down into unique values”. There are <a
+href="https://hackage.haskell.org/package/set-monad">some packages</a>
+which claim to implement a performant, monad-compatible set datatype,
+the implementation details of which I know not.)</p>
 <p>Another very compelling feature of Haskell, which is a bit of a
 diversion from the main subject of this post but still worth bringing
 up, is that monad transformers can be used to mix and match
@@ -626,7 +628,7 @@ class="sourceCode py"><code class="sourceCode python"><span id="cb17-1"><a href=
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> statet_test(<span class="dv">1</span>):</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(r)</span></code></pre></div>
-<p>Surprisingly, this is as concise as the Haskell version (albeit much
+<p>Surprisingly, this is ~as concise as the Haskell version (albeit much
 slower)! I’ve temporarily changed the backing type in <code>go</code>
 from a <code>set</code> to a <code>list</code>, for two reasons: we want
 to get our results in the same order and we cannot have a

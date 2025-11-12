@@ -4,7 +4,7 @@ tags: [haskell, monads, python, generators, tricks]
 location: Maryland
 ---
 
-*This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to `## Nondeterminism in Python`*
+*This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to [`## General nondeterminism with generators`](#general-nondeterminism-with-generators)*
 
 Many of the most curious and useful features of functional programming languages like Haskell derive from their ability (often unencumbered by the norms and constraints of industrial software engineering) to restate common algorithmic problems in novel ways -- i.e., to perform a change of basis into a domain more suited to the problem. One such frame shift (or rather, category of such) is widely known as [*declarative programming*](https://en.wikipedia.org/wiki/Declarative_programming) (as opposed to imperative or functional programming, for example), and concerns programming languages, libraries, and techniques based on stating the problem domain or constraint system, as well as the desired objective or target (the "what"), at a high level and leaving the low-level algorithmic details to the optimizer or runtime (the "how"). In some cases this may take the form of a domain-specific optimization or constraint solving library; other times it is integrated more tightly with a language's semantics and execution model.
 
@@ -106,13 +106,14 @@ ghci> mapM print [((x, y), x * y) | x <- [1..10], y <- [1..10], even (x * y)]
 ((1,8),8)
 ((1,10),10)
 ((2,1),2)
+...
 ```
 
 (There is a tremendous amount of fascinating monad/applicative/traversable/alternative machinery that works with almost all of Haskell's basic types, and which I would recommend having a look at if the above interests you at all; another example I'm fond of is `sequence [[1..2], [3..6]]`, which exploits the fact that lists are both `Traversable` and `Monad`.)
 
 It is important to note that -- unlike with naive implementations that iterate over all combinations of elements from a handful of statically known sets, and only check which combinations would have survived at the end -- this approach really does prune branches each time `guard` is invoked, avoiding much unnecessary work, and has all the execution semantics you would expect of a handwritten "iterate over items in source collections -> map transformations over each element and collect the results -> filter/prune -> ..." approach.
 
-(The main deficiency, aside from those mild to moderate performance concerns (cache locality, laziness) that apply to Haskell's execution model more generally, is that since `Data.Set` cannot be made into a monad (for any `Set a`, `a` carries an `Ord` constraint), we cannot use the obvious optimization strategy: "implement nondeterminism backed using a `Set` so that at each step/branching point, the universe is automatically collapsed down into unique values". There are some packages which claim to implement a performant, monad-compatible set datatype, the implementation details of which I know not.)
+(The main deficiency, aside from those mild to moderate performance concerns (cache locality, laziness) that apply to Haskell's execution model more generally, is that since `Data.Set` cannot be made into a monad (for any `Set a`, `a` carries an `Ord` constraint), we cannot use the obvious optimization strategy: "implement nondeterminism backed using a `Set` so that at each step/branching point, the universe is automatically collapsed down into unique values". There are [some packages](https://hackage.haskell.org/package/set-monad) which claim to implement a performant, monad-compatible set datatype, the implementation details of which I know not.)
 
 Another very compelling feature of Haskell, which is a bit of a diversion from the main subject of this post but still worth bringing up, is that monad transformers can be used to mix and match nondeterminism with other kinds of effects -- for example, the early termination/short-circuiting behavior of the `Maybe` monad, or the hermetic state manipulation features of `State`. As a brief example, we can use `StateT` over the list monad to iterate over all combinations of some transformations (successively applied to an initial value) while maintaining a "history" of each transformation trace, then print them all out:
 
@@ -176,7 +177,7 @@ This is somewhat brittle, since we are generally forced to intermediate every op
 
 - build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
 - perform AST-munging of the kind certain Python JIT compilers (Numba, etc.) do
-- perform runtime tracing of the branching structure (more on this in an in-progress future post)
+- perform runtime tracing of the branching structure (more on this in an in-progress future post that may or may not come to fruition)
 
 ...this seemingly requires some way to interrupt execution at specific points and backtrack/rewind to those points, modifying execution state each time before resuming to inject the state of the current "branch".
 
@@ -270,7 +271,7 @@ for r in statet_test(1):
     print(r)
 ```
 
-Surprisingly, this is as concise as the Haskell version (albeit much slower)! I've temporarily changed the backing type in `go` from a `set` to a `list`, for two reasons: we want to get our results in the same order and we cannot have a `set[list[int]]` since lists are non-hashable. Either one works fine. Here are the results (seemingly matching the ones from the original):
+Surprisingly, this is ~as concise as the Haskell version (albeit much slower)! I've temporarily changed the backing type in `go` from a `set` to a `list`, for two reasons: we want to get our results in the same order and we cannot have a `set[list[int]]` since lists are non-hashable. Either one works fine. Here are the results (seemingly matching the ones from the original):
 
 ```
 [1, 5, 9, 13]

@@ -3,6 +3,8 @@ pages:
     slug: index
   - title: contact
     slug: contact
+  # - title: colophon
+  #   slug: colophon
 
 posts:
   - python_nondeterminism_monad
