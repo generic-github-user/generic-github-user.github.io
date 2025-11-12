@@ -1,4 +1,8 @@
-# Nondeterminism monad in Python
+---
+title: Nondeterminism monad in Python
+tags: [haskell, monads, python, generators, tricks]
+location: Maryland
+---
 
 **Also in this post: Haskell and parsing-free execution tracers**
 
