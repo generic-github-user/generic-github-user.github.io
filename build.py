@@ -14,12 +14,14 @@ from jinja2 import Environment
 
 REPO_ROOT = Path(__file__).resolve().parent
 POSTS_DIR = REPO_ROOT / "posts"
+PAGES_DIR = REPO_ROOT / "pages"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
-HEADER_TEMPLATE_PATH = REPO_ROOT / "pages" / "header.md"
-POST_TEMPLATE_PATH = REPO_ROOT / "pages" / "post.md"
+HEADER_TEMPLATE_PATH = PAGES_DIR / "header.md"
+POST_TEMPLATE_PATH = PAGES_DIR / "post.md"
 POST_OUTPUT_DIR = REPO_ROOT / "src" / "posts"
-POST_HEADER_INCLUDE_PATH = REPO_ROOT / "pages" / "post_head.html"
-H2_ANCHOR_FILTER_PATH = REPO_ROOT / "pages" / "h2_anchors.lua"
+POST_HEADER_INCLUDE_PATH = PAGES_DIR / "post_head.html"
+H2_ANCHOR_FILTER_PATH = PAGES_DIR / "h2_anchors.lua"
+PAGES_OUTPUT_DIR = REPO_ROOT / "src"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 
@@ -104,6 +106,59 @@ def render_site_header(
     return template.render(main_navigation=navigation)
 
 
+def render_pages_to_html(
+    metadata_path: Path | None = None,
+    pages_dir: Path | None = None,
+    header_template_path: Path | None = None,
+    output_dir: Path | None = None,
+    pandoc_extra_args: Iterable[str] | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> list[Path]:
+    """Render top-level pages (index, contact, etc.) to HTML files under src/."""
+
+    metadata_file = Path(metadata_path or METADATA_PATH)
+    pages_directory = Path(pages_dir or PAGES_DIR)
+    header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
+    output_directory = Path(output_dir or PAGES_OUTPUT_DIR)
+    output_directory.mkdir(parents=True, exist_ok=True)
+
+    metadata_obj = metadata or _read_metadata(metadata_file)
+    page_entries = metadata_obj.get("pages") or []
+    if not isinstance(page_entries, list):
+        page_entries = [page_entries]
+
+    site_header = render_site_header(
+        metadata_path=metadata_file,
+        header_template_path=header_path,
+        metadata=metadata_obj,
+    )
+    base_pandoc_args = _build_pandoc_base_args(pandoc_extra_args)
+
+    rendered_paths: list[Path] = []
+    for entry in page_entries:
+        slug, title, source_name, context = _normalize_page_entry(entry)
+        if not slug or not source_name:
+            continue
+
+        page_path = pages_directory / f"{source_name}.md"
+        if not page_path.exists():
+            raise FileNotFoundError(f"page source not found: {page_path}")
+
+        template = JINJA_ENV.from_string(page_path.read_text(encoding="utf-8"))
+        rendered_markdown = template.render(site_header=site_header, page=context)
+
+        html = _markdown_to_html(
+            rendered_markdown,
+            base_pandoc_args,
+            metadata={"title": "", "pagetitle": title or slug},
+        )
+        output_path = output_directory / f"{slug}.html"
+        output_path.write_text(html, encoding="utf-8")
+        rendered_paths.append(output_path)
+
+    return rendered_paths
+
+
 def render_posts_to_html(
     metadata_path: Path | None = None,
     posts_dir: Path | None = None,
@@ -136,14 +191,7 @@ def render_posts_to_html(
         metadata=metadata_obj,
     )
 
-    base_pandoc_args: list[str] = []
-    if POST_HEADER_INCLUDE_PATH.exists():
-        base_pandoc_args.append(f"--include-in-header={POST_HEADER_INCLUDE_PATH}")
-    if H2_ANCHOR_FILTER_PATH.exists():
-        base_pandoc_args.append(f"--lua-filter={H2_ANCHOR_FILTER_PATH}")
-    base_pandoc_args.append("--section-divs")
-    if pandoc_extra_args:
-        base_pandoc_args.extend(pandoc_extra_args)
+    base_pandoc_args = _build_pandoc_base_args(pandoc_extra_args)
 
     template_source = template_path.read_text(encoding="utf-8")
     template = JINJA_ENV.from_string(template_source)
@@ -282,6 +330,23 @@ def _iter_navigation_items(pages_meta: Any) -> Iterable[str]:
     return links
 
 
+def _normalize_page_entry(entry: Any) -> tuple[str, str, str, dict[str, Any]]:
+    if isinstance(entry, dict):
+        slug = _first_non_empty(entry, "slug", "path", "name")
+        title = _first_non_empty(entry, "title", "label", "name", "slug")
+        source_name = _first_non_empty(entry, "source", "template", "file", "slug", "path", "name")
+        context = dict(entry)
+        if slug and "slug" not in context:
+            context["slug"] = slug
+        if title and "title" not in context:
+            context["title"] = title
+        return slug or "", title or (slug or ""), source_name or (slug or ""), context
+
+    value = str(entry).strip()
+    context = {"title": value, "slug": value}
+    return value, value, value, context
+
+
 def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
     for key in keys:
         value = entry.get(key)
@@ -322,4 +387,23 @@ def _markdown_to_html(
         ) from exc
 
 
-__all__ = ["CommitInfo", "Post", "load_posts", "render_site_header", "render_posts_to_html"]
+def _build_pandoc_base_args(extra_args: Iterable[str] | None = None) -> list[str]:
+    args: list[str] = []
+    if POST_HEADER_INCLUDE_PATH.exists():
+        args.append(f"--include-in-header={POST_HEADER_INCLUDE_PATH}")
+    if H2_ANCHOR_FILTER_PATH.exists():
+        args.append(f"--lua-filter={H2_ANCHOR_FILTER_PATH}")
+    args.append("--section-divs")
+    if extra_args:
+        args.extend(extra_args)
+    return args
+
+
+__all__ = [
+    "CommitInfo",
+    "Post",
+    "load_posts",
+    "render_site_header",
+    "render_pages_to_html",
+    "render_posts_to_html",
+]

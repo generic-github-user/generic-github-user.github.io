@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Nondeterminism monad in Python</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+  body {
+    max-width: 50em;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+  </style>
+</head>
+<body>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a
+href="/contact">contact</a></em></p>
+</section>
+<section id="nondeterminism-monad-in-python" class="level1">
+<h1>Nondeterminism monad in Python</h1>
+<p>started <strong>2025-11-10 at 17:17 EST</strong> | updated
+<strong>2025-11-11 at 22:48 EST</strong> | written in
+<strong>Maryland</strong></p>
+<p><em>This post contains some fairly lengthy exposition; if you want to
+skip right to the content promised by the title, go to
+<code>## Nondeterminism in Python</code></em></p>
+<p>Many of the most curious and useful features of functional
+programming languages like Haskell derive from their ability (often
+unencumbered by the norms and constraints of industrial software
+engineering) to restate common algorithmic problems in novel ways –
+i.e., to perform a change of basis into a domain more suited to the
+problem. One such frame shift (or rather, category of such) is widely
+known as <a
+href="https://en.wikipedia.org/wiki/Declarative_programming"><em>declarative
+programming</em></a> (as opposed to imperative or functional
+programming, for example), and concerns programming languages,
+libraries, and techniques based on stating the problem domain or
+constraint system, as well as the desired objective or target (the
+“what”), at a high level and leaving the low-level algorithmic details
+to the optimizer or runtime (the “how”). In some cases this may take the
+form of a domain-specific optimization or constraint solving library;
+other times it is integrated more tightly with a language’s semantics
+and execution model.</p>
+<p>One self-contained and useful tool from this paradigm is <a
+href="https://en.wikipedia.org/wiki/Nondeterministic_programming">“nondeterminism”</a>
+(this is a somewhat overloaded term, but in this case I am <em>not</em>
+talking about the kind of nondeterminism that people mention with
+respect to e.g., reproducibility of software artifacts or experiments).
+The premise is that we delineate the ways in which a program can branch
+or the alternatives to be selected between (potentially with nesting,
+recursion, and other complications) and search/“solve” for some solution
+among the set of possible paths or choices. That is to say, the
+nondeterminism interface should abstract away the construction of the
+search space and execution of the search procedure to some extent; the
+programmer need only be concerned with which choices are available and
+how they interact (e.g., how state evolves over time depending on the
+branch taken at each step).</p>
+<p>The classical implementation of this scheme is described in chapter
+4.3 of the well-known <a
+href="https://en.wikipedia.org/wiki/Structure_and_Interpretation_of_Computer_Programs"><em>Structure
+and Interpretation of Computer Programs</em></a>: McCarthy’s
+<code>amb</code> (“ambiguous”) operator, usually implemented in Lisp. I
+will omit the details of the implementation since there are <a
+href="https://rosettacode.org/wiki/Amb">decent</a> <a
+href="https://www.randomhacks.net/2005/10/11/amb-operator/">explanations</a>
+<a
+href="https://ds26gte.github.io/tyscheme/index-Z-H-16.html">elsewhere</a>,
+but the idea rhymes with what I’ve described above: we consider
+“splitting” execution into different paths corresponding to available
+combinations of initial values, and return results only from the path
+(or paths) where execution “succeeded” (some specified criteria was
+met).</p>
+<section id="nondeterminism-in-the-list-monad" class="level2">
+<h2>Nondeterminism in the list monad <a
+href="#nondeterminism-in-the-list-monad" class="heading-anchor"
+title="Link to this section">¶</a></h2>
+<p><a href="https://www.haskell.org/">Haskell</a> has what I would
+consider a somewhat more principled implementation of nondeterminism
+using monads. In particular, the built-in list type forms a monad, with
+<code>\xs f -&gt; concat (map f xs)</code> as the <code>&gt;&gt;=</code>
+(<code>bind</code>) operation (and the singleton list constructor, i.e.,
+<code>return x = [x]</code>, as <code>return</code>/<code>pure</code>).
+This means that the resulting list will be constructed by passing each
+element in <code>xs</code> to <code>f</code> to yield a new list, then
+concatenating the results:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> [x <span class="op">*</span> <span class="dv">2</span>, x <span class="op">*</span> <span class="dv">3</span>])</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">9</span>]</span></code></pre></div>
+<p>(see <a
+href="https://en.wikibooks.org/wiki/Haskell/Understanding_monads/List">this
+Wikibooks entry</a> for a more detailed explanation)</p>
+<p>As you may expect, this means that we can stack multiple “branching”
+operations to recursively expand every possible path:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> [x <span class="op">*</span> <span class="dv">2</span>, x <span class="op">*</span> <span class="dv">3</span>]) <span class="op">&gt;&gt;=</span> (\y <span class="ot">-&gt;</span> [y <span class="op">+</span> <span class="dv">4</span>, <span class="dv">0</span>])</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">6</span>,<span class="dv">0</span>,<span class="dv">7</span>,<span class="dv">0</span>,<span class="dv">8</span>,<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">0</span>,<span class="dv">13</span>,<span class="dv">0</span>]</span></code></pre></div>
+<p>The equivalent code in <a
+href="https://en.wikibooks.org/wiki/Haskell/do_notation">do-notation</a>
+looks like this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> [x <span class="op">*</span> <span class="dv">2</span>, x <span class="op">*</span> <span class="dv">3</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    z <span class="ot">&lt;-</span> [y <span class="op">+</span> <span class="dv">4</span>, <span class="dv">0</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> z</span></code></pre></div>
+<p>Perhaps now it is clear how this is useful: we can trivially iterate
+over all combinations of choices for x, y, and z merely by specifying
+what the choices are, foregoing cumbersome and unscalable combinatorics
+logic. If you’re familiar with Haskell’s list comprehension notation,
+this is indeed syntax sugar for the list monad:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> [((x, y), x <span class="op">*</span> y) <span class="op">|</span> x <span class="ot">&lt;-</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], y <span class="ot">&lt;-</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>[((<span class="dv">1</span>,<span class="dv">4</span>),<span class="dv">4</span>),((<span class="dv">1</span>,<span class="dv">5</span>),<span class="dv">5</span>),((<span class="dv">1</span>,<span class="dv">6</span>),<span class="dv">6</span>),((<span class="dv">2</span>,<span class="dv">4</span>),<span class="dv">8</span>),((<span class="dv">2</span>,<span class="dv">5</span>),<span class="dv">10</span>),((<span class="dv">2</span>,<span class="dv">6</span>),<span class="dv">12</span>),((<span class="dv">3</span>,<span class="dv">4</span>),<span class="dv">12</span>),((<span class="dv">3</span>,<span class="dv">5</span>),<span class="dv">15</span>),((<span class="dv">3</span>,<span class="dv">6</span>),<span class="dv">18</span>)]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>] <span class="op">&gt;&gt;=</span> (\y <span class="ot">-&gt;</span> [((x, y), x <span class="op">*</span> y)]))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>[((<span class="dv">1</span>,<span class="dv">4</span>),<span class="dv">4</span>),((<span class="dv">1</span>,<span class="dv">5</span>),<span class="dv">5</span>),((<span class="dv">1</span>,<span class="dv">6</span>),<span class="dv">6</span>),((<span class="dv">2</span>,<span class="dv">4</span>),<span class="dv">8</span>),((<span class="dv">2</span>,<span class="dv">5</span>),<span class="dv">10</span>),((<span class="dv">2</span>,<span class="dv">6</span>),<span class="dv">12</span>),((<span class="dv">3</span>,<span class="dv">4</span>),<span class="dv">12</span>),((<span class="dv">3</span>,<span class="dv">5</span>),<span class="dv">15</span>),((<span class="dv">3</span>,<span class="dv">6</span>),<span class="dv">18</span>)]</span></code></pre></div>
+<p>We can do more interesting things as well; <code>Control.Monad</code>
+exports a function called <code>guard</code> with the following (quite
+general) definition:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>guard <span class="dt">True</span>  <span class="ot">=</span> <span class="fu">pure</span> ()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>guard <span class="dt">False</span> <span class="ot">=</span> empty</span></code></pre></div>
+<p>…which for <code>[]</code>, specializes to:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> (guard <span class="dt">True</span>)<span class="ot"> ::</span> [()]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>[()]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ghci<span class="op">&gt;</span> (guard <span class="dt">False</span>)<span class="ot"> ::</span> [()]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>[]</span></code></pre></div>
+<p><code>guard</code> lets us access a general “cancellation” action for
+applicative functors (specifically, <code>Alternative</code>s); in the
+context of the list monad, we can think of this as conditionally pruning
+a branch from our computation by ignoring the results accumulated so far
+in that branch and returning an empty list. Let’s say we want to find
+all pairs of integers in <code>1..10 x 1..10</code> with even products,
+and annotate them with those products:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> [<span class="dv">1</span><span class="op">..</span><span class="dv">10</span>]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  guard (<span class="fu">even</span> (a <span class="op">*</span> b))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> ((a, b), a <span class="op">*</span> b)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="fu">mapM</span> <span class="fu">print</span> xs</span></code></pre></div>
+<pre><code>((1,2),2)
+((1,4),4)
+((1,6),6)
+((1,8),8)
+((1,10),10)
+((2,1),2)
+((2,2),4)
+((2,3),6)
+((2,4),8)
+((2,5),10)
+((2,6),12)
+...</code></pre>
+<p>Haskell has convenient syntax sugar for this too:</p>
+<pre><code>ghci&gt; mapM print [((x, y), x * y) | x &lt;- [1..10], y &lt;- [1..10], even (x * y)]
+((1,2),2)
+((1,4),4)
+((1,6),6)
+((1,8),8)
+((1,10),10)
+((2,1),2)</code></pre>
+<p>(There is a tremendous amount of fascinating
+monad/applicative/traversable/alternative machinery that works with
+almost all of Haskell’s basic types, and which I would recommend having
+a look at if the above interests you at all; another example I’m fond of
+is <code>sequence [[1..2], [3..6]]</code>, which exploits the fact that
+lists are both <code>Traversable</code> and <code>Monad</code>.)</p>
+<p>It is important to note that – unlike with naive implementations that
+iterate over all combinations of elements from a handful of statically
+known sets, and only check which combinations would have survived at the
+end – this approach really does prune branches each time
+<code>guard</code> is invoked, avoiding much unnecessary work, and has
+all the execution semantics you would expect of a handwritten “iterate
+over items in source collections -&gt; map transformations over each
+element and collect the results -&gt; filter/prune -&gt; …”
+approach.</p>
+<p>(The main deficiency, aside from those mild to moderate performance
+concerns (cache locality, laziness) that apply to Haskell’s execution
+model more generally, is that since <code>Data.Set</code> cannot be made
+into a monad (for any <code>Set a</code>, <code>a</code> carries an
+<code>Ord</code> constraint), we cannot use the obvious optimization
+strategy: “implement nondeterminism backed using a <code>Set</code> so
+that at each step/branching point, the universe is automatically
+collapsed down into unique values”. There are some packages which claim
+to implement a performant, monad-compatible set datatype, the
+implementation details of which I know not.)</p>
+<p>Another very compelling feature of Haskell, which is a bit of a
+diversion from the main subject of this post but still worth bringing
+up, is that monad transformers can be used to mix and match
+nondeterminism with other kinds of effects – for example, the early
+termination/short-circuiting behavior of the <code>Maybe</code> monad,
+or the hermetic state manipulation features of <code>State</code>. As a
+brief example, we can use <code>StateT</code> over the list monad to
+iterate over all combinations of some transformations (successively
+applied to an initial value) while maintaining a “history” of each
+transformation trace, then print them all out:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Control.Monad.State.Lazy</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.List</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Function</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ot">test ::</span> <span class="dt">StateT</span> [<span class="dt">Int</span>] [] ()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    x&#39;<span class="op">@</span>(x<span class="op">:</span>xs) <span class="ot">&lt;-</span> get</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    rule <span class="ot">&lt;-</span> lift [(<span class="op">+</span><span class="dv">4</span>), (<span class="op">*</span><span class="dv">2</span>), (<span class="ot">`rem`</span> <span class="dv">3</span>)]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    put <span class="op">$</span> (rule x)<span class="op">:</span>x&#39;</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> ()</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mapM_</span> (<span class="fu">print</span> <span class="op">.</span> <span class="fu">reverse</span>) <span class="op">$</span> execStateT (replicateM <span class="dv">3</span> test) [<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>[1,5,9,13]
+[1,5,9,18]
+[1,5,9,0]
+[1,5,10,14]
+[1,5,10,20]
+[1,5,10,1]
+[1,5,2,6]
+[1,5,2,4]
+[1,5,2,2]
+[1,2,6,10]
+[1,2,6,12]
+[1,2,6,0]
+[1,2,4,8]
+[1,2,4,8]
+[1,2,4,1]
+[1,2,2,6]
+[1,2,2,4]
+[1,2,2,2]
+[1,1,5,9]
+[1,1,5,10]
+[1,1,5,2]
+[1,1,2,6]
+[1,1,2,4]
+[1,1,2,2]
+[1,1,1,5]
+[1,1,1,2]
+[1,1,1,1]</code></pre>
+<p>(The initial value is 1; the three transforms are “add 4”, “multiply
+by 2”, and “take the remainder mod 3”; we do three transformations in a
+row. As you would expect, we get <code>3^3 = 27</code> results.)</p>
+<p><a
+href="http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0">This
+page</a> has some nice illustrations of the control flow implied by
+various stacks of monad transformers. Finding the correct ordering of
+monad transformers in the stack, and mentally modeling the relevant
+types, is sometimes nontrivial; nevertheless, they can certainly improve
+concision in situations that call for them.</p>
+</section>
+<section id="general-nondeterminism-with-generators" class="level2">
+<h2>General nondeterminism with generators <a
+href="#general-nondeterminism-with-generators" class="heading-anchor"
+title="Link to this section">¶</a></h2>
+<p>Now that the basic idea has been motivated and demonstrated in a
+language more suited to it (I think this is actually a fairly good
+illustration of the utility of monads as “programmable semicolons” in
+languages with good syntax/compiler support for them), we can get to the
+main question: can we implement a reasonably ergonomic and performant
+version of this in Python? It is clear enough that McCarthy’s
+<code>amb</code> operator can be implemented in basically any
+programming language; <a
+href="https://rosettacode.org/wiki/Amb#Python">Rosetta Code</a> contains
+several Python implementations that seem fairly clean and well-behaved,
+including a (somewhat impractical) transliteration of the list monad
+described above (as well as more <a
+href="https://rosettacode.org/wiki/Amb#Haskell">Haskell</a>
+examples).</p>
+<p>This is somewhat brittle, since we are generally forced to
+intermediate every operation in our code with a set of predefined
+combinators. Clearly, we would prefer to go beyond <code>amb</code>-like
+data structures – we want to interleave Python’s control flow with some
+amount of automated branching logic. Unless we want to either:</p>
+<ul>
+<li>build a DSL supplanting Python’s normal constructs and implement our
+own pseudo-interpreter/compiler; and/or</li>
+<li>perform AST-munging of the kind certain Python JIT compilers (Numba,
+etc.) do</li>
+<li>perform runtime tracing of the branching structure (more on this in
+an in-progress future post)</li>
+</ul>
+<p>…this seemingly requires some way to interrupt execution at specific
+points and backtrack/rewind to those points, modifying execution state
+each time before resuming to inject the state of the current
+“branch”.</p>
+<p><a href="https://en.wikipedia.org/wiki/Coroutine">Coroutines</a> seem
+well-suited to this purpose; Python’s <a
+href="https://wiki.python.org/moin/Generators">generators</a>, though <a
+href="https://wiki.c2.com/?GeneratorsAreNotCoroutines">not quite the
+same</a>, provide enough functionality to do what we have described
+above. In particular, generators allow us to temporarily stop execution,
+returning control (and an arbitrary value) to the caller, then later
+resume execution while passing back (“<code>send</code>ing”) a new
+value. We now have the basics of a workable approach: at each
+“ambiguous” expression in the program, just stop execution, run the
+<em>remainder</em> of the program once with each possible value for that
+expression, and coalesce the results.</p>
+<p>Here is a minimal example of the sort of function we would like to
+support nondeterminism for; we have a <code>yield</code> statement
+enclosing each “source” of ambiguity/<code>Amb</code> expression (and
+these can use values from prior ones normally, no extra magic
+needed):</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">set</span>[((<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>), <span class="bu">int</span>)]:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="dv">2</span>, <span class="dv">4</span>, a])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="op">==</span> y:</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="dv">0</span>, a <span class="op">*</span> <span class="dv">2</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((x, y, z), (x <span class="op">+</span> y) <span class="op">*</span> z)</span></code></pre></div>
+<p>We’ll implement a very thin class to store these intermediate values
+and to flag stop points/junctions:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Amb:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, xs):</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.xs <span class="op">=</span> xs</span></code></pre></div>
+<p>Python generators <a
+href="https://stackoverflow.com/a/29837018">aren’t readily
+cloneable</a>, so we’ll write a helper to advance through one
+<code>yield</code> statement for each element of <code>xs</code>, using
+<code>.send</code> to set the values we want for each <code>Amb</code>
+expression in order (this is the main source of inefficiency in this
+implementation):</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> send_n(g, xs):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> g.send(<span class="va">None</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> x <span class="kw">in</span> xs:</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            v <span class="op">=</span> g.send(x)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> v</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">StopIteration</span> <span class="im">as</span> v:</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> v.value</span></code></pre></div>
+<p>We catch <code>StopIteration</code> to intercept the final return
+value from the generator. Now we can put together our <code>amb</code>
+decorator, which takes an <code>Amb</code>-annotated generator function
+and returns a function with the nondeterminism effects applied (note
+that a real-world version of this should probably use
+<code>functools.wraps</code> or similar to copy relevant metadata from
+the original function: its docstring, name, etc.):</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pprint <span class="im">import</span> pprint</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> amb(f):</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> go(g, xs):</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(v <span class="op">:=</span> send_n(g(), xs), Amb):</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="bu">set</span>(itertools.chain.from_iterable(go(g, xs <span class="op">+</span> [x]) <span class="cf">for</span> x <span class="kw">in</span> v.xs))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="bu">set</span>([v])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> r(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> go(<span class="kw">lambda</span>: f(<span class="op">*</span>args, <span class="op">**</span>kwargs), [])</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r</span></code></pre></div>
+<p>This does exactly what we described above; <code>go</code> merely
+sends the current “branch” (ordered list of values to pass to the
+<code>yield</code>s/<code>Amb</code>s) into the generator, and receives
+whatever is <code>yield</code>ed or <code>return</code>ed. If it’s a
+plain value, we are exiting the function and should embed the raw return
+value in a list. If we get an <code>Amb</code>, we are signaling a
+“breakpoint” or junction, at which we should evaluate <em>the rest</em>
+of the code once for each value inside the <code>Amb</code> and
+concatenate the results (a list of lists).</p>
+<p>If we decorate our <code>test</code> function with <code>amb</code>
+and evaluate <code>pprint(list(test(5)))</code>, we get:</p>
+<pre><code>[((1, 5, 4), 24),
+ ((2, 4, 4), 24),
+ ((3, 2, 4), 20),
+ ((1, 2, 4), 12),
+ ((3, 4, 4), 28),
+ ((2, 5, 4), 28),
+ ((3, 5, 4), 32),
+ ((1, 4, 4), 20),
+ ((2, 2, 0), 0),
+ ((2, 2, 10), 40)]</code></pre>
+<p>Excellent!</p>
+<p>Let’s try recreating our earlier <code>StateT</code> example as
+faithfully as possible:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> statet_test(start: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">int</span>]]:</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> [start]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        rule <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="kw">lambda</span> x: x <span class="op">+</span> <span class="dv">4</span>, <span class="kw">lambda</span> x: x <span class="op">*</span> <span class="dv">2</span>, <span class="kw">lambda</span> x: x <span class="op">%</span> <span class="dv">3</span>])</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> rule(start)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        r.append(start)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> statet_test(<span class="dv">1</span>):</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(r)</span></code></pre></div>
+<p>Surprisingly, this is as concise as the Haskell version (albeit much
+slower)! I’ve temporarily changed the backing type in <code>go</code>
+from a <code>set</code> to a <code>list</code>, for two reasons: we want
+to get our results in the same order and we cannot have a
+<code>set[list[int]]</code> since lists are non-hashable. Either one
+works fine. Here are the results (seemingly matching the ones from the
+original):</p>
+<pre><code>[1, 5, 9, 13]
+[1, 5, 9, 18]
+[1, 5, 9, 0]
+[1, 5, 10, 14]
+[1, 5, 10, 20]
+[1, 5, 10, 1]
+[1, 5, 2, 6]
+[1, 5, 2, 4]
+[1, 5, 2, 2]
+[1, 2, 6, 10]
+[1, 2, 6, 12]
+[1, 2, 6, 0]
+[1, 2, 4, 8]
+[1, 2, 4, 8]
+[1, 2, 4, 1]
+[1, 2, 2, 6]
+[1, 2, 2, 4]
+[1, 2, 2, 2]
+[1, 1, 5, 9]
+[1, 1, 5, 10]
+[1, 1, 5, 2]
+[1, 1, 2, 6]
+[1, 1, 2, 4]
+[1, 1, 2, 2]
+[1, 1, 1, 5]
+[1, 1, 1, 2]
+[1, 1, 1, 1]</code></pre>
+<p>Just to round it out, here’s a more interesting example using string
+manipulation:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> random <span class="im">import</span> shuffle</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> string_test() <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="st">&quot;where [content] go&quot;</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">&quot;what [content] do&quot;</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                   <span class="ss">f&quot;</span><span class="sc">{</span><span class="cf">yield</span> Amb([<span class="st">&#39;how&#39;</span>, <span class="st">&#39;why&#39;</span>])<span class="sc">}</span><span class="ss"> [content] do it&quot;</span>])</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    content <span class="op">=</span> (<span class="cf">yield</span> Amb([<span class="st">&#39;will&#39;</span>, <span class="st">&#39;did&#39;</span>])) <span class="op">+</span> <span class="st">&#39; &#39;</span> <span class="op">+</span> (<span class="cf">yield</span> Amb([<span class="st">&#39;you&#39;</span>, <span class="st">&#39;she&#39;</span>, <span class="st">&#39;he&#39;</span>]))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a.replace(<span class="st">&#39;[content]&#39;</span>, content) <span class="op">+</span> (<span class="cf">yield</span> Amb([<span class="st">&quot;?&quot;</span>, <span class="st">&quot;...?&quot;</span>]))</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> string_test()</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>shuffle(s)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>pprint(s[:<span class="dv">20</span>])</span></code></pre></div>
+<pre><code>[&#39;where did he go?&#39;,
+ &#39;what will he do...?&#39;,
+ &#39;why did you do it?&#39;,
+ &#39;what did you do...?&#39;,
+ &#39;why will he do it...?&#39;,
+ &#39;what will you do...?&#39;,
+ &#39;where will you go...?&#39;,
+ &#39;how did he do it?&#39;,
+ &#39;why did he do it?&#39;,
+ &#39;where will you go...?&#39;,
+ &#39;where will she go...?&#39;,
+ &#39;where did she go?&#39;,
+ &#39;what did you do?&#39;,
+ &#39;why will you do it?&#39;,
+ &#39;why did he do it...?&#39;,
+ &#39;where did she go...?&#39;,
+ &#39;how will she do it?&#39;,
+ &#39;how did she do it?&#39;,
+ &#39;what did she do?&#39;,
+ &#39;what will he do?&#39;]</code></pre>
+<p>If you squint at the definitions, it might be clear that our two
+branches in <code>go</code> map almost directly onto the
+<code>bind</code> (concat) and <code>return</code> (singleton) methods
+of the list monad. Indeed, we could swap in the behavior of a different
+monad and get the results we expect:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> TypeVar, Generic, Tuple</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> TypeVar(<span class="st">&#39;T&#39;</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Maybe[T]:</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, x: T, isjust: <span class="bu">bool</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.x: T <span class="op">=</span> x</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.isjust: <span class="bu">bool</span> <span class="op">=</span> isjust</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__str__</span>(<span class="va">self</span>):</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.isjust:</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="ss">f&quot;Just(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>x<span class="sc">}</span><span class="ss">)&quot;</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="st">&quot;Nothing&quot;</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> send_n(g, xs):</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    [elided]</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run(f):</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> go(g, xs):</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(v <span class="op">:=</span> send_n(g(), xs), Maybe):</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> v.isjust:</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> go(g, xs <span class="op">+</span> [v.x])</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> Maybe(<span class="va">None</span>, <span class="va">False</span>)</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> Maybe(v, <span class="va">True</span>)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> r(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> go(<span class="kw">lambda</span>: f(<span class="op">*</span>args, <span class="op">**</span>kwargs), [])</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="at">@run</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> Maybe[Tuple[Tuple[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>], <span class="bu">int</span>]]:</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Maybe(<span class="dv">7</span>, <span class="va">True</span>)</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="cf">yield</span> Maybe(<span class="dv">3</span>, <span class="va">True</span>)</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="op">==</span> a:</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> <span class="cf">yield</span> Maybe(<span class="va">None</span>, <span class="va">False</span>)</span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> <span class="cf">yield</span> Maybe(x <span class="op">+</span> y <span class="op">-</span> <span class="dv">5</span>, <span class="va">True</span>)</span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((x, y, z), (x <span class="op">+</span> y) <span class="op">*</span> z)</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="dv">5</span>, test(<span class="dv">5</span>))</span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="dv">7</span>, test(<span class="dv">7</span>))</span></code></pre></div>
+<pre><code>5 Just(((7, 3, 5), 50))
+7 Nothing</code></pre>
+<p>In the first example, the <code>x == a</code> evaluates to
+<code>False</code> and the “monadic state” is set to
+<code>Some(x + y - 5)</code>; in the second, it evaluates to
+<code>True</code> and the state is <code>Nothing</code>, which
+short-circuits evaluation.</p>
+<p>(n.b.: this is just illustrative – another, much better, way to
+implement something like this if you have a “scalar” short-circuiting
+monad like <code>Maybe</code>/<code>Option</code> or
+<code>Either</code>/<code>Result</code> is by using a custom exception
+handler that, for example, catches exceptions thrown by
+<code>.unwrap</code> calls on <code>Nothing</code>/<code>Err</code>
+values and transforms them back into the appropriate type, basically
+circumventing the need to actually thread handlers for the wrapper type
+through your function; this has the benefit of handling deeply nested
+call stacks with little additional effort)</p>
+<p>When we look back at how do-notation desugars in Haskell, the
+correspondence to the control flow used above is even clearer:</p>
+<pre><code>do { x1 &lt;- action1
+   ; x2 &lt;- action2
+   ; mk_action3 x1 x2 }</code></pre>
+<pre><code>action1 &gt;&gt;= (\ x1 -&gt; action2 &gt;&gt;= (\ x2 -&gt; mk_action3 x1 x2 ))</code></pre>
+<p>(example from <a
+href="https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_operator">Wikibooks:
+“Haskell/do notation”</a>; CC BY-SA 4.0)</p>
+<p>As a final note, you can probably convince yourself without too much
+effort that the implicit control flow in cases where we select specific
+branches (i.e., perform goal-directed search) directly mirrors the
+backtracking that would occur in say, an equivalent hand-programmed tree
+search algorithm, or a typical implementation of <code>amb</code> in
+Lisp. Wikipedia’s <a
+href="https://en.wikipedia.org/wiki/Nondeterministic_programming">description</a>
+of this process is somewhat more precise:</p>
+<blockquote>
+<p>If all alternatives fail at a particular choice point, then an entire
+branch fails, and the program will backtrack further, to an older choice
+point. One complication is that, because any choice is tentative and may
+be remade, the system must be able to restore old program states by
+undoing side-effects caused by partially executing a branch that
+eventually failed.</p>
+</blockquote>
+<p>Back to the list/set version. This is a nice toy, but is it
+compatible with more complex control flow? TODO</p>
+<p>TODO: compare code with version saved on styx</p>
+</section>
+<section id="scaling-it-up" class="level2">
+<h2>Scaling it up <a href="#scaling-it-up" class="heading-anchor"
+title="Link to this section">¶</a></h2>
+<p>This is certainly interesting, but even ignoring the efficiency loss
+from having to reconstruct the entire function state (by rewinding the
+generator) each time we follow a branch, the performance leaves much to
+be desired: Python is not a fast language. To illustrate, we’ll try
+implementing a naive function that generates a list of <a
+href="https://en.wikipedia.org/wiki/Pythagorean_triple">Pythagorean
+triples</a> with a, b, c in <code>1..200</code>:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>guard <span class="op">=</span> <span class="kw">lambda</span> c: Amb([<span class="va">None</span>]) <span class="cf">if</span> c <span class="cf">else</span> Amb([])</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pythagorean_triples(n: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">set</span>[Tuple[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>]]:</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(<span class="dv">1</span>, n<span class="op">+</span><span class="dv">1</span>))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(x<span class="op">+</span><span class="dv">1</span>, n<span class="op">+</span><span class="dv">1</span>)) <span class="co"># avoid double-counting</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(y<span class="op">+</span><span class="dv">1</span>, n<span class="op">+</span><span class="dv">1</span>))</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">yield</span> guard(x <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> y <span class="op">**</span> <span class="dv">2</span> <span class="op">==</span> z <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (x, y, z)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">len</span>(t <span class="op">:=</span> pythagorean_triples(<span class="dv">200</span>)))</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>pprint(t)</span></code></pre></div>
+<p><code>time python amb.py</code> gives:</p>
+<pre><code>127
+{(3, 4, 5),
+ (5, 12, 13),
+ (6, 8, 10),
+ (7, 24, 25),
+ (8, 15, 17),
+ (9, 12, 15),
+ (9, 40, 41),
+ (10, 24, 26),
+ (11, 60, 61),
+ (12, 16, 20),
+ (12, 35, 37),
+ (13, 84, 85),
+ (14, 48, 50),
+ (15, 20, 25),
+
+ ...
+
+ python amb.py  6.88s user 0.02s system 99% cpu 6.932 total</code></pre>
+<section id="vectorized-combinatorial-sugar" class="level3">
+<h3>Vectorized combinatorial sugar</h3>
+<p>This is somewhat better than I expected, but still impractical for
+most real-world problems. For performing e.g., Monte Carlo simulations,
+we want something with performance within an order of magnitude of C/C++
+code (or at least Haskell). The ideal case would be to somehow vectorize
+the annotated function with minimal input from the user, probably using
+NumPy or a similar library that provides Python bindings to efficient
+array operations. In particular, if each step (or bind operation) in our
+function can be represented by <code>f(a, b, ...)</code>, with each
+argument being some (nondeterministic) expression derived from an
+<code>Amb</code> term, we want to implicitly generate the Cartesian
+product of all <code>a_i, b_j, ...</code> and pass it to a vectorized
+version of <code>f</code>. This will inevitably require some syntactic
+and semantic tradeoffs over the generator-based version. For now, we’ll
+impose the constraint that our decorated function only takes as inputs,
+computes using, or returns integers or floats.</p>
+<p>Unfortunately, just swapping NumPy arrays into the code we showed
+earlier (instead of lists/sets) probably wouldn’t be of much use: we’d
+still end up iterating through every element in native Python. We would
+inevitably need to have a vectorized version of every operation involved
+in the code so that we could process many branches in parallel. The
+other extreme involves full vectorization ignoring control flow; after
+each <code>Amb</code>, we could unroll all that had been encountered up
+to that point, take their Cartesian product, and compute every relevant
+operation on every combination of inputs, accepting some wasted work in
+exchange for being able to forego extremely expensive native Python
+logic. In the case of our Pythagorean triple calculator, we don’t lose
+much, since we need to consider every combination of elements from our
+three <code>Amb</code> expressions (clearly, a simpler collection-based
+solution like some of the ones shown on Rosetta Code would also work for
+this problem).</p>
+<p>If we are willing to dispense for the moment with some more complex
+control flow, we may as well just replace the generator-based
+interceptor with a special object that broadcasts over common arithmetic
+operations; if we do something like
+<code>Wrapped([1, 2]) + Wrapped([3, 4])</code>, for example, we would
+expect to get
+<code>Wrapped([1 + 3, 2 + 3, 1 + 4, 2 + 4]) == Wrapped([4, 5, 5, 6])</code>.
+This is certainly cleaner than with the generator approach; we only
+traverse the code once, instead of once per branch/combination. The main
+trouble is with if-statements – we must follow <em>both</em> branches at
+different places in the array, ideally rewriting the <code>if</code> as
+an <code>np.where</code> or similar (we can perform this translation
+manually, but figuring out how to avoid this is an interesting
+exercise). We’ll come back to that.</p>
+<p>Let’s create a wrapper class that stands in for scalar values in our
+program and automatically performs the broadcasting described above:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> operator</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Amb2:</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, data):</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(data, np.ndarray):</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> np.array(data)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.data <span class="op">=</span> data</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> makeop(name: <span class="bu">str</span>):</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> tmp(xs: Amb2, ys: Amb2) <span class="op">-&gt;</span> Amb2:</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>        a, b <span class="op">=</span> np.meshgrid(xs.data, ys.data, indexing<span class="op">=</span><span class="st">&#39;ij&#39;</span>)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>        prod <span class="op">=</span> np.stack([a.ravel(), b.ravel()], axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Amb2(<span class="bu">getattr</span>(operator, name)(prod[:, <span class="dv">0</span>], prod[:, <span class="dv">1</span>]))</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">setattr</span>(Amb2, <span class="ss">f&#39;__</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">__&#39;</span>, tmp)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> [<span class="st">&#39;add&#39;</span>, <span class="st">&#39;mul&#39;</span>, <span class="st">&#39;sub&#39;</span>, <span class="st">&#39;truediv&#39;</span>, <span class="st">&#39;floordiv&#39;</span>, <span class="st">&#39;pow&#39;</span>, <span class="st">&#39;and_&#39;</span>, <span class="st">&#39;or_&#39;</span>, <span class="st">&#39;xor&#39;</span>]:</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    makeop(f)</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> amb(f):</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> r(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> f(<span class="op">*</span>args, <span class="op">**</span>kwargs).data</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test() <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> Amb2([<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>])</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> Amb2([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>])</span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b</span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(test())</span></code></pre></div>
+<pre><code>[ 3  5  7  5  7  9  7  9 11]</code></pre>
+<p>It’s probably also worthwhile to support scalar types mixed into our
+code without additional effort from the programmer:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> makeop(name: <span class="bu">str</span>):</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> tmp(xs: Amb2 <span class="op">|</span> <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>, ys: Amb2 <span class="op">|</span> <span class="bu">int</span> <span class="op">|</span> <span class="bu">float</span>) <span class="op">-&gt;</span> Amb2:</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(xs, Amb2):</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">assert</span> <span class="bu">isinstance</span>(xs, (<span class="bu">int</span>, <span class="bu">float</span>))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>            xs <span class="op">=</span> Amb2([xs])</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(ys, Amb2):</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">assert</span> <span class="bu">isinstance</span>(ys, (<span class="bu">int</span>, <span class="bu">float</span>))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>            ys <span class="op">=</span> Amb2([ys])</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>        a, b <span class="op">=</span> np.meshgrid(xs.data, ys.data, indexing<span class="op">=</span><span class="st">&#39;ij&#39;</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>        prod <span class="op">=</span> np.stack([a.ravel(), b.ravel()], axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Amb2(<span class="bu">getattr</span>(operator, name)(prod[:, <span class="dv">0</span>], prod[:, <span class="dv">1</span>]))</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">setattr</span>(Amb2, <span class="ss">f&#39;__</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">__&#39;</span>, tmp)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">setattr</span>(Amb2, <span class="ss">f&#39;__r</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">__&#39;</span>, tmp)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test() <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> Amb2([<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>])</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> Amb2([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>])</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">1.5</span> <span class="op">*</span> (a <span class="op">+</span> b <span class="op">+</span> <span class="dv">2</span>)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(test())</span></code></pre></div>
+<pre><code>[ 7.5 10.5 13.5 10.5 13.5 16.5 13.5 16.5 19.5]</code></pre>
+<p>Mutation is also supported, even if the left-hand side is not (yet)
+<code>Amb</code>:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test2() <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        a <span class="op">+=</span> Amb2([<span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a</span></code></pre></div>
+<pre><code>[ 7  8  8  9  8  9  9 10]</code></pre>
+<p>For/while loops (and conditionals) however only work when the loop
+condition is “primitive” and does not contain any
+<code>Amb</code>-expressions. For example, a while-loop with a condition
+derived from an <code>Amb</code> would likely not behave as expected;
+one could imagine a way to make this work by detecting when we drop into
+a loop, overriding the behavior of <code>bool</code>-coercion to keep
+the loop running until the condition is false for <em>all</em> values in
+the <code>Amb</code>, and “masking” assignment operations so that they
+only affect members of the target value for which corresponding values
+of any ambiguous expressions in the context still make the loop
+condition evaluate to <code>True</code> (perhaps maintaining a stack of
+contexts for nested loops/conditional statements), all in an efficient
+vectorized fashion. This is nontrivial.</p>
+<p>In lieu of <code>guard</code>, let’s add a trivial filtering function
+(and a restricted variant for concision), and use it to re-implement our
+Pythagorean triple example from earlier:</p>
+<p>TODO</p>
+</section>
+</section>
+<section id="end" class="level2">
+<h2>End <a href="#end" class="heading-anchor"
+title="Link to this section">¶</a></h2>
+<p>I hope you have learned something useful (or at least entertaining)
+from this post, or at least found some of the links therein interesting.
+Thanks for reading!</p>
+</section>
+</section>
+</body>
+</html>
