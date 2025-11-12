@@ -109,6 +109,8 @@ def render_site_header(
 def render_pages_to_html(
     metadata_path: Path | None = None,
     pages_dir: Path | None = None,
+    posts_dir: Path | None = None,
+    repo_path: Path | None = None,
     header_template_path: Path | None = None,
     output_dir: Path | None = None,
     pandoc_extra_args: Iterable[str] | None = None,
@@ -118,6 +120,8 @@ def render_pages_to_html(
 
     metadata_file = Path(metadata_path or METADATA_PATH)
     pages_directory = Path(pages_dir or PAGES_DIR)
+    posts_directory = Path(posts_dir or POSTS_DIR)
+    repo_dir = Path(repo_path or REPO_ROOT)
     header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
     output_directory = Path(output_dir or PAGES_OUTPUT_DIR)
     output_directory.mkdir(parents=True, exist_ok=True)
@@ -134,6 +138,21 @@ def render_pages_to_html(
     )
     base_pandoc_args = _build_pandoc_base_args(pandoc_extra_args)
 
+    posts_for_listing: list[dict[str, Any]] = []
+    try:
+        posts = load_posts(
+            metadata_path=metadata_file,
+            posts_dir=posts_directory,
+            repo_path=repo_dir,
+            metadata=metadata_obj,
+        )
+        posts_for_listing = [
+            _post_template_context(post)
+            for post in sorted(posts, key=lambda p: p.created_at, reverse=True)
+        ]
+    except FileNotFoundError:
+        posts_for_listing = []
+
     rendered_paths: list[Path] = []
     for entry in page_entries:
         slug, title, source_name, context = _normalize_page_entry(entry)
@@ -145,7 +164,11 @@ def render_pages_to_html(
             raise FileNotFoundError(f"page source not found: {page_path}")
 
         template = JINJA_ENV.from_string(page_path.read_text(encoding="utf-8"))
-        rendered_markdown = template.render(site_header=site_header, page=context)
+        rendered_markdown = template.render(
+            site_header=site_header,
+            page=context,
+            posts=posts_for_listing,
+        )
 
         html = _markdown_to_html(
             rendered_markdown,
@@ -198,16 +221,8 @@ def render_posts_to_html(
 
     rendered_paths: list[Path] = []
     for post in posts:
-        rendered_markdown = template.render(
-            site_header=site_header,
-            post={
-                "title": post.title,
-                "location": post.location,
-                "content": post.content,
-                "start_date": _format_datetime(post.created_at),
-                "update_date": _format_datetime(post.updated_at),
-            },
-        )
+        post_context = _post_template_context(post, include_body=True)
+        rendered_markdown = template.render(site_header=site_header, post=post_context)
 
         visible_title = post.title or post.name
         html = _markdown_to_html(
@@ -356,6 +371,25 @@ def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
         if value_str:
             return value_str
     return None
+
+
+def _post_template_context(post: Post, include_body: bool = False) -> dict[str, Any]:
+    permalink = f"/posts/{post.name}.html"
+    relative = f"./posts/{post.name}.html"
+    context: dict[str, Any] = {
+        "name": post.name,
+        "title": post.title or post.name,
+        "location": post.location,
+        "tags": post.tags,
+        "start_date": _format_datetime(post.created_at),
+        "update_date": _format_datetime(post.updated_at),
+        "url": permalink,
+        "permalink": permalink,
+        "relative_url": relative,
+    }
+    if include_body:
+        context["content"] = post.content
+    return context
 
 
 def _format_datetime(dt: datetime) -> str:
