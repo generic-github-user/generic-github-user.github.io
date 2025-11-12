@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
+from zoneinfo import ZoneInfo
 
 import pypandoc
 import yaml
@@ -17,6 +18,9 @@ METADATA_PATH = REPO_ROOT / "metadata.yaml"
 HEADER_TEMPLATE_PATH = REPO_ROOT / "pages" / "header.md"
 POST_TEMPLATE_PATH = REPO_ROOT / "pages" / "post.md"
 POST_OUTPUT_DIR = REPO_ROOT / "src" / "posts"
+POST_HEADER_INCLUDE_PATH = REPO_ROOT / "pages" / "post_head.html"
+H2_ANCHOR_FILTER_PATH = REPO_ROOT / "pages" / "h2_anchors.lua"
+DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 
 
@@ -132,6 +136,15 @@ def render_posts_to_html(
         metadata=metadata_obj,
     )
 
+    base_pandoc_args: list[str] = []
+    if POST_HEADER_INCLUDE_PATH.exists():
+        base_pandoc_args.append(f"--include-in-header={POST_HEADER_INCLUDE_PATH}")
+    if H2_ANCHOR_FILTER_PATH.exists():
+        base_pandoc_args.append(f"--lua-filter={H2_ANCHOR_FILTER_PATH}")
+    base_pandoc_args.append("--section-divs")
+    if pandoc_extra_args:
+        base_pandoc_args.extend(pandoc_extra_args)
+
     template_source = template_path.read_text(encoding="utf-8")
     template = JINJA_ENV.from_string(template_source)
 
@@ -148,7 +161,15 @@ def render_posts_to_html(
             },
         )
 
-        html = _markdown_to_html(rendered_markdown, pandoc_extra_args)
+        visible_title = post.title or post.name
+        html = _markdown_to_html(
+            rendered_markdown,
+            base_pandoc_args,
+            metadata={
+                "title": "",
+                "pagetitle": visible_title,
+            },
+        )
         output_path = output_directory / f"{post.name}.html"
         output_path.write_text(html, encoding="utf-8")
         rendered_paths.append(output_path)
@@ -275,14 +296,23 @@ def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
 def _format_datetime(dt: datetime) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc).isoformat()
+    localized = dt.astimezone(DISPLAY_TIMEZONE)
+    return localized.strftime("%Y-%m-%d at %H:%M %Z")
 
 
-def _markdown_to_html(markdown: str, extra_args: Iterable[str] | None = None) -> str:
-    default_args = ["--standalone", "--highlight-style=pygments"]
-    args = default_args.copy()
+def _markdown_to_html(
+    markdown: str,
+    extra_args: Iterable[str] | None = None,
+    metadata: dict[str, str] | None = None,
+) -> str:
+    args = ["--standalone", "--highlight-style=pygments"]
     if extra_args:
         args.extend(extra_args)
+    if metadata:
+        for key, value in metadata.items():
+            if value:
+                args.append("--metadata")
+                args.append(f"{key}={value}")
 
     try:
         return pypandoc.convert_text(markdown, "html", format="md", extra_args=args)

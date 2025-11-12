@@ -4,8 +4,6 @@ tags: [haskell, monads, python, generators, tricks]
 location: Maryland
 ---
 
-*Also in this post: Haskell and parsing-free execution tracers*
-
 *This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to `## Nondeterminism in Python`*
 
 Many of the most curious and useful features of functional programming languages like Haskell derive from their ability (often unencumbered by the norms and constraints of industrial software engineering) to restate common algorithmic problems in novel ways -- i.e., to perform a change of basis into a domain more suited to the problem. One such frame shift (or rather, category of such) is widely known as [*declarative programming*](https://en.wikipedia.org/wiki/Declarative_programming) (as opposed to imperative or functional programming, for example), and concerns programming languages, libraries, and techniques based on stating the problem domain or constraint system, as well as the desired objective or target (the "what"), at a high level and leaving the low-level algorithmic details to the optimizer or runtime (the "how"). In some cases this may take the form of a domain-specific optimization or constraint solving library; other times it is integrated more tightly with a language's semantics and execution model.
