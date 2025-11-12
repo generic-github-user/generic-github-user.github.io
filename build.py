@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
-from rich import print as rprint
 
+import pypandoc
 import yaml
 from git import Commit, Repo
 from jinja2 import Environment
@@ -15,6 +15,8 @@ REPO_ROOT = Path(__file__).resolve().parent
 POSTS_DIR = REPO_ROOT / "posts"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
 HEADER_TEMPLATE_PATH = REPO_ROOT / "pages" / "header.md"
+POST_TEMPLATE_PATH = REPO_ROOT / "pages" / "post.md"
+POST_OUTPUT_DIR = REPO_ROOT / "src" / "posts"
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 
 
@@ -48,6 +50,7 @@ def load_posts(
     metadata_path: Path | None = None,
     posts_dir: Path | None = None,
     repo_path: Path | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> list[Post]:
     """Return Post objects for every entry under `posts` in metadata.yaml."""
 
@@ -56,8 +59,8 @@ def load_posts(
     repo_dir = Path(repo_path or REPO_ROOT)
 
     repo = Repo(repo_dir)
-    metadata = _read_metadata(metadata_file)
-    post_names = metadata.get("posts") or []
+    metadata_obj = metadata or _read_metadata(metadata_file)
+    post_names = metadata_obj.get("posts") or []
 
     posts: list[Post] = []
     for post_name in post_names:
@@ -84,16 +87,73 @@ def load_posts(
 def render_site_header(
     metadata_path: Path | None = None,
     header_template_path: Path | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> str:
     """Render the header template populated with navigation links."""
 
     metadata_file = Path(metadata_path or METADATA_PATH)
     header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
 
-    metadata = _read_metadata(metadata_file)
-    navigation = _build_navigation(metadata.get("pages"))
+    metadata_obj = metadata or _read_metadata(metadata_file)
+    navigation = _build_navigation(metadata_obj.get("pages"))
     template = JINJA_ENV.from_string(header_path.read_text(encoding="utf-8"))
     return template.render(main_navigation=navigation)
+
+
+def render_posts_to_html(
+    metadata_path: Path | None = None,
+    posts_dir: Path | None = None,
+    repo_path: Path | None = None,
+    header_template_path: Path | None = None,
+    post_template_path: Path | None = None,
+    output_dir: Path | None = None,
+    pandoc_extra_args: Iterable[str] | None = None,
+) -> list[Path]:
+    """Render every post listed in metadata.yaml into HTML files under src/posts."""
+
+    metadata_file = Path(metadata_path or METADATA_PATH)
+    posts_directory = Path(posts_dir or POSTS_DIR)
+    repo_dir = Path(repo_path or REPO_ROOT)
+    header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
+    template_path = Path(post_template_path or POST_TEMPLATE_PATH)
+    output_directory = Path(output_dir or POST_OUTPUT_DIR)
+    output_directory.mkdir(parents=True, exist_ok=True)
+
+    metadata_obj = _read_metadata(metadata_file)
+    posts = load_posts(
+        metadata_path=metadata_file,
+        posts_dir=posts_directory,
+        repo_path=repo_dir,
+        metadata=metadata_obj,
+    )
+    site_header = render_site_header(
+        metadata_path=metadata_file,
+        header_template_path=header_path,
+        metadata=metadata_obj,
+    )
+
+    template_source = template_path.read_text(encoding="utf-8")
+    template = JINJA_ENV.from_string(template_source)
+
+    rendered_paths: list[Path] = []
+    for post in posts:
+        rendered_markdown = template.render(
+            site_header=site_header,
+            post={
+                "title": post.title,
+                "location": post.location,
+                "content": post.content,
+                "start_date": _format_datetime(post.created_at),
+                "update_date": _format_datetime(post.updated_at),
+            },
+        )
+
+        html = _markdown_to_html(rendered_markdown, pandoc_extra_args)
+        output_path = output_directory / f"{post.name}.html"
+        output_path.write_text(html, encoding="utf-8")
+        rendered_paths.append(output_path)
+
+    return rendered_paths
 
 
 def _read_metadata(metadata_path: Path) -> dict[str, Any]:
@@ -212,4 +272,24 @@ def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
     return None
 
 
-__all__ = ["CommitInfo", "Post", "load_posts", "render_site_header"]
+def _format_datetime(dt: datetime) -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).isoformat()
+
+
+def _markdown_to_html(markdown: str, extra_args: Iterable[str] | None = None) -> str:
+    default_args = ["--standalone", "--highlight-style=pygments"]
+    args = default_args.copy()
+    if extra_args:
+        args.extend(extra_args)
+
+    try:
+        return pypandoc.convert_text(markdown, "html", format="md", extra_args=args)
+    except OSError as exc:  # pandoc binary missing
+        raise RuntimeError(
+            "pandoc is required to render posts; install it and retry"
+        ) from exc
+
+
+__all__ = ["CommitInfo", "Post", "load_posts", "render_site_header", "render_posts_to_html"]

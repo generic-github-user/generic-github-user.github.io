@@ -4,7 +4,7 @@ tags: [haskell, monads, python, generators, tricks]
 location: Maryland
 ---
 
-**Also in this post: Haskell and parsing-free execution tracers**
+*Also in this post: Haskell and parsing-free execution tracers*
 
 *This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to `## Nondeterminism in Python`*
 
@@ -176,9 +176,9 @@ Now that the basic idea has been motivated and demonstrated in a language more s
 
 This is somewhat brittle, since we are generally forced to intermediate every operation in our code with a set of predefined combinators. Clearly, we would prefer to go beyond `amb`-like data structures -- we want to interleave Python's control flow with some amount of automated branching logic. Unless we want to either:
 
-- (a) build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
-- (b) perform AST-munging of the kind certain Python JIT compilers (Numba, etc.) do
-- (c) perform runtime tracing of the branching structure (more on this in an in-progress future post)
+- build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
+- perform AST-munging of the kind certain Python JIT compilers (Numba, etc.) do
+- perform runtime tracing of the branching structure (more on this in an in-progress future post)
 
 ...this seemingly requires some way to interrupt execution at specific points and backtrack/rewind to those points, modifying execution state each time before resuming to inject the state of the current "branch".
 
@@ -311,7 +311,8 @@ from random import shuffle
 
 @amb
 def string_test() -> list[str]:
-    a = yield Amb(["where [content] go", "what [content] do",
+    a = yield Amb(["where [content] go",
+                   "what [content] do",
                    f"{yield Amb(['how', 'why'])} [content] do it"])
     content = (yield Amb(['will', 'did'])) + ' ' + (yield Amb(['you', 'she', 'he']))
     return a.replace('[content]', content) + (yield Amb(["?", "...?"]))
@@ -402,7 +403,7 @@ print(7, test(7))
 
 In the first example, the `x == a` evaluates to `False` and the "monadic state" is set to `Some(x + y - 5)`; in the second, it evaluates to `True` and the state is `Nothing`, which short-circuits evaluation.
 
-(n.b.: this is just illustrative -- another, much better, way to implement something like this if you have a "scalar" short-circuiting monad like `Maybe`/`Option` or `Either`/`Result` is using a custom exception handler that, for example, catches exceptions thrown by `.unwrap` calls on `Nothing`/`Err` values and transforms them back into the appropriate type, basically circumventing the need to actually thread handlers for the wrapper type through your function; this has the benefit of handling deeply nested call stacks with little additional effort)
+(n.b.: this is just illustrative -- another, much better, way to implement something like this if you have a "scalar" short-circuiting monad like `Maybe`/`Option` or `Either`/`Result` is by using a custom exception handler that, for example, catches exceptions thrown by `.unwrap` calls on `Nothing`/`Err` values and transforms them back into the appropriate type, basically circumventing the need to actually thread handlers for the wrapper type through your function; this has the benefit of handling deeply nested call stacks with little additional effort)
 
 When we look back at how do-notation desugars in Haskell, the correspondence to the control flow used above is even clearer:
 
@@ -416,7 +417,7 @@ do { x1 <- action1
 action1 >>= (\ x1 -> action2 >>= (\ x2 -> mk_action3 x1 x2 ))
 ```
 
-(example from https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_operator; CC BY-SA 4.0)
+(example from [Wikibooks: "Haskell/do notation"](https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_operator); CC BY-SA 4.0)
 
 As a final note, you can probably convince yourself without too much effort that the implicit control flow in cases where we select specific branches (i.e., perform goal-directed search) directly mirrors the backtracking that would occur in say, an equivalent hand-programmed tree search algorithm, or a typical implementation of `amb` in Lisp. Wikipedia's [description](https://en.wikipedia.org/wiki/Nondeterministic_programming) of this process is somewhat more precise:
 
