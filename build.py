@@ -450,3 +450,9 @@ __all__ = [
     "render_pages_to_html",
     "render_posts_to_html",
 ]
+
+def main():
+    render_pages_to_html()
+    render_posts_to_html()
+
+main()

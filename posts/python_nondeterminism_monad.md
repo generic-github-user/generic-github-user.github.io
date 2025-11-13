@@ -167,7 +167,7 @@ main = do
 
 (The initial value is 1; the three transforms are "add 4", "multiply by 2", and "take the remainder mod 3"; we do three transformations in a row. As you would expect, we get `3^3 = 27` results.)
 
-[This page](http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0) has some nice illustrations of the control flow implied by various stacks of monad transformers. Finding the correct ordering of monad transformers in the stack, and mentally modeling the relevant types, is sometimes nontrivial; nevertheless, they can certainly improve concision in situations that call for them.
+[This page](http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0) has some nice ileustrations of the control flow implied by various stacks of monad transformers. Finding the correct ordering of monad transformers in the stack, and mentally modeling the relevant types, is sometimes nontrivial; nevertheless, they can certainly improve concision in situations that call for them.
 
 ## General nondeterminism with generators
 
@@ -177,11 +177,11 @@ This is somewhat brittle, since we are generally forced to intermediate every op
 
 - build a DSL supplanting Python's normal constructs and implement our own pseudo-interpreter/compiler; and/or
 - perform AST-munging of the kind certain Python JIT compilers (Numba, etc.) do
-- perform runtime tracing of the branching structure (more on this in an in-progress future post that may or may not come to fruition)
+- perform runtime tracing of the branching structure (more on this in an in-progress future post, potentially)
 
 ...this seemingly requires some way to interrupt execution at specific points and backtrack/rewind to those points, modifying execution state each time before resuming to inject the state of the current "branch".
 
-[Coroutines](https://en.wikipedia.org/wiki/Coroutine) seem well-suited to this purpose; Python's [generators](https://wiki.python.org/moin/Generators), though [not quite the same](https://wiki.c2.com/?GeneratorsAreNotCoroutines), provide enough functionality to do what we have described above. In particular, generators allow us to temporarily stop execution, returning control (and an arbitrary value) to the caller, then later resume execution while passing back ("`send`ing") a new value. We now have the basics of a workable approach: at each "ambiguous" expression in the program, just stop execution, run the *remainder* of the program once with each possible value for that expression, and coalesce the results.
+[Coroutines](https://en.wikipedia.org/wiki/Coroutine) seem well-suited to this purpose; Python's [generators](https://wiki.python.org/moin/Generators), though [not quite the same](https://wiki.c2.com/?GeneratorsAreNotCoroutines), provide enough functionality to do what we have described above. In particular, generators allow us to temporarily stop execution, returning control (and an arbitrary value) to the caller, then later resume execution while passing back ("`send`ing") a new value. We now have the basics of a workable approach: at each "ambiguous" expression in the program, just stop execution, run the *remainder* of the program once with each possible value for that expression, and coalesce the results. The actual code implementing this turns out to be quite short.
 
 Here is a minimal example of the sort of function we would like to support nondeterminism for; we have a `yield` statement enclosing each "source" of ambiguity/`Amb` expression (and these can use values from prior ones normally, no extra magic needed):
 
@@ -418,7 +418,7 @@ action1 >>= (\ x1 -> action2 >>= (\ x2 -> mk_action3 x1 x2 ))
 
 (example from [Wikibooks: "Haskell/do notation"](https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_operator); CC BY-SA 4.0)
 
-As a final note, you can probably convince yourself without too much effort that the implicit control flow in cases where we select specific branches (i.e., perform goal-directed search) directly mirrors the backtracking that would occur in say, an equivalent hand-programmed tree search algorithm, or a typical implementation of `amb` in Lisp. Wikipedia's [description](https://en.wikipedia.org/wiki/Nondeterministic_programming) of this process is somewhat more precise:
+As a final note, you can probably convince yourself without too much effort that the implicit control flow in cases where we select specific branches (i.e., perform goal-directed search) directly mirrors the backtracking that would occur in say, an equivalent hand-programmed tree search algorithm, or a typical [continuation-based](https://ds26gte.github.io/tyscheme/index-Z-H-16.html) implementation of `amb` in Lisp. Wikipedia's [description](https://en.wikipedia.org/wiki/Nondeterministic_programming) of this process is somewhat more precise:
 
 > If all alternatives fail at a particular choice point, then an entire branch fails, and the program will backtrack further, to an older choice point. One complication is that, because any choice is tentative and may be remade, the system must be able to restore old program states by undoing side-effects caused by partially executing a branch that eventually failed.
 
@@ -572,7 +572,9 @@ def test2() -> np.ndarray:
 
 For/while loops (and conditionals) however only work when the loop condition is "primitive" and does not contain any `Amb`-expressions. For example, a while-loop with a condition derived from an `Amb` would likely not behave as expected; one could imagine a way to make this work by detecting when we drop into a loop, overriding the behavior of `bool`-coercion to keep the loop running until the condition is false for *all* values in the `Amb`, and "masking" assignment operations so that they only affect members of the target value for which corresponding values of any ambiguous expressions in the context still make the loop condition evaluate to `True` (perhaps maintaining a stack of contexts for nested loops/conditional statements), all in an efficient vectorized fashion. This is nontrivial.
 
-In lieu of `guard`, let's add a trivial filtering function (and a restricted variant for concision), and use it to re-implement our Pythagorean triple example from earlier:
+The main issue here is that we discard provenance information describing where the values were derived from; we could cache the expression tree used to generate the concrete values for each `Amb`, but this wouldn't be of much use if we wanted to e.g., perform another computation using the same variables and use it to filter the results of the original computation.
+
+Let's return to our earlier generator-based decorator, which gives us more precision over control flow.
 
 TODO
 

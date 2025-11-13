@@ -260,7 +260,7 @@ href="/contact">contact</a></em></p>
 <section id="nondeterminism-monad-in-python" class="level1">
 <h1>Nondeterminism monad in Python</h1>
 <p>started <strong>2025-11-10 at 17:17 EST</strong> | updated
-<strong>2025-11-11 at 22:48 EST</strong> | written in
+<strong>2025-11-11 at 23:54 EST</strong> | written in
 <strong>Maryland</strong></p>
 <p><em>This post contains some fairly lengthy exposition; if you want to
 skip right to the content promised by the title, go to <a
@@ -481,7 +481,7 @@ by 2”, and “take the remainder mod 3”; we do three transformations in a
 row. As you would expect, we get <code>3^3 = 27</code> results.)</p>
 <p><a
 href="http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0">This
-page</a> has some nice illustrations of the control flow implied by
+page</a> has some nice ileustrations of the control flow implied by
 various stacks of monad transformers. Finding the correct ordering of
 monad transformers in the stack, and mentally modeling the relevant
 types, is sometimes nontrivial; nevertheless, they can certainly improve
@@ -516,7 +516,7 @@ own pseudo-interpreter/compiler; and/or</li>
 <li>perform AST-munging of the kind certain Python JIT compilers (Numba,
 etc.) do</li>
 <li>perform runtime tracing of the branching structure (more on this in
-an in-progress future post)</li>
+an in-progress future post, potentially)</li>
 </ul>
 <p>…this seemingly requires some way to interrupt execution at specific
 points and backtrack/rewind to those points, modifying execution state
@@ -533,7 +533,8 @@ resume execution while passing back (“<code>send</code>ing”) a new
 value. We now have the basics of a workable approach: at each
 “ambiguous” expression in the program, just stop execution, run the
 <em>remainder</em> of the program once with each possible value for that
-expression, and coalesce the results.</p>
+expression, and coalesce the results. The actual code implementing this
+turns out to be quite short.</p>
 <p>Here is a minimal example of the sort of function we would like to
 support nondeterminism for; we have a <code>yield</code> statement
 enclosing each “source” of ambiguity/<code>Amb</code> expression (and
@@ -766,7 +767,8 @@ handler that, for example, catches exceptions thrown by
 values and transforms them back into the appropriate type, basically
 circumventing the need to actually thread handlers for the wrapper type
 through your function; this has the benefit of handling deeply nested
-call stacks with little additional effort)</p>
+call stacks with little additional effort, and is almost surely
+faster)</p>
 <p>When we look back at how do-notation desugars in Haskell, the
 correspondence to the control flow used above is even clearer:</p>
 <pre><code>do { x1 &lt;- action1
@@ -780,8 +782,9 @@ href="https://en.wikibooks.org/wiki/Haskell/do_notation#Translating_the_bind_ope
 effort that the implicit control flow in cases where we select specific
 branches (i.e., perform goal-directed search) directly mirrors the
 backtracking that would occur in say, an equivalent hand-programmed tree
-search algorithm, or a typical implementation of <code>amb</code> in
-Lisp. Wikipedia’s <a
+search algorithm, or a typical <a
+href="https://ds26gte.github.io/tyscheme/index-Z-H-16.html">continuation-based</a>
+implementation of <code>amb</code> in Lisp. Wikipedia’s <a
 href="https://en.wikipedia.org/wiki/Nondeterministic_programming">description</a>
 of this process is somewhat more precise:</p>
 <blockquote>
@@ -973,9 +976,12 @@ of any ambiguous expressions in the context still make the loop
 condition evaluate to <code>True</code> (perhaps maintaining a stack of
 contexts for nested loops/conditional statements), all in an efficient
 vectorized fashion. This is nontrivial.</p>
-<p>In lieu of <code>guard</code>, let’s add a trivial filtering function
-(and a restricted variant for concision), and use it to re-implement our
-Pythagorean triple example from earlier:</p>
+<p>The main issue here is that we discard provenance information
+describing where the values were derived from; we could cache the
+expression tree used to generate the concrete values for each
+<code>Amb</code>, but this wouldn’t be of much use if we wanted to e.g.,
+perform another computation using the same variables and use it to
+filter the results of the original computation.</p>
 <p>TODO</p>
 </section>
 </section>
