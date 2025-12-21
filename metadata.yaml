@@ -7,4 +7,4 @@ pages:
   #   slug: colophon
 
 posts:
-  # - python_nondeterminism_monad
+  - python_nondeterminism_monad
