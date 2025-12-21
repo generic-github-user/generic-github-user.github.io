@@ -572,7 +572,12 @@ def test2() -> np.ndarray:
 
 For/while loops (and conditionals) however only work when the loop condition is "primitive" and does not contain any `Amb`-expressions. For example, a while-loop with a condition derived from an `Amb` would likely not behave as expected; one could imagine a way to make this work by detecting when we drop into a loop, overriding the behavior of `bool`-coercion to keep the loop running until the condition is false for *all* values in the `Amb`, and "masking" assignment operations so that they only affect members of the target value for which corresponding values of any ambiguous expressions in the context still make the loop condition evaluate to `True` (perhaps maintaining a stack of contexts for nested loops/conditional statements), all in an efficient vectorized fashion. This is nontrivial.
 
-The main issue here is that we discard provenance information describing where the values were derived from; we could cache the expression tree used to generate the concrete values for each `Amb`, but this wouldn't be of much use if we wanted to e.g., perform another computation using the same variables and use it to filter the results of the original computation. I may address this in a future post, but for now I've opted to end it here in the interest of being able to get this out in a timely manner. Hopefully I've provided enough context to get you thinking about how some of these issues might be addressed.
+The main issue here is that we discard provenance information describing where the values were derived from; we could cache the expression tree used to generate the concrete values for each `Amb`, but this wouldn't be of much use if we wanted to e.g., perform another computation using the same variables and use it to filter the results of the original computation.
+
+Let's return to our earlier generator-based decorator, which gives us more precision over control flow.
+
+TODO
+
 
 ## End
 
