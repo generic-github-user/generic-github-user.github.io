@@ -260,7 +260,7 @@ href="/contact">contact</a></em></p>
 <section id="nondeterminism-monad-in-python" class="level1">
 <h1>Nondeterminism monad in Python</h1>
 <p>started <strong>2025-11-10 at 17:17 EST</strong> | updated
-<strong>2025-12-21 at 16:21 EST</strong> | written in <strong>Maryland
+<strong>2025-12-21 at 16:34 EST</strong> | written in <strong>Maryland
 and NYC</strong></p>
 <p><em>This post contains some fairly lengthy exposition; if you want to
 skip right to the content promised by the title, go to <a
@@ -273,15 +273,14 @@ i.e., to perform a change of basis into a domain more suited to the
 problem. One such frame shift (or rather, category of such) is widely
 known as <a
 href="https://en.wikipedia.org/wiki/Declarative_programming"><em>declarative
-programming</em></a> (as opposed to imperative or functional
-programming, for example), and concerns programming languages,
-libraries, and techniques based on stating the problem domain or
-constraint system, as well as the desired objective or target (the
-“what”), at a high level and leaving the low-level algorithmic details
-to the optimizer or runtime (the “how”). In some cases this may take the
-form of a domain-specific optimization or constraint solving library;
-other times it is integrated more tightly with a language’s semantics
-and execution model.</p>
+programming</em></a> (as opposed to imperative programming, for
+example), and concerns programming languages, libraries, and techniques
+based on stating the problem domain or constraint system, as well as the
+desired objective or target (the “what”), at a high level and leaving
+the low-level algorithmic details to the optimizer or runtime (the
+“how”). In some cases this may take the form of a domain-specific
+optimization or constraint solving library; other times it is integrated
+more tightly with a language’s semantics and execution model.</p>
 <p>One self-contained and useful tool from this paradigm is <a
 href="https://en.wikipedia.org/wiki/Nondeterministic_programming">“nondeterminism”</a>
 (this is a somewhat overloaded term, but in this case I am <em>not</em>
@@ -403,9 +402,9 @@ href="https://play.haskell.org/saved/WcoBB6Rs"><em>(run)</em></a></p>
 ...</code></pre>
 <p>(There is a tremendous amount of fascinating
 monad/applicative/traversable/alternative machinery that works with
-almost all of Haskell’s basic types, and which I would recommend having
-a look at if the above interests you at all; another example I’m fond of
-is <code>sequence [[1..2], [3..6]]</code>, which exploits the fact that
+almost all of Haskell’s basic types, and which I would recommend looking
+at if the above interests you at all; another example I’m fond of is
+<code>sequence [[1..2], [3..6]]</code>, which exploits the fact that
 lists are both <code>Traversable</code> and <code>Monad</code>.)</p>
 <p>It is important to note that – unlike with naive implementations that
 iterate over all combinations of elements from a handful of statically
@@ -486,7 +485,7 @@ by 2”, and “take the remainder mod 3”; we do three transformations in a
 row. As you would expect, we get <code>3^3 = 27</code> results.)</p>
 <p><a
 href="http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0">This
-page</a> has some nice ileustrations of the control flow implied by
+page</a> has some nice illustrations of the control flow implied by
 various stacks of monad transformers. Finding the correct ordering of
 monad transformers in the stack, and mentally modeling the relevant
 types, is sometimes nontrivial; nevertheless, they can certainly improve
@@ -546,7 +545,7 @@ enclosing each “source” of ambiguity/<code>Amb</code> expression (and
 these can use values from prior ones normally, no extra magic
 needed):</p>
 <div class="sourceCode" id="cb12"><pre
-class="sourceCode py"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">set</span>[((<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>), <span class="bu">int</span>)]:</span>
+class="sourceCode py"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">set</span>[<span class="bu">tuple</span>[<span class="bu">tuple</span>[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>], <span class="bu">int</span>]]:</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="cf">yield</span> Amb([<span class="dv">2</span>, <span class="dv">4</span>, a])</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="op">==</span> y:</span>
@@ -793,7 +792,7 @@ test condition fails will not be executed:</p>
 class="sourceCode py"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>guard <span class="op">=</span> <span class="kw">lambda</span> c: Amb([<span class="va">None</span>]) <span class="cf">if</span> c <span class="cf">else</span> Amb([])</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> guard_test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> guard_test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>]]:</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(<span class="dv">0</span>, a))</span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(a, a <span class="op">*</span> <span class="dv">2</span>))</span>
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">yield</span> guard((x <span class="op">+</span> y) <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>)</span>
@@ -839,7 +838,7 @@ themselves. To illustrate (a trivial example, but not hard to
 extend):</p>
 <div class="sourceCode" id="cb27"><pre
 class="sourceCode py"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="at">@amb</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recursion_test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recursion_test(a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>:</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> a <span class="op">&lt;</span> <span class="dv">5</span>:</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (<span class="cf">yield</span> Amb([a]))</span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="cf">yield</span> Amb(<span class="bu">range</span>(a <span class="op">-</span> <span class="dv">4</span>, a))</span>
@@ -858,6 +857,12 @@ class="sourceCode py"><code class="sourceCode python"><span id="cb27-1"><a href=
 results from recursive calls, so that the semantics more closely
 resemble “explore all possible combinations of inputs in all execution
 frames, coalescing the outcomes into a single collection.”)</p>
+<p>I ought also to note that if the decorated function performs any
+mutation of global state (including locals of the enclosing function, if
+it is a closure) or other side effects (I/O, etc.), these will be
+performed once per branch; if you wanted to explicitly roll back
+mutations of external state, an additional context manager could be
+implemented to support this.</p>
 <p>The main issue here (and one which is hopefully evident by now) is
 that this is not very performant, both due to Python being an
 exceptionally slow language and the overhead of needing to reproduce the

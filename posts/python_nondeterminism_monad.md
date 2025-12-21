@@ -6,7 +6,7 @@ location: Maryland and NYC
 
 *This post contains some fairly lengthy exposition; if you want to skip right to the content promised by the title, go to [`## General nondeterminism with generators`](#general-nondeterminism-with-generators)*
 
-Many of the most curious and useful features of functional programming languages like Haskell derive from their ability (often unencumbered by the norms and constraints of industrial software engineering) to restate common algorithmic problems in novel ways -- i.e., to perform a change of basis into a domain more suited to the problem. One such frame shift (or rather, category of such) is widely known as [*declarative programming*](https://en.wikipedia.org/wiki/Declarative_programming) (as opposed to imperative or functional programming, for example), and concerns programming languages, libraries, and techniques based on stating the problem domain or constraint system, as well as the desired objective or target (the "what"), at a high level and leaving the low-level algorithmic details to the optimizer or runtime (the "how"). In some cases this may take the form of a domain-specific optimization or constraint solving library; other times it is integrated more tightly with a language's semantics and execution model.
+Many of the most curious and useful features of functional programming languages like Haskell derive from their ability (often unencumbered by the norms and constraints of industrial software engineering) to restate common algorithmic problems in novel ways -- i.e., to perform a change of basis into a domain more suited to the problem. One such frame shift (or rather, category of such) is widely known as [*declarative programming*](https://en.wikipedia.org/wiki/Declarative_programming) (as opposed to imperative programming, for example), and concerns programming languages, libraries, and techniques based on stating the problem domain or constraint system, as well as the desired objective or target (the "what"), at a high level and leaving the low-level algorithmic details to the optimizer or runtime (the "how"). In some cases this may take the form of a domain-specific optimization or constraint solving library; other times it is integrated more tightly with a language's semantics and execution model.
 
 One self-contained and useful tool from this paradigm is ["nondeterminism"](https://en.wikipedia.org/wiki/Nondeterministic_programming) (this is a somewhat overloaded term, but in this case I am *not* talking about the kind of nondeterminism that people mention with respect to e.g., reproducibility of software artifacts or experiments). The premise is that we delineate the ways in which a program can branch or the alternatives to be selected between (potentially with nesting, recursion, and other complications) and search/"solve" for some solution among the set of possible paths or choices. That is to say, the nondeterminism interface should abstract away the construction of the search space and execution of the search procedure to some extent; the programmer need only be concerned with which choices are available and how they interact (e.g., how state evolves over time depending on the branch taken at each step).
 
@@ -111,7 +111,7 @@ ghci> mapM print [((x, y), x * y) | x <- [1..10], y <- [1..10], even (x * y)]
 ...
 ```
 
-(There is a tremendous amount of fascinating monad/applicative/traversable/alternative machinery that works with almost all of Haskell's basic types, and which I would recommend having a look at if the above interests you at all; another example I'm fond of is `sequence [[1..2], [3..6]]`, which exploits the fact that lists are both `Traversable` and `Monad`.)
+(There is a tremendous amount of fascinating monad/applicative/traversable/alternative machinery that works with almost all of Haskell's basic types, and which I would recommend looking at if the above interests you at all; another example I'm fond of is `sequence [[1..2], [3..6]]`, which exploits the fact that lists are both `Traversable` and `Monad`.)
 
 It is important to note that -- unlike with naive implementations that iterate over all combinations of elements from a handful of statically known sets, and only check which combinations would have survived at the end -- this approach really does prune branches each time `guard` is invoked, avoiding much unnecessary work, and has all the execution semantics you would expect of a handwritten "iterate over items in source collections -> map transformations over each element and collect the results -> filter/prune -> ..." approach.
 
@@ -171,7 +171,7 @@ main = do
 
 (The initial value is 1; the three transforms are "add 4", "multiply by 2", and "take the remainder mod 3"; we do three transformations in a row. As you would expect, we get `3^3 = 27` results.)
 
-[This page](http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0) has some nice ileustrations of the control flow implied by various stacks of monad transformers. Finding the correct ordering of monad transformers in the stack, and mentally modeling the relevant types, is sometimes nontrivial; nevertheless, they can certainly improve concision in situations that call for them.
+[This page](http://blog.sigfpe.com/2006/10/monads-field-guide.html?m=0) has some nice illustrations of the control flow implied by various stacks of monad transformers. Finding the correct ordering of monad transformers in the stack, and mentally modeling the relevant types, is sometimes nontrivial; nevertheless, they can certainly improve concision in situations that call for them.
 
 ## General nondeterminism with generators
 
@@ -190,7 +190,7 @@ This is somewhat brittle, since we are generally forced to intermediate every op
 Here is a minimal example of the sort of function we would like to support nondeterminism for; we have a `yield` statement enclosing each "source" of ambiguity/`Amb` expression (and these can use values from prior ones normally, no extra magic needed):
 
 ```py
-def test(a: int) -> set[((int, int, int), int)]:
+def test(a: int) -> set[tuple[tuple[int, int, int], int]]:
     x = yield Amb([1, 2, 3])
     y = yield Amb([2, 4, a])
     if x == y:
@@ -428,7 +428,7 @@ It's also quite possible to define our own `guard` in analogy to Haskell's (here
 guard = lambda c: Amb([None]) if c else Amb([])
 
 @amb
-def guard_test(a: int) -> list[int]:
+def guard_test(a: int) -> list[tuple[int, int, int]]:
     x = yield Amb(range(0, a))
     y = yield Amb(range(a, a * 2))
     yield guard((x + y) % 2 == 0)
@@ -461,7 +461,7 @@ Back to the list/set version. This is a nice toy, but is it compatible with more
 
 ```py
 @amb
-def recursion_test(a: int) -> list[int]:
+def recursion_test(a: int) -> list:
     if a < 5:
         return (yield Amb([a]))
     x = yield Amb(range(a - 4, a))
@@ -482,6 +482,8 @@ pprint(recursion_test(7))
 ```
 
 (We could also, if we wished, modify our decorator to "flatten" the results from recursive calls, so that the semantics more closely resemble "explore all possible combinations of inputs in all execution frames, coalescing the outcomes into a single collection.")
+
+I ought also to note that if the decorated function performs any mutation of global state (including locals of the enclosing function, if it is a closure) or other side effects (I/O, etc.), these will be performed once per branch; if you wanted to explicitly roll back mutations of external state, an additional context manager could be implemented to support this.
 
 The main issue here (and one which is hopefully evident by now) is that this is not very performant, both due to Python being an exceptionally slow language and the overhead of needing to reproduce the generator state de novo for each path we evaluate. One possible approach that solves both issues is representing ambiguous/nondeterministic variables, intermediate expressions, and outputs using suitably shaped NumPy arrays, and broadcasting computations to recreate our "compute this operation for every pair of inputs generated by these two ambiguous expressions" semantics. This runs into some issues with choosing how to model things like a range of values where one or both bounds is an `Amb` value, representing conditionals and loops without inflicting onerous DSL syntax on the programmer or depriving them of the other facilities of the language, performance overhead from fitting branching/nonuniform computations into neat rectangular ndarrays, and representing non-primitive datatypes; it might nevertheless not be a bad option for certain kinds of tasks. (Another is using Haskell with `-O3` set in GHC.)
 
