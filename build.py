@@ -149,7 +149,7 @@ def render_pages_to_html(
         )
         posts_for_listing = [
             _post_template_context(post)
-            for post in sorted(posts, key=lambda p: p.created_at, reverse=True)
+            for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
         ]
     except FileNotFoundError:
         posts_for_listing = []

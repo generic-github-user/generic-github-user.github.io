@@ -3,6 +3,8 @@ pages:
     slug: index
   - title: contact
     slug: contact
+  - title: blog
+    slug: blog
   # - title: colophon
   #   slug: colophon
 
