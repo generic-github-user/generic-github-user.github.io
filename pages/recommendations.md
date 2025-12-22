@@ -92,6 +92,7 @@ h3 {
 - [BorgBackup](https://www.borgbackup.org/)
 - [Firefox](https://www.firefox.com/en-US/)
 - [jq](https://jqlang.org/)
+- [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux.]
 - [kitty](https://sw.kovidgoyal.net/kitty/)
 - [LaTeX](https://www.latex-project.org/)
 - [mypy](https://mypy-lang.org/)
@@ -106,8 +107,10 @@ h3 {
 - [Sanoid/Syncoid](https://github.com/jimsalterjrs/sanoid)
 - [Signal](https://signal.org/)
 - [Sway WM](https://swaywm.org/)
+- [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics.]
 - [Timewarrior](https://timewarrior.net/)
 - [tldr](https://tldr.sh/)
+- [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
 - [uv](https://github.com/astral-sh/uv)
 - [xonsh](https://xon.sh/)
 
