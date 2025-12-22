@@ -18,7 +18,7 @@ body {
   break-inside: avoid;
   -webkit-column-break-inside: avoid; /* Safari */
   page-break-inside: avoid;           /* older */
-  display: inline-block;              /* helps some browsers honor avoid */
+  /* display: inline-block;              /* helps some browsers honor avoid */ */
   width: 100%;
   box-sizing: border-box;
   margin: 0 0 2rem 0;
@@ -166,6 +166,8 @@ h3 {
 ### Miscellaneous
 
 - [Flatiron Pepper Co](https://www.flatironpepper.com/)^[my favorite variety is the [Chipotle - Roasted Garlic - Toasted Onion](https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion) mixture]
+- [Meltdown](http://www.ccru.net/swarm1/1_melt.htm)
+- [The Intelligence Curse](https://intelligence-curse.ai/)
 - [Scrandle](https://scrandle.com/)
 
 :::
