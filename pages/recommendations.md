@@ -46,6 +46,10 @@ h3 {
 - <https://gwern.net/>
 - <https://www.bitsaboutmoney.com/>
 - <https://jyn.dev/>
+- <https://www.haskellforall.com/>
+- <https://www.elizas.website/>
+- <https://loginasroot.net/>
+- <https://www.bloomberg.com/account/newsletters/money-stuff>
 
 ### Films
 
@@ -64,6 +68,8 @@ h3 {
 - [The Prestige](https://en.wikipedia.org/wiki/The_Prestige_(film))
 - [The Usual Suspects](https://en.wikipedia.org/wiki/The_Usual_Suspects)
 - [Uncut Gems](https://en.wikipedia.org/wiki/Uncut_Gems)
+- [Memento](https://en.wikipedia.org/wiki/Memento_(film))
+- [Pulp Fiction](https://en.wikipedia.org/wiki/Pulp_Fiction)
 
 ### Shows
 
@@ -110,15 +116,26 @@ h3 {
 
 ### Short stories
 
-- ["Survivor Type"](https://en.wikipedia.org/wiki/Survivor_Type) (Stephen King)
+- ["Survivor Type"](https://en.wikipedia.org/wiki/Survivor_Type) (Stephen King)^[reader discretion advised]
 - ["The Cask of Amontillado"](https://poemuseum.org/the-cask-of-amontillado/) (Edgar Allan Poe)
 - ["The Necklace"](https://en.wikipedia.org/wiki/The_Necklace) (Guy de Maupassant)
 
 ### Games
 
 - [Minecraft](https://www.minecraft.net/en-us)
+    - (see also: [CC: Tweaked](https://tweaked.cc/) and the [Create Mod](https://create.fandom.com/wiki/Create_Mod_Wiki); [Prism Launcher](https://prismlauncher.org/))
 - [Kerbal Space Program](https://www.kerbalspaceprogram.com/)
 - [Portal](https://en.wikipedia.org/wiki/Portal_(video_game))
 - [Portal 2](https://en.wikipedia.org/wiki/Portal_2)
+
+### Music
+
+- [Requiem in D minor, K. 626](https://en.wikipedia.org/wiki/Requiem_(Mozart)) (Mozart); particularly the [1991 Academy of St. Martin in the Fields recording](https://open.spotify.com/album/2mAq4V9WfnKBIMmKGLS653)
+- [The Phantom of the Opera](https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical))
+
+### Miscellaneous
+
+- [Flatiron Pepper Co](https://www.flatironpepper.com/)^[my favorite variety is the [Chipotle - Roasted Garlic - Toasted Onion](https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion) mixture]
+- [Scrandle](https://scrandle.com/)
 
 :::
