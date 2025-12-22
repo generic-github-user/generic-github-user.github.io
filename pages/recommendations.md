@@ -4,12 +4,12 @@ Some things I enjoy or find useful and think others might enjoy or find useful. 
 
 <style>
 body {
-    min-width: 80% !important;
+    min-width: 70% !important;
 }
 
 .multicol {
   column-count: 3;
-  column-gap: 4rem;
+  column-gap: 2rem;
 }
 
 .multicol section {
@@ -18,6 +18,7 @@ body {
   page-break-inside: avoid;           /* older */
   display: inline-block;              /* helps some browsers honor avoid */
   width: 100%;
+  box-sizing: border-box;
   margin: 0 0 2rem 0;
 
   border: solid;
