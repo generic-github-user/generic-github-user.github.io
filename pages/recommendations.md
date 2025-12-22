@@ -40,7 +40,7 @@ h3 {
 
 ::: {.multicol}
 
-### Newsletters, blogs, etc:
+### Newsletters, blogs, etc.
 
 - <https://mcyoung.xyz/>
 - <https://gwern.net/>
@@ -62,26 +62,26 @@ h3 {
 - [Interstellar](https://en.wikipedia.org/wiki/Interstellar_(film))
 - [Margin Call](https://en.wikipedia.org/wiki/Margin_Call)
 - [Megalopolis](https://en.wikipedia.org/wiki/Megalopolis_(film))
+- [Memento](https://en.wikipedia.org/wiki/Memento_(film))
+- [Pulp Fiction](https://en.wikipedia.org/wiki/Pulp_Fiction)
 - [Scarface](https://en.wikipedia.org/wiki/Scarface_(1983_film))
 - [The Godfather Part II](https://en.wikipedia.org/wiki/The_Godfather_Part_II)
 - [The Godfather](https://en.wikipedia.org/wiki/The_Godfather)
 - [The Prestige](https://en.wikipedia.org/wiki/The_Prestige_(film))
 - [The Usual Suspects](https://en.wikipedia.org/wiki/The_Usual_Suspects)
 - [Uncut Gems](https://en.wikipedia.org/wiki/Uncut_Gems)
-- [Memento](https://en.wikipedia.org/wiki/Memento_(film))
-- [Pulp Fiction](https://en.wikipedia.org/wiki/Pulp_Fiction)
 
 ### Shows
 
-- [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)
 - [Arrested Development](https://en.wikipedia.org/wiki/Arrested_Development)^[As far as I can remember, I have not seen the original cut of season 4, only the Netflix "remix"; despite the mixed reception, I think that on the whole the last two seasons are at least as strong as the first three in most respects]
-- [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))^[As far as I can remember, the English dub on Netflix is not very good; prefer the original German audio with subtitles]
-- [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)
 - [Better Call Saul](https://en.wikipedia.org/wiki/Better_Call_Saul)
-- [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
-- [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
+- [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)
+- [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))^[As far as I can remember, the English dub on Netflix is not very good; prefer the original German audio with subtitles]
+- [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)
 - [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)
 - [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
+- [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
+- [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 
 ### Software
 
@@ -132,6 +132,10 @@ h3 {
 
 - [Requiem in D minor, K. 626](https://en.wikipedia.org/wiki/Requiem_(Mozart)) (Mozart); particularly the [1991 Academy of St. Martin in the Fields recording](https://open.spotify.com/album/2mAq4V9WfnKBIMmKGLS653)
 - [The Phantom of the Opera](https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical))
+
+### Literature
+
+- [Hamlet](https://shakespeare.mit.edu/hamlet/full.html)
 
 ### Miscellaneous
 
