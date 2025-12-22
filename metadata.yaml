@@ -7,6 +7,8 @@ pages:
     slug: blog
   # - title: colophon
   #   slug: colophon
+  - title: recommendations
+    slug: recommendations
 
 posts:
   - python_nondeterminism_monad
