@@ -2,7 +2,7 @@
 
 Some things I enjoy or find useful and think others might enjoy or find useful. Please don't be offended if we disagree on the enjoyability and/or usefulness of a particular entry. Listed in no particular order.
 
-Items marked with a "+" are exceptionally high-quality or otherwise distinguished among the other members of their category, in my view. (In a few cases this refers only to the immediate reference class relevant to that item and not to the entire category.)
+Items marked with a "+" are exceptionally high-quality or otherwise distinguished among the other members of their category, in my view. (In a few cases this refers only to the immediate reference class relevant to that item and not to the entire category. Sometimes they are just things I have a strong personal preference for.)
 
 <style>
 body {
@@ -27,6 +27,11 @@ body {
   border-width: 6px;
   border-color: #f2e6ff;
   padding: 10px;
+}
+
+.col2 {
+  column-count: 2;
+  column-gap: 0rem;
 }
 
 h3 {
@@ -56,6 +61,7 @@ h3 {
 
 ### Films
 
+- [Amadeus](https://en.wikipedia.org/wiki/Amadeus_(film))^+^
 - [Avatar](https://en.wikipedia.org/wiki/Avatar_(2009_film))
 - [Dune (2021)](https://en.wikipedia.org/wiki/Dune_(2021_film))
 - [Dune: Part Two (2024)](https://en.wikipedia.org/wiki/Dune:_Part_Two)
@@ -73,6 +79,7 @@ h3 {
 - [The Prestige](https://en.wikipedia.org/wiki/The_Prestige_(film))
 - [The Usual Suspects](https://en.wikipedia.org/wiki/The_Usual_Suspects)
 - [Uncut Gems](https://en.wikipedia.org/wiki/Uncut_Gems)
+- [Cloverfield](https://en.wikipedia.org/wiki/Cloverfield)
 
 ### Shows
 
@@ -87,6 +94,8 @@ h3 {
 - [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 
 ### Software
+
+::: {.col2}
 
 - [Blender](https://www.blender.org/)^+^
 - [BorgBackup](https://www.borgbackup.org/)
@@ -113,6 +122,8 @@ h3 {
 - [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
 - [uv](https://github.com/astral-sh/uv)
 - [xonsh](https://xon.sh/)
+
+:::
 
 ### Programming languages
 
