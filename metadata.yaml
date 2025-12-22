@@ -5,10 +5,10 @@ pages:
     slug: contact
   - title: blog
     slug: blog
-  # - title: colophon
-  #   slug: colophon
   - title: recommendations
     slug: recommendations
+  - title: colophon
+    slug: colophon
 
 posts:
   - python_nondeterminism_monad
