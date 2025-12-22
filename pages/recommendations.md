@@ -68,11 +68,11 @@ h3 {
 ### Shows
 
 - [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)
-- [Arrested Development](https://en.wikipedia.org/wiki/Arrested_Development)
-- [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))
+- [Arrested Development](https://en.wikipedia.org/wiki/Arrested_Development)^[As far as I can remember, I have not seen the original cut of season 4, only the Netflix "remix"; despite the mixed reception, I think that on the whole the last two seasons are at least as strong as the first three in most respects]
+- [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))^[As far as I can remember, the English dub on Netflix is not very good; prefer the original German audio with subtitles]
 - [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)
 - [Better Call Saul](https://en.wikipedia.org/wiki/Better_Call_Saul)
-- [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1)
+- [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 - [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
 - [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)
 - [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
@@ -106,7 +106,7 @@ h3 {
 - [Haskell](https://www.haskell.org/)
 - [Rust](https://rust-lang.org/)
 - [Common Lisp](https://common-lisp.net/)
-- [Idris](https://www.idris-lang.org/) (have used this very little myself, but still interesting enough to be worth mentioning)
+- [Idris](https://www.idris-lang.org/)^[I have used this very little myself, but it's still interesting enough to be worth mentioning]
 
 ### Short stories
 
