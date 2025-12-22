@@ -137,6 +137,13 @@ h3 {
 
 - [Hamlet](https://shakespeare.mit.edu/hamlet/full.html)
 
+### Poetry
+
+- [Ozymandias](https://www.poetryfoundation.org/poems/46565/ozymandias) (Percy Bysshe Shelley)
+- [Do Not Go Gentle into That Good Night](https://www.poetryfoundation.org/poems/46569/do-not-go-gentle-into-that-good-night) (Dylan Thomas)
+- [The Sensual World](https://adyingeye.wordpress.com/2011/07/02/the-sensual-world-louise-gluck/) (Louise Glück)
+- [Thanatopsis]()
+
 ### Miscellaneous
 
 - [Flatiron Pepper Co](https://www.flatironpepper.com/)^[my favorite variety is the [Chipotle - Roasted Garlic - Toasted Onion](https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion) mixture]
