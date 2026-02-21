@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
+import shutil
 
 import pypandoc
 import yaml
@@ -15,6 +16,7 @@ from jinja2 import Environment
 REPO_ROOT = Path(__file__).resolve().parent
 POSTS_DIR = REPO_ROOT / "posts"
 PAGES_DIR = REPO_ROOT / "pages"
+FILES_DIR = REPO_ROOT / "files"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
 HEADER_TEMPLATE_PATH = PAGES_DIR / "header.md"
 POST_TEMPLATE_PATH = PAGES_DIR / "post.md"
@@ -110,6 +112,7 @@ def render_site_header(
 def render_pages_to_html(
     metadata_path: Path | None = None,
     pages_dir: Path | None = None,
+    files_dir: Path | None = None,
     posts_dir: Path | None = None,
     repo_path: Path | None = None,
     header_template_path: Path | None = None,
@@ -121,6 +124,7 @@ def render_pages_to_html(
 
     metadata_file = Path(metadata_path or METADATA_PATH)
     pages_directory = Path(pages_dir or PAGES_DIR)
+    static_files_directory = Path(files_dir or FILES_DIR)
     posts_directory = Path(posts_dir or POSTS_DIR)
     repo_dir = Path(repo_path or REPO_ROOT)
     header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
@@ -179,6 +183,8 @@ def render_pages_to_html(
         output_path = output_directory / f"{slug}.html"
         output_path.write_text(html, encoding="utf-8")
         rendered_paths.append(output_path)
+
+    _copy_static_files(static_files_directory, output_directory)
 
     return rendered_paths
 
@@ -330,22 +336,45 @@ def _iter_navigation_items(pages_meta: Any) -> Iterable[str]:
     for entry in entries:
         label: str | None
         slug: str | None
+        direct_href: str | None = None
 
         if isinstance(entry, dict):
             label = _first_non_empty(entry, "label", "title", "name", "slug", "path")
-            slug = _first_non_empty(entry, "slug", "path", "href", "url", "name")
+            slug = _first_non_empty(entry, "slug", "path", "name")
+            direct_href = _first_non_empty(entry, "href", "url")
         else:
             value = str(entry).strip()
             label = value
             slug = value
 
-        if not label or not slug:
+        if not label:
             continue
 
-        href = "/" + slug.lstrip("/")
-        links.append(f"[{label}]({href})")
+        resolved_href: str | None
+        if direct_href:
+            resolved_href = direct_href
+        elif slug:
+            resolved_href = "/" + slug.lstrip("/")
+        else:
+            resolved_href = None
+
+        if not resolved_href:
+            continue
+
+        links.append(f"[{label}]({resolved_href})")
 
     return links
+
+
+def _copy_static_files(source_dir: Path, destination_root: Path) -> Path | None:
+    if not source_dir.exists():
+        return None
+
+    destination = destination_root / source_dir.name
+    if destination.exists():
+        shutil.rmtree(destination)
+    shutil.copytree(source_dir, destination)
+    return destination
 
 
 def _normalize_page_entry(entry: Any) -> tuple[str, str, str, dict[str, Any]]:

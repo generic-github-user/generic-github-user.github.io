@@ -9,6 +9,8 @@ pages:
     slug: recommendations
   - title: colophon
     slug: colophon
+  - title: resume
+    href: ./files/anna-allen-resume.pdf
 
 posts:
   - python_nondeterminism_monad
