@@ -92,6 +92,8 @@ h3 {
 - [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
 - [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
 - [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
+- [Twin Peaks](https://en.wikipedia.org/wiki/Twin_Peaks)
+- [Pluribus](https://en.wikipedia.org/wiki/Pluribus_(TV_series))
 
 ### Software
 
