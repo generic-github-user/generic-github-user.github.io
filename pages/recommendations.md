@@ -29,12 +29,16 @@ body {
   padding: 10px;
 }
 
+.multicol section section {
+  margin: 0;
+}
+
 .col2 {
   column-count: 2;
   column-gap: 0rem;
 }
 
-h3 {
+h3, h4 {
   margin: 0px;
 }
 
@@ -55,9 +59,14 @@ h3 {
 - <https://www.bitsaboutmoney.com/>^+^
 - <https://jyn.dev/>
 - <https://www.haskellforall.com/>
-- <https://www.elizas.website/>
-- <https://loginasroot.net/>
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
+- <https://loginasroot.net/>
+
+#### Friends & acquaintances
+
+- <https://rvns.moe/>
+- <https://www.elizas.website/>
+- <https://aryl.org/>
 
 ### Films
 
