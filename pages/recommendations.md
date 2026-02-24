@@ -1,6 +1,6 @@
 {{ site_header }}
 
-Some things I enjoy or find useful and think others might enjoy or find useful. Please don't be offended if we disagree on the enjoyability and/or usefulness of a particular entry. Listed in no particular order.
+Some things I enjoy or find useful and think others might enjoy or find useful. Please don't be offended if we disagree on the enjoyability and/or usefulness of a particular entry. Listed in no particular order^[Some sections are alphabetized but I haven't been consistent about this so far].
 
 Items marked with a "+" are exceptionally high-quality or otherwise distinguished among the other members of their category, in my view. (In a few cases this refers only to the immediate reference class relevant to that item and not to the entire category. Sometimes they are just things I have a strong personal preference for.)
 
@@ -64,9 +64,10 @@ h3, h4 {
 
 #### Friends & acquaintances
 
+- <https://aryl.org/>
+- <https://packet.science/>
 - <https://rvns.moe/>
 - <https://www.elizas.website/>
-- <https://aryl.org/>
 
 ### Films
 
@@ -112,7 +113,7 @@ h3, h4 {
 - [BorgBackup](https://www.borgbackup.org/)
 - [Firefox](https://www.firefox.com/en-US/)
 - [jq](https://jqlang.org/)
-- [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux.]
+- [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux. I *have* experienced nontrivial performance issues with it, including crashes on certain hardware, but these have been fairly infrequent. I'd advise new users, unless they plan to do a lot of searching for files/dirs in [Dolphin](https://apps.kde.org/dolphin/), to disable the [Baloo](https://community.kde.org/Baloo) search indexer; [fd](https://github.com/sharkdp/fd), [fzf](https://github.com/junegunn/fzf), and [ripgrep](https://github.com/BurntSushi/ripgrep) are fast enough for most use cases.]
 - [kitty](https://sw.kovidgoyal.net/kitty/)
 - [LaTeX](https://www.latex-project.org/)
 - [mypy](https://mypy-lang.org/)
