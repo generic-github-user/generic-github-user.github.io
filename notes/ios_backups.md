@@ -5,7 +5,7 @@ location: Maryland
 
 This is a *brief* note on taking and extracting (into a human-readable form closely resembling, as best I can tell, the on-device directory structure of the originating device) backups from iOS devices. I used this process for an Apple iPhone 13 Pro Max, but it should apply equally to ~any device supported by [libimobiledevice](https://libimobiledevice.org/). This allows one to access a great deal of on-device data not otherwise exposed to users, at the cost of having very limited support for granularity/incremental backups. If everything goes well, it includes data from most (all?) core applications and user-installed applications on an iPhone, including e.g., browsing data, photos (and associated metadata), notes, etc., generally in normal files and/or legible SQL databases. Maybe somebody will find the below useful.
 
-For backing up/transferring photos from my iPhone to my server, I have a separate workflow involving [iOS shortcuts](https://en.wikipedia.org/wiki/Shortcuts_(Apple)) and a REST API, which I will document at some point in the future -- but this is quite janky and I find it reassuring to have a proper & reasonably recent full-device backup in place before running any destructive actions.
+For backing up/transferring photos from my iPhone to my server, I have a separate workflow involving [iOS shortcuts](https://en.wikipedia.org/wiki/Shortcuts_(Apple)) and a self-hosted REST API, which I will document at some point in the future -- but this is quite janky and I find it reassuring to have a proper & reasonably recent full-device backup in place before running any destructive actions.
 
 libimobiledevice exposes most of the necessary tools:
 

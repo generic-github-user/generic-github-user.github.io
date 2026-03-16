@@ -198,7 +198,7 @@ href="./files/anna-allen-resume.pdf">resume</a></em></p>
 <section id="backing-up-ios-devices-on-linux" class="level1">
 <h1>Backing up iOS devices on Linux</h1>
 <p>started <strong>2026-03-16 at 00:04 EDT</strong> | updated
-<strong>2026-03-16 at 00:04 EDT</strong> | written in
+<strong>2026-03-16 at 00:37 EDT</strong> | written in
 <strong>Maryland</strong></p>
 <p>This is a <em>brief</em> note on taking and extracting (into a
 human-readable form closely resembling, as best I can tell, the
@@ -216,10 +216,10 @@ databases. Maybe somebody will find the below useful.</p>
 <p>For backing up/transferring photos from my iPhone to my server, I
 have a separate workflow involving <a
 href="https://en.wikipedia.org/wiki/Shortcuts_(Apple)">iOS shortcuts</a>
-and a REST API, which I will document at some point in the future – but
-this is quite janky and I find it reassuring to have a proper &amp;
-reasonably recent full-device backup in place before running any
-destructive actions.</p>
+and a self-hosted REST API, which I will document at some point in the
+future – but this is quite janky and I find it reassuring to have a
+proper &amp; reasonably recent full-device backup in place before
+running any destructive actions.</p>
 <p>libimobiledevice exposes most of the necessary tools:</p>
 <pre><code>nix-shell -p libimobiledevice usbmuxd</code></pre>
 <p>Then, after plugging in the device and clicking “Trust” in the dialog
