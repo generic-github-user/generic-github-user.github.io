@@ -1,5 +1,6 @@
 ---
 title: How I Learned to Stop Worrying and Love the Technopole
+tags: technocapital, ASI
 location: Maryland
 ---
 
@@ -17,7 +18,7 @@ You can walk by the buildings, the normal office buildings, where the inhabitant
 
 You can readily notice the near-total stratification (which you had been warned of) of downtown San Francisco between ~software engineers and the service worker caste, and idly wonder which you'll fall into in ten or twenty years; you can retreat to Berkeley, where “software engineers” is replaced with “wealthy students from abroad,” or one of the poorer and more heterogeneous suburban or exurban areas of the Bay.
 
-coldhealing has a tweet that goes like this: "my vision of new york is five boroughs filled entirely with laptop job elite galavanting around the playground city served by an underclass that commutes in from tiny five-over-ones in hoboken". Whether they realized it or not, this post was about SF, the downtown area of which is probably the most powerwashed place I've ever been, including Washington, D.C., Wall Street, and Boston.
+coldhealing has a tweet that goes like this: "my vision of new york is five boroughs filled entirely with laptop job elite galavanting around the playground city served by an underclass that commutes in from tiny five-over-ones in hoboken". Whether they realized it or not, this post was about SF, the downtown area of which is probably the most thoroughly powerwashed place I've ever been, including Washington, D.C., Wall Street, and Boston.
 
 Californians love their cars, and pedestrians and drivers alike are subservient to the automobile in a way that urban East Coast residents mostly are not (though this is in large part a function of distance & sprawl). You get the sense that the real technocapital demon reaching through time to ensure its own survival is the specter of Henry Ford haunting America, many decades later. Nothing human makes it out of the near future, but compact SUVs probably will.
 
@@ -39,6 +40,8 @@ You might meditate on the natures of competence, gratitude, progress, disillusio
 SF is also one of the most secular-feeling places I've ever been, a kind of special economic zone God declines to enter.
 
 Hypergambling culture (see: prediction markets, memecoins, the Stanford dropout to Y Combinator pipeline, etc.) has been synthesized with rather extreme forms of classism and cynicism to form a uniquely repulsive new economic religion, one foremost of nihilism -- one embraced in its milder forms by much of the disillusioned "gen Z" cohort, many of whom seem to itch for an excuse to declare normative economic participation a lost cause and indulge their zero-sum aspirations. Of course, many proponents of this complex of beliefs show a marked failure of imagination: tacit in their scheming and rhetoric is the assumption that many parts of the status quo will be preserved indefinitely, even through unprecedented transformation of our species and society. To many others, and perhaps to me to some lesser extent, "will property rights survive the singularity?" probably sounds akin to "".
+
+Some have been so completely captured by Capital that, when you venture to question their barely-implicit assumption that the only end of human activity is to more efficiently allocate capital for the purpose of maximizing returns to capital, they react as if you have threatened their life. e/acc embraces this
 
 Certainly not every professional who lives and works in the Bay Area subscribes to this religion, but nearly committed clergy-member of it that I've met so far was at the very least socially or culturally enmeshed in the place. The last twenty years of tech in California are, I'm told, the modern incarnation of last century's local gold rush economy; the favored term of art is "high-variance," i.e. the acknowledgement that by (for example) founding or joining a startup, one sacrifices expected value and accepts a likely poor outcome in exchange for a realistic chance at a right-tail outcome ("generational wealth"). The stakes are, of course, not so serious as long as there's a 350k TC tech job for the founder to fall back on (longtime Twitter addicts may recall a discourse in which the startup class tried to get away with referring to themselves as being "in the arena," and perhaps overplayed their hand a bit, resulting in some ridicule).
 
@@ -93,5 +96,7 @@ I could go on. I want to emphasize that these are not *consensus* among any part
 For the record, I more or less believe most of these. They also all independently scare the shit out of me. These are often skirted around in day-to-day conversation, but one gradually gets the sense that this has more to do with boredom or weariness or tactfulness than any kind of intentional deceit or strategization. So pervasive is the air of autistic openness, at least in the higher-trust social environments.
 
 In a way, I have already been stuck in the Bay Area for years. Even though actual inhabitants thereof constituted a minority of my close friends and acquaintances until fairly recently, the rest -- in Massachusetts, NYC, the PNW, and elsewhere -- have been increasingly culturally downstream of far-west discourses, thoughtforms, and world models for several years. It became impossible to ignore after 2022 or so, to our eternal chagrin; being even moderately intelligent, "plugged in," and tolerant to the outlandish implies that you care to some extent about/pay some attention to the Project, and accordingly steep in the wretched culture surrounding it. Every group chat is tacitly *permanentunderclasschat* now.
+
+My excursion made me more optimistic and tempered my mood -- at the very least, it reduced the mean number of times per day that I post about the permanent underclass or the singularity or the ASI at the end of time, though this was already beginning to happen just due to sheer boredom of the topic. I remarked to friends at least twice that I wasn't sure whether this calming had more to do with renewed personal optimism about my specific positioning, or mere contagion from spending so much time around highly amiable people with unflinchingly positive outlooks. I imagine that one needs both kinds to succeed.
 
 It is perhaps, in some senses, the strangest and most fraught moment in history that one could have chosen to be recovering from severe health issues, and to be in the earlier months of gender transition, and trying to become net- economically and socially useful for the first time. On the other hand,
