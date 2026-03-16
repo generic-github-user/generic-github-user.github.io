@@ -15,12 +15,15 @@ from jinja2 import Environment
 
 REPO_ROOT = Path(__file__).resolve().parent
 POSTS_DIR = REPO_ROOT / "posts"
+NOTES_DIR = REPO_ROOT / "notes"
 PAGES_DIR = REPO_ROOT / "pages"
 FILES_DIR = REPO_ROOT / "files"
 METADATA_PATH = REPO_ROOT / "metadata.yaml"
 HEADER_TEMPLATE_PATH = PAGES_DIR / "header.md"
 POST_TEMPLATE_PATH = PAGES_DIR / "post.md"
+NOTE_TEMPLATE_PATH = PAGES_DIR / "note.md"
 POST_OUTPUT_DIR = REPO_ROOT / "docs" / "posts"
+NOTE_OUTPUT_DIR = REPO_ROOT / "docs" / "notes"
 POST_HEADER_INCLUDE_PATH = PAGES_DIR / "post_head.html"
 H2_ANCHOR_FILTER_PATH = PAGES_DIR / "h2_anchors.lua"
 ARROW_FILTER_PATH = PAGES_DIR / "replace_arrows.lua"
@@ -63,23 +66,57 @@ def load_posts(
 ) -> list[Post]:
     """Return Post objects for every entry under `posts` in metadata.yaml."""
 
+    return _load_entries(
+        "posts",
+        metadata_path=metadata_path,
+        content_dir=posts_dir or POSTS_DIR,
+        repo_path=repo_path or REPO_ROOT,
+        metadata=metadata,
+    )
+
+
+def load_notes(
+    metadata_path: Path | None = None,
+    notes_dir: Path | None = None,
+    repo_path: Path | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> list[Post]:
+    """Return Post objects for every entry under `notes` in metadata.yaml."""
+
+    return _load_entries(
+        "notes",
+        metadata_path=metadata_path,
+        content_dir=notes_dir or NOTES_DIR,
+        repo_path=repo_path or REPO_ROOT,
+        metadata=metadata,
+    )
+
+
+def _load_entries(
+    metadata_key: str,
+    *,
+    metadata_path: Path | None = None,
+    content_dir: Path,
+    repo_path: Path,
+    metadata: dict[str, Any] | None = None,
+) -> list[Post]:
     metadata_file = Path(metadata_path or METADATA_PATH)
-    posts_directory = Path(posts_dir or POSTS_DIR)
-    repo_dir = Path(repo_path or REPO_ROOT)
+    content_directory = Path(content_dir)
+    repo_dir = Path(repo_path)
 
     repo = Repo(repo_dir)
     metadata_obj = metadata or _read_metadata(metadata_file)
-    post_names = metadata_obj.get("posts") or []
+    entry_names = metadata_obj.get(metadata_key) or []
 
-    posts: list[Post] = []
-    for post_name in post_names:
-        post_path = posts_directory / f"{post_name}.md"
-        frontmatter, content = _read_post_file(post_path)
-        commits = _collect_commits(repo, post_path)
-        created_at, updated_at = _resolve_post_timestamps(post_path, commits)
+    entries: list[Post] = []
+    for entry_name in entry_names:
+        entry_path = content_directory / f"{entry_name}.md"
+        frontmatter, content = _read_post_file(entry_path)
+        commits = _collect_commits(repo, entry_path)
+        created_at, updated_at = _resolve_post_timestamps(entry_path, commits)
 
-        post = Post(
-            name=post_name,
+        entry = Post(
+            name=entry_name,
             title=str(frontmatter.get("title") or ""),
             tags=list(frontmatter.get("tags") or []),
             location=str(frontmatter.get("location") or ""),
@@ -88,9 +125,9 @@ def load_posts(
             updated_at=updated_at,
             commits=commits,
         )
-        posts.append(post)
+        entries.append(entry)
 
-    return posts
+    return entries
 
 
 def render_site_header(
@@ -114,6 +151,7 @@ def render_pages_to_html(
     pages_dir: Path | None = None,
     files_dir: Path | None = None,
     posts_dir: Path | None = None,
+    notes_dir: Path | None = None,
     repo_path: Path | None = None,
     header_template_path: Path | None = None,
     output_dir: Path | None = None,
@@ -126,6 +164,7 @@ def render_pages_to_html(
     pages_directory = Path(pages_dir or PAGES_DIR)
     static_files_directory = Path(files_dir or FILES_DIR)
     posts_directory = Path(posts_dir or POSTS_DIR)
+    notes_directory = Path(notes_dir or NOTES_DIR)
     repo_dir = Path(repo_path or REPO_ROOT)
     header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
     output_directory = Path(output_dir or PAGES_OUTPUT_DIR)
@@ -152,11 +191,26 @@ def render_pages_to_html(
             metadata=metadata_obj,
         )
         posts_for_listing = [
-            _post_template_context(post)
+            _post_template_context(post, base_slug="posts")
             for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
         ]
     except FileNotFoundError:
         posts_for_listing = []
+
+    notes_for_listing: list[dict[str, Any]] = []
+    try:
+        notes = load_notes(
+            metadata_path=metadata_file,
+            notes_dir=notes_directory,
+            repo_path=repo_dir,
+            metadata=metadata_obj,
+        )
+        notes_for_listing = [
+            _post_template_context(note, base_slug="notes")
+            for note in sorted(notes, key=lambda n: n.updated_at, reverse=True)
+        ]
+    except FileNotFoundError:
+        notes_for_listing = []
 
     rendered_paths: list[Path] = []
     for entry in page_entries:
@@ -173,6 +227,7 @@ def render_pages_to_html(
             site_header=site_header,
             page=context,
             posts=posts_for_listing,
+            notes=notes_for_listing,
         )
 
         html = _markdown_to_html(
@@ -230,7 +285,7 @@ def render_posts_to_html(
 
     rendered_paths: list[Path] = []
     for post in posts:
-        post_context = _post_template_context(post, include_body=True)
+        post_context = _post_template_context(post, include_body=True, base_slug="posts")
         rendered_markdown = template.render(site_header=site_header, post=post_context)
 
         visible_title = post.title or post.name
@@ -243,6 +298,69 @@ def render_posts_to_html(
             },
         )
         output_path = output_directory / f"{post.name}.html"
+        output_path.write_text(html, encoding="utf-8")
+        rendered_paths.append(output_path)
+
+    return rendered_paths
+
+
+def render_notes_to_html(
+    metadata_path: Path | None = None,
+    notes_dir: Path | None = None,
+    repo_path: Path | None = None,
+    header_template_path: Path | None = None,
+    note_template_path: Path | None = None,
+    output_dir: Path | None = None,
+    pandoc_extra_args: Iterable[str] | None = None,
+) -> list[Path]:
+    """Render every note listed in metadata.yaml into HTML files under src/notes."""
+
+    metadata_file = Path(metadata_path or METADATA_PATH)
+    notes_directory = Path(notes_dir or NOTES_DIR)
+    repo_dir = Path(repo_path or REPO_ROOT)
+    header_path = Path(header_template_path or HEADER_TEMPLATE_PATH)
+    template_candidate = Path(note_template_path or NOTE_TEMPLATE_PATH)
+    if not template_candidate.exists():
+        template_candidate = POST_TEMPLATE_PATH
+    template_path = template_candidate
+    output_directory = Path(output_dir or NOTE_OUTPUT_DIR)
+    output_directory.mkdir(parents=True, exist_ok=True)
+
+    metadata_obj = _read_metadata(metadata_file)
+    notes = load_notes(
+        metadata_path=metadata_file,
+        notes_dir=notes_directory,
+        repo_path=repo_dir,
+        metadata=metadata_obj,
+    )
+    site_header = render_site_header(
+        metadata_path=metadata_file,
+        header_template_path=header_path,
+        metadata=metadata_obj,
+    )
+
+    base_pandoc_args = _build_pandoc_base_args(
+        pandoc_extra_args, include_arrow_filter=True
+    )
+
+    template_source = template_path.read_text(encoding="utf-8")
+    template = JINJA_ENV.from_string(template_source)
+
+    rendered_paths: list[Path] = []
+    for note in notes:
+        note_context = _post_template_context(note, include_body=True, base_slug="notes")
+        rendered_markdown = template.render(site_header=site_header, post=note_context)
+
+        visible_title = note.title or note.name
+        html = _markdown_to_html(
+            rendered_markdown,
+            base_pandoc_args,
+            metadata={
+                "title": "",
+                "pagetitle": visible_title,
+            },
+        )
+        output_path = output_directory / f"{note.name}.html"
         output_path.write_text(html, encoding="utf-8")
         rendered_paths.append(output_path)
 
@@ -405,9 +523,10 @@ def _first_non_empty(entry: dict[str, Any], *keys: str) -> str | None:
     return None
 
 
-def _post_template_context(post: Post, include_body: bool = False) -> dict[str, Any]:
-    permalink = f"/posts/{post.name}.html"
-    relative = f"./posts/{post.name}.html"
+def _post_template_context(post: Post, include_body: bool = False, *, base_slug: str = "posts") -> dict[str, Any]:
+    normalized_slug = base_slug.strip("/") or "posts"
+    permalink = f"/{normalized_slug}/{post.name}.html"
+    relative = f"./{normalized_slug}/{post.name}.html"
     context: dict[str, Any] = {
         "name": post.name,
         "title": post.title or post.name,
@@ -475,13 +594,16 @@ __all__ = [
     "CommitInfo",
     "Post",
     "load_posts",
+    "load_notes",
     "render_site_header",
     "render_pages_to_html",
     "render_posts_to_html",
+    "render_notes_to_html",
 ]
 
 def main():
     render_pages_to_html()
     render_posts_to_html()
+    render_notes_to_html()
 
 main()

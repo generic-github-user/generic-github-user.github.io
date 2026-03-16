@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Backing up iOS devices on Linux</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  body {
+    max-width: 50em;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+  </style>
+</head>
+<body>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/blog">blog</a> | <a href="/notes">notes</a> | <a
+href="/recommendations">recommendations</a> | <a
+href="/colophon">colophon</a> | <a
+href="./files/anna-allen-resume.pdf">resume</a></em></p>
+</section>
+<section id="backing-up-ios-devices-on-linux" class="level1">
+<h1>Backing up iOS devices on Linux</h1>
+<p>started <strong>2026-03-16 at 00:04 EDT</strong> | updated
+<strong>2026-03-16 at 00:04 EDT</strong> | written in
+<strong>Maryland</strong></p>
+<p>This is a <em>brief</em> note on taking and extracting (into a
+human-readable form closely resembling, as best I can tell, the
+on-device directory structure of the originating device) backups from
+iOS devices. I used this process for an Apple iPhone 13 Pro Max, but it
+should apply equally to ~any device supported by <a
+href="https://libimobiledevice.org/">libimobiledevice</a>. This allows
+one to access a great deal of on-device data not otherwise exposed to
+users, at the cost of having very limited support for
+granularity/incremental backups. If everything goes well, it includes
+data from most (all?) core applications and user-installed applications
+on an iPhone, including e.g., browsing data, photos (and associated
+metadata), notes, etc., generally in normal files and/or legible SQL
+databases. Maybe somebody will find the below useful.</p>
+<p>For backing up/transferring photos from my iPhone to my server, I
+have a separate workflow involving <a
+href="https://en.wikipedia.org/wiki/Shortcuts_(Apple)">iOS shortcuts</a>
+and a REST API, which I will document at some point in the future – but
+this is quite janky and I find it reassuring to have a proper &amp;
+reasonably recent full-device backup in place before running any
+destructive actions.</p>
+<p>libimobiledevice exposes most of the necessary tools:</p>
+<pre><code>nix-shell -p libimobiledevice usbmuxd</code></pre>
+<p>Then, after plugging in the device and clicking “Trust” in the dialog
+box that appears:</p>
+<pre><code>idevicepair pair</code></pre>
+<p>If this succeeds, then:</p>
+<pre><code>idevicepair validate</code></pre>
+<p>Enabling encryption (even though we’ll decrypt and extract the
+contents immediately after making the backup) permits us to extract a
+much wider set of on-device domains, including normally protected
+health/browsing data (these would otherwise be silently excluded!):</p>
+<pre><code>idevicebackup2 encryption on -i</code></pre>
+<p><em>(this will prompt for a password)</em></p>
+<p>Then:</p>
+<pre><code>mkdir ./iphone-backup
+idevicebackup2 backup --full ./iphone-backup</code></pre>
+<p>We can then extract the raw encrypted backup using:</p>
+<pre><code>idevicebackup2 unback ./iphone-backup --password &lt;password&gt;</code></pre>
+<p>…but this requires the device to remain connected and paired
+throughout extraction. My phone’s charging port is fairly unreliable and
+the connection usually fails at some point in the process. There are
+some other options, like <a
+href="https://github.com/PeterUpfold/dump-iphone-backup">this
+script</a>:</p>
+<pre><code>python ./dump-iphone-backup.py -b ./iphone-backup/&lt;UUID&gt; -o ./iphone-backup-unpacked</code></pre>
+<p>However, I found the performance lacking, and preferred to use <a
+href="https://docs.mvt.re/en/latest/">MVT</a>’s backup decryption tool,
+which is better-optimized (I did not finish a full run using the other
+script and so cannot compare directly, but eyeballing it, this seems to
+be at least 30-50x faster).</p>
+<pre><code>NIXPKGS_ALLOW_UNFREE=1 nix-shell -p mvt
+mvt-ios decrypt-backup --password &#39;&lt;password&gt;&#39; --destination ./iphone-backup-unpacked ./iphone-backup</code></pre>
+<p>It decrypts the individual files comprising the backup, but does not
+seem to have a built-in way to remap these to their original on-device
+names/paths. For this, I had Claude (Opus 4.5) compose <a
+href="https://gist.github.com/generic-github-user/0f0fa0c01228d796c58b0e2cef2d09b9">a
+short script</a>:</p>
+<pre><code>python remap_backup.py ./iphone-backup-unpacked ./iphone-backup-unpacked-remapped</code></pre>
+<p>For me, this (seemingly successfully; I have yet to verify it more
+thoroughly) handled ~157k files in ~45 seconds. A cursory inspection
+indicated that the results had the expected size and shape, but I wasn’t
+urgently concerned about whether every single file was handled, since I
+retained the original encrypted backup, and since the unpacked version
+was in this case more for my own casual interest/archival than immediate
+use.</p>
+<p>The script creates hard links to the source files, so I merely
+deleted the original flattened archive generated by MVT (i.e., unlinked
+its contents) to save myself some storage space in the event that a
+hard-link-unaware backup process is run over this directory at some
+point in the future.</p>
+<p>That’s all; feel free to contact me with any questions or
+concerns.</p>
+</section>
+</body>
+</html>

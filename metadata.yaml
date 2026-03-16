@@ -5,6 +5,8 @@ pages:
     slug: contact
   - title: blog
     slug: blog
+  - title: notes
+    slug: notes
   - title: recommendations
     slug: recommendations
   - title: colophon
@@ -14,3 +16,6 @@ pages:
 
 posts:
   - python_nondeterminism_monad
+
+notes:
+  - ios_backups
