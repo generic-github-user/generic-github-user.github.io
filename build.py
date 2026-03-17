@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 import shutil
+import re
 
 import pypandoc
 import yaml
@@ -30,6 +31,7 @@ ARROW_FILTER_PATH = PAGES_DIR / "replace_arrows.lua"
 PAGES_OUTPUT_DIR = REPO_ROOT / "docs"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
+WORD_PATTERN = re.compile(r"[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*")
 
 
 @dataclass(slots=True)
@@ -53,6 +55,7 @@ class Post:
     tags: list[str]
     location: str
     content: str
+    word_count: int
     created_at: datetime
     updated_at: datetime
     commits: list[CommitInfo]
@@ -114,6 +117,7 @@ def _load_entries(
         frontmatter, content = _read_post_file(entry_path)
         commits = _collect_commits(repo, entry_path)
         created_at, updated_at = _resolve_post_timestamps(entry_path, commits)
+        word_count = _count_words(content)
 
         entry = Post(
             name=entry_name,
@@ -121,6 +125,7 @@ def _load_entries(
             tags=list(frontmatter.get("tags") or []),
             location=str(frontmatter.get("location") or ""),
             content=content,
+            word_count=word_count,
             created_at=created_at,
             updated_at=updated_at,
             commits=commits,
@@ -532,6 +537,7 @@ def _post_template_context(post: Post, include_body: bool = False, *, base_slug:
         "title": post.title or post.name,
         "location": post.location,
         "tags": post.tags,
+        "word_count": post.word_count,
         "start_date": _format_datetime(post.created_at),
         "update_date": _format_datetime(post.updated_at),
         "url": permalink,
@@ -541,6 +547,14 @@ def _post_template_context(post: Post, include_body: bool = False, *, base_slug:
     if include_body:
         context["content"] = post.content
     return context
+
+
+def _count_words(text: str) -> int:
+    """Best-effort word counting that treats hyphenated/possessive words as single tokens."""
+
+    if not text:
+        return 0
+    return len(WORD_PATTERN.findall(text))
 
 
 def _format_datetime(dt: datetime) -> str:
