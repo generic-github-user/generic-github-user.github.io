@@ -259,6 +259,20 @@
     opacity: 1;
   }
 
+  a {
+    text-decoration: underline;
+    text-decoration-color: #d6ccf2;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    background-color: #f4f0ff;
+    text-decoration-color: #c0b3f0;
+  }
+
   hr {
     background-color: #787878;
     border: none;
