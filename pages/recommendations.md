@@ -61,6 +61,7 @@ h3, h4 {
 - <https://www.haskellforall.com/>
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
 - <https://loginasroot.net/>
+- <https://www.owlposting.com/>
 
 #### Friends & acquaintances
 
