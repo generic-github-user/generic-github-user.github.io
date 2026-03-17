@@ -176,6 +176,11 @@ h3, h4 {
 - [The Sensual World](https://adyingeye.wordpress.com/2011/07/02/the-sensual-world-louise-gluck/) (Louise Glück)
 - [Thanatopsis](https://www.poetryfoundation.org/poems/50465/thanatopsis) (William Cullen Bryant)
 
+### Paintings
+
+- [Ophelia (Heyser)](https://en.wikipedia.org/wiki/Ophelia_(Heyser))
+- [Bacchante (Bouguereau)](https://www.wikiart.org/en/william-adolphe-bouguereau/bacchante-1894)
+
 ### Miscellaneous
 
 - [Flatiron Pepper Co](https://www.flatironpepper.com/)^[my favorite variety is the [Chipotle - Roasted Garlic - Toasted Onion](https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion) mixture]
