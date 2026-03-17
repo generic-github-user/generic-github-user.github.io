@@ -181,6 +181,18 @@
     font-family: "Instrument Serif", serif;
   }
 
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
   h2 .heading-anchor {
     margin-left: 0.5rem;
     text-decoration: none;
@@ -213,6 +225,16 @@
     border: none;
     height: 2px;
     margin: 2em 0;
+  }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
   }
   </style>
 </head>

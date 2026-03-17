@@ -246,6 +246,18 @@
     font-family: "Instrument Serif", serif;
   }
 
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
   h2 .heading-anchor {
     margin-left: 0.5rem;
     text-decoration: none;
@@ -279,6 +291,16 @@
     height: 2px;
     margin: 2em 0;
   }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
+  }
   </style>
 </head>
 <body>
@@ -292,9 +314,17 @@ href="./files/anna-allen-resume.pdf">resume</a></em></p>
 </section>
 <section id="nondeterminism-monad-in-python" class="level1">
 <h1>Nondeterminism monad in Python</h1>
+<div class="post-meta post-meta-inline">
 <p>started <strong>2025-11-10 at 17:17 EST</strong> | updated
 <strong>2025-12-21 at 16:49 EST</strong> | written in <strong>Maryland
 and NYC</strong> | 3940 words</p>
+</div>
+<div class="post-meta post-meta-stacked">
+<p><span>started <strong>2025-11-10 at 17:17 EST</strong></span>
+<span>updated <strong>2025-12-21 at 16:49 EST</strong></span>
+<span>written in <strong>Maryland and NYC</strong></span> <span>3940
+words</span></p>
+</div>
 <p>tags: <code>haskell</code>, <code>monads</code>, <code>python</code>,
 <code>generators</code>, <code>tricks</code> <em>This post contains some
 fairly lengthy exposition; if you want to skip right to the content
