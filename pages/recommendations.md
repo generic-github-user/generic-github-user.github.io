@@ -55,7 +55,7 @@ h3, h4 {
 ### Newsletters, blogs, etc.
 
 - <https://mcyoung.xyz/>
-- <https://gwern.net/>
+- <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
 - <https://www.bitsaboutmoney.com/>^+^
 - <https://jyn.dev/>
 - <https://www.haskellforall.com/>
