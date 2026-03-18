@@ -14,6 +14,7 @@
 
 {% if post.tags %}
 tags: {% for tag in post.tags %}`{{ tag }}`{% if not loop.last %}, {% endif %}{% endfor %}
+<br />
 {% endif %}
 
 {{ post.content }}
