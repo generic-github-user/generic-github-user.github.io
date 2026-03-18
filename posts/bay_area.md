@@ -3,6 +3,10 @@ title: How I Learned to Stop Worrying and Love the Technopole
 location: Maryland
 ---
 
+*Special thanks to my friend [Alecto](https://github.com/codeinred), who provided editorial feedback and suggestions on the piece.*
+
+---
+
 > Beyond the Judgement of God. Meltdown: planetary china-syndrome, dissolution of the biosphere into the technosphere, terminal speculative bubble crisis, ultravirus, and revolution stripped of all christian-socialist eschatology (down to its burn-core of crashed security). It is poised to eat your TV, infect your bank account, and hack xenodata from your mitochondria.
 >
 > Machinic Synthesis. Deleuzoguattarian schizoanalysis comes from the future. It is already engaging with nonlinear nano-engineering runaway in 1972; differentiating molecular or neotropic machineries from molar or entropic aggregates of nonassembled particles; functional connectivity from antiproductive static.
