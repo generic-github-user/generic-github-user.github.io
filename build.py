@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
+import re
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
-import shutil
-import re
 
 import pypandoc
 import yaml
@@ -32,6 +33,8 @@ PAGES_OUTPUT_DIR = REPO_ROOT / "docs"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
 WORD_PATTERN = re.compile(r"[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*")
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(slots=True)
@@ -110,10 +113,12 @@ def _load_entries(
     repo = Repo(repo_dir)
     metadata_obj = metadata or _read_metadata(metadata_file)
     entry_names = metadata_obj.get(metadata_key) or []
+    LOGGER.info("Loading %s entries: %d found", metadata_key, len(entry_names))
 
     entries: list[Post] = []
     for entry_name in entry_names:
         entry_path = content_directory / f"{entry_name}.md"
+        LOGGER.debug("Reading %s/%s", metadata_key, entry_name)
         frontmatter, content = _read_post_file(entry_path)
         commits = _collect_commits(repo, entry_path)
         created_at, updated_at = _resolve_post_timestamps(entry_path, commits)
@@ -148,7 +153,9 @@ def render_site_header(
     metadata_obj = metadata or _read_metadata(metadata_file)
     navigation = _build_navigation(metadata_obj.get("pages"))
     template = JINJA_ENV.from_string(header_path.read_text(encoding="utf-8"))
-    return template.render(main_navigation=navigation)
+    rendered = template.render(main_navigation=navigation)
+    LOGGER.debug("Rendered site header")
+    return rendered
 
 
 def render_pages_to_html(
@@ -179,6 +186,7 @@ def render_pages_to_html(
     page_entries = metadata_obj.get("pages") or []
     if not isinstance(page_entries, list):
         page_entries = [page_entries]
+    LOGGER.info("Rendering %d pages", len(page_entries))
 
     site_header = render_site_header(
         metadata_path=metadata_file,
@@ -199,6 +207,7 @@ def render_pages_to_html(
             _post_template_context(post, base_slug="posts")
             for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
         ]
+        LOGGER.info("Loaded posts for listing: %d", len(posts))
     except FileNotFoundError:
         posts_for_listing = []
 
@@ -227,6 +236,7 @@ def render_pages_to_html(
         if not page_path.exists():
             raise FileNotFoundError(f"page source not found: {page_path}")
 
+        LOGGER.info("Rendering page %s -> %s.html", slug, slug)
         template = JINJA_ENV.from_string(page_path.read_text(encoding="utf-8"))
         rendered_markdown = template.render(
             site_header=site_header,
@@ -268,6 +278,7 @@ def render_posts_to_html(
     output_directory = Path(output_dir or POST_OUTPUT_DIR)
     output_directory.mkdir(parents=True, exist_ok=True)
 
+    LOGGER.info("Rendering posts to HTML")
     metadata_obj = _read_metadata(metadata_file)
     posts = load_posts(
         metadata_path=metadata_file,
@@ -289,7 +300,9 @@ def render_posts_to_html(
     template = JINJA_ENV.from_string(template_source)
 
     rendered_paths: list[Path] = []
+    LOGGER.info("Found %d posts", len(posts))
     for post in posts:
+        LOGGER.info("Rendering post %s", post.name)
         post_context = _post_template_context(post, include_body=True, base_slug="posts")
         rendered_markdown = template.render(site_header=site_header, post=post_context)
 
@@ -331,6 +344,7 @@ def render_notes_to_html(
     output_directory = Path(output_dir or NOTE_OUTPUT_DIR)
     output_directory.mkdir(parents=True, exist_ok=True)
 
+    LOGGER.info("Rendering notes to HTML")
     metadata_obj = _read_metadata(metadata_file)
     notes = load_notes(
         metadata_path=metadata_file,
@@ -352,7 +366,9 @@ def render_notes_to_html(
     template = JINJA_ENV.from_string(template_source)
 
     rendered_paths: list[Path] = []
+    LOGGER.info("Found %d notes", len(notes))
     for note in notes:
+        LOGGER.info("Rendering note %s", note.name)
         note_context = _post_template_context(note, include_body=True, base_slug="notes")
         rendered_markdown = template.render(site_header=site_header, post=note_context)
 
@@ -382,6 +398,7 @@ def _read_metadata(metadata_path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("metadata.yaml must contain a mapping at the top level")
 
+    LOGGER.debug("Loaded metadata from %s", metadata_path)
     return data
 
 
@@ -410,6 +427,7 @@ def _collect_commits(repo: Repo, post_path: Path) -> list[CommitInfo]:
     commits: list[CommitInfo] = []
     for commit in repo.iter_commits(paths=str(post_path.relative_to(repo.working_tree_dir))):
         commits.append(_to_commit_info(commit))
+    LOGGER.debug("Collected %d commits for %s", len(commits), post_path)
     return commits
 
 
@@ -497,6 +515,7 @@ def _copy_static_files(source_dir: Path, destination_root: Path) -> Path | None:
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(source_dir, destination)
+    LOGGER.info("Copied static files from %s to %s", source_dir, destination)
     return destination
 
 
@@ -616,8 +635,10 @@ __all__ = [
 ]
 
 def main():
+    LOGGER.info("Starting site build")
     render_pages_to_html()
     render_posts_to_html()
     render_notes_to_html()
+    LOGGER.info("Site build complete")
 
 main()
