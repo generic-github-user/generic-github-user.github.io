@@ -5,13 +5,13 @@ I'm Anna Allen; this is my website. My interests include functional programming,
 ## Posts
 
 {% for post in posts %}
-*\[{{ post.start_date }}\]* [{{ post.title }}]({{ post.relative_url }})
+`[{{ post.start_date }}]` [{{ post.title }}]({{ post.relative_url }})
 
 {% endfor %}
 
 ## Notes
 
 {% for note in notes %}
-*\[{{ note.start_date }}\]* [{{ note.title }}]({{ note.relative_url }})
+`[{{ note.start_date }}]` [{{ note.title }}]({{ note.relative_url }})
 
 {% endfor %}
