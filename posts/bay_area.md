@@ -5,6 +5,8 @@ location: Maryland
 
 *Special thanks to my friend [Alecto](https://github.com/codeinred), who provided editorial feedback and suggestions on the piece.*
 
+*Some reviews this post has received so far: "ambling," "it definitely wants some editing," "you have bad opinions about computer and the future," "overwrought," "the prose is serviceable," "needs to be [edited]," and "jesus thats long"*
+
 ---
 
 > Beyond the Judgement of God. Meltdown: planetary china-syndrome, dissolution of the biosphere into the technosphere, terminal speculative bubble crisis, ultravirus, and revolution stripped of all christian-socialist eschatology (down to its burn-core of crashed security). It is poised to eat your TV, infect your bank account, and hack xenodata from your mitochondria.
@@ -95,7 +97,7 @@ In the Bay, perceptual time slows to a crawl, and the higher the density of "sho
 
 There is something refreshing in entering a zone where the typical Overton window is several standard deviations closer to yours than to the general public's, one in which ninety percent of a given conversation about the Situation by volume is *no longer* dedicated to unbearable microlitigation of sneers and derailments invited by your casual invocation of "AGI," or some unobjectionable-seeming assumption you made about X premise or Y modus ponens, or your interlocutors refusing to believe what is in front of their very eyes^[Quite possibly because they're scared out of their minds, like everyone else; this is eminently forgivable.] --- to say nothing of a person like me enjoying other conversational, social, and geographic privileges that I've never before experienced in my life.
 
-It is simultaneously somewhat maddening to have, for casual conversation, a discursive setpoint that lies squarely on, or at least a discursive attractor pointing toward, *the rest of everything that's going to happen [to you] forever*. Earnesty about the extent to which your life, and many others, are more likely than not in the hands of a small group of highly willful (albeit highly competent) people is in permanent tension with social caution^[As is, like, acknowledging this tension, potentially, but people generally seem to be forgiving of it.] ^[Though I have found that this is another thing that exists substantially in the mind, especially when around good/reasonable people.] and basic tact.
+It is simultaneously somewhat maddening to have, in casual conversation, a discursive setpoint that lies squarely on, or at least a discursive attractor pointing toward, *the rest of everything that's going to happen [to you] forever*. Earnesty about the extent to which your life, and many others, are more likely than not in the hands of a small group of highly willful (albeit highly competent) people is in permanent tension with social caution^[As is, like, acknowledging this tension, potentially, but people generally seem to be forgiving of it.] ^[Though I have found that this is another thing that exists substantially in the mind, especially when around good/reasonable people.] and basic tact.
 
 Yudkowsky's old note about ["competent elites"](https://www.lesswrong.com/posts/CKpByWmsZ8WmpHtYa/competent-elites) crosses your mind frequently, but so do the various TPOT aphorisms about how there are only very rarely any "adults in the room" by default. There is a looming dread that the level of insight, maturity, & seriousness of say, the people in the rooms comprising AI labs, policy orgs/think tanks, etc. may not matter very much if the halls of government don't share the same virtues.
 
@@ -150,7 +152,7 @@ It overwhelms at times.
 >
 > B: "no, most people on the *planet*"
 >
-> A: "like, the current ones, or---"^[Mildly fictionalized, i.e. not quite the original exchange. This version was written some weeks ago.]
+> A: "like, the current ones, or---"^[Mildly fictionalized, i.e. not quite the original exchange; though this version was written some weeks ago. The quotes below are all verbatim.]
 
 <br />
 
