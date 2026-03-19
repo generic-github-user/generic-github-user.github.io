@@ -426,12 +426,6 @@
       }
     };
 
-    const closeAllTooltips = () => {
-      if (openWrapper) {
-        closeTooltip(openWrapper);
-      }
-    };
-
     const adjustTooltipPosition = (tooltip) => {
       if (!tooltip) {
         return;
@@ -441,19 +435,23 @@
         'footnote-tooltip--align-right',
         'footnote-tooltip--below',
       );
-      requestAnimationFrame(() => {
-        const rect = tooltip.getBoundingClientRect();
-        const margin = 16;
-        if (rect.left < margin) {
-          tooltip.classList.add('footnote-tooltip--align-left');
-        }
-        if (rect.right > window.innerWidth - margin) {
-          tooltip.classList.add('footnote-tooltip--align-right');
-        }
-        if (rect.top < margin) {
-          tooltip.classList.add('footnote-tooltip--below');
-        }
-      });
+      const rect = tooltip.getBoundingClientRect();
+      const margin = 16;
+      if (rect.left < margin) {
+        tooltip.classList.add('footnote-tooltip--align-left');
+      }
+      if (rect.right > window.innerWidth - margin) {
+        tooltip.classList.add('footnote-tooltip--align-right');
+      }
+      if (rect.top < margin) {
+        tooltip.classList.add('footnote-tooltip--below');
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
     };
 
     const showTooltip = (wrapper) => {
@@ -462,11 +460,17 @@
       if (!trigger || !tooltip) {
         return;
       }
-      closeAllTooltips();
+      if (openWrapper && openWrapper !== wrapper) {
+        closeTooltip(openWrapper);
+      }
+      if (wrapper.classList.contains('is-visible')) {
+        cancelScheduledClose(wrapper);
+        return;
+      }
+      adjustTooltipPosition(tooltip);
       wrapper.classList.add('is-visible');
       trigger.setAttribute('aria-expanded', 'true');
       openWrapper = wrapper;
-      adjustTooltipPosition(tooltip);
       cancelScheduledClose(wrapper);
     };
 
