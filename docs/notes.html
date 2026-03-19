@@ -227,6 +227,70 @@
     margin: 2em 0;
   }
 
+  .footnote-ref-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .footnote-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, calc(-100% - 0.75rem));
+    width: min(22rem, 80vw);
+    background-color: #fdfdfd;
+    border: 1px solid #d6ccf2;
+    border-radius: 6px;
+    box-shadow: 0px 15px 35px rgba(26, 26, 26, 0.2);
+    padding: 0.85rem 1rem;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #1a1a1a;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    z-index: 50;
+    background-clip: padding-box;
+  }
+
+  .footnote-ref-wrapper.is-visible .footnote-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footnote-tooltip p:first-child {
+    margin-top: 0;
+  }
+
+  .footnote-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote-tooltip--align-left {
+    left: 0;
+    right: auto;
+    transform: translate(0, calc(-100% - 0.75rem));
+  }
+
+  .footnote-tooltip--align-right {
+    left: auto;
+    right: 0;
+    transform: translate(0, calc(-100% - 0.75rem));
+  }
+
+  .footnote-tooltip--below {
+    top: 100%;
+    transform: translate(-50%, 0.75rem);
+  }
+
+  .footnote-tooltip--below.footnote-tooltip--align-left {
+    transform: translate(0, 0.75rem);
+  }
+
+  .footnote-tooltip--below.footnote-tooltip--align-right {
+    transform: translate(0, 0.75rem);
+  }
+
   @media (max-width: 600px) {
     .post-meta-inline {
       display: none;
@@ -235,8 +299,212 @@
     .post-meta-stacked {
       display: block;
     }
+
+    .footnote-tooltip,
+    .footnote-tooltip--align-left,
+    .footnote-tooltip--align-right {
+      left: 50%;
+      right: auto;
+      width: min(24rem, 90vw);
+      top: 100%;
+      transform: translate(-50%, 0.75rem);
+    }
   }
   </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = Array.from(document.querySelectorAll('a.footnote-ref'));
+    if (!footnoteRefs.length) {
+      return;
+    }
+
+    let openWrapper = null;
+    const hideTimeouts = new WeakMap();
+
+    const cancelScheduledClose = (wrapper) => {
+      const timeoutId = hideTimeouts.get(wrapper);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        hideTimeouts.delete(wrapper);
+      }
+    };
+
+    const scheduleClose = (wrapper) => {
+      cancelScheduledClose(wrapper);
+      const timeoutId = window.setTimeout(() => {
+        closeTooltip(wrapper);
+      }, 120);
+      hideTimeouts.set(wrapper, timeoutId);
+    };
+
+    const closeTooltip = (wrapper) => {
+      if (!wrapper) {
+        return;
+      }
+      cancelScheduledClose(wrapper);
+      wrapper.classList.remove('is-visible');
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      if (trigger) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove(
+          'footnote-tooltip--align-left',
+          'footnote-tooltip--align-right',
+          'footnote-tooltip--below',
+        );
+      }
+      if (openWrapper === wrapper) {
+        openWrapper = null;
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
+    };
+
+    const adjustTooltipPosition = (tooltip) => {
+      if (!tooltip) {
+        return;
+      }
+      tooltip.classList.remove(
+        'footnote-tooltip--align-left',
+        'footnote-tooltip--align-right',
+        'footnote-tooltip--below',
+      );
+      requestAnimationFrame(() => {
+        const rect = tooltip.getBoundingClientRect();
+        const margin = 16;
+        if (rect.left < margin) {
+          tooltip.classList.add('footnote-tooltip--align-left');
+        }
+        if (rect.right > window.innerWidth - margin) {
+          tooltip.classList.add('footnote-tooltip--align-right');
+        }
+        if (rect.top < margin) {
+          tooltip.classList.add('footnote-tooltip--below');
+        }
+      });
+    };
+
+    const showTooltip = (wrapper) => {
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (!trigger || !tooltip) {
+        return;
+      }
+      closeAllTooltips();
+      wrapper.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      openWrapper = wrapper;
+      adjustTooltipPosition(tooltip);
+      cancelScheduledClose(wrapper);
+    };
+
+    document.addEventListener('click', (event) => {
+      if (openWrapper && !openWrapper.contains(event.target)) {
+        closeAllTooltips();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllTooltips();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (openWrapper) {
+        const tooltip = openWrapper.querySelector('.footnote-tooltip');
+        adjustTooltipPosition(tooltip);
+      }
+    });
+
+    footnoteRefs.forEach((ref) => {
+      const targetId = ref.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        return;
+      }
+      const footnote = document.getElementById(targetId.slice(1));
+      if (!footnote) {
+        return;
+      }
+
+      const wrapper = document.createElement('span');
+      wrapper.className = 'footnote-ref-wrapper';
+      ref.parentNode.insertBefore(wrapper, ref);
+      wrapper.appendChild(ref);
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'footnote-tooltip';
+      const clone = footnote.cloneNode(true);
+      clone.querySelectorAll('.footnote-back').forEach((node) => node.remove());
+      tooltip.innerHTML = `
+        <span class="footnote-tooltip-body">${clone.innerHTML.trim()}</span>
+      `;
+      wrapper.appendChild(tooltip);
+
+      ref.setAttribute('aria-expanded', 'false');
+      ref.setAttribute('aria-haspopup', 'dialog');
+
+      ref.addEventListener('click', (event) => {
+        if (!wrapper.classList.contains('is-visible')) {
+          event.preventDefault();
+          showTooltip(wrapper);
+        } else {
+          closeTooltip(wrapper);
+        }
+      });
+
+      ref.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          showTooltip(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      ref.addEventListener('focus', () => {
+        showTooltip(wrapper);
+      });
+
+      wrapper.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (!wrapper.contains(active)) {
+            closeTooltip(wrapper);
+          }
+        });
+      });
+
+      tooltip.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      tooltip.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+    });
+  });
+  </script>
 </head>
 <body>
 <section id="anna-a" class="level1">
