@@ -4,6 +4,7 @@ import json
 import logging
 import shutil
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Iterable
 
 from git import Repo
@@ -48,7 +49,10 @@ def render_pages_to_html(
     pandoc_extra_args: Iterable[str] | None = None,
     metadata: dict[str, Any] | None = None,
     force_history: bool = False,
+    listing_posts: list[dict[str, Any]] | None = None,
+    listing_notes: list[dict[str, Any]] | None = None,
 ) -> list[Path]:
+    started = perf_counter()
     metadata_file = Path(metadata_path or METADATA_PATH)
     pages_directory = Path(pages_dir or PAGES_DIR)
     static_files_directory = Path(files_dir or FILES_DIR)
@@ -74,8 +78,8 @@ def render_pages_to_html(
     )
     base_pandoc_args = build_pandoc_base_args(pandoc_extra_args)
 
-    posts_for_listing = _collect_listing_posts(metadata_file, posts_directory, repo_dir, metadata_obj)
-    notes_for_listing = _collect_listing_notes(metadata_file, notes_directory, repo_dir, metadata_obj)
+    posts_for_listing = listing_posts if listing_posts is not None else _collect_listing_posts(metadata_file, posts_directory, repo_dir, metadata_obj)
+    notes_for_listing = listing_notes if listing_notes is not None else _collect_listing_notes(metadata_file, notes_directory, repo_dir, metadata_obj)
     random_targets_json = json.dumps(_build_random_targets(site_pages, posts_for_listing, notes_for_listing))
 
     repo = Repo(repo_dir)
@@ -129,6 +133,8 @@ def render_pages_to_html(
                 force_history=force_history,
             )
     _copy_static_files(static_files_directory, output_directory)
+    elapsed = perf_counter() - started
+    LOGGER.info("Rendered %d pages in %.2fs", len(rendered_paths), elapsed)
     return rendered_paths
 
 
@@ -141,7 +147,9 @@ def render_posts_to_html(
     output_dir: Path | None = None,
     pandoc_extra_args: Iterable[str] | None = None,
     force_history: bool = False,
+    posts: list[Post] | None = None,
 ) -> list[Path]:
+    started = perf_counter()
     metadata_file = Path(metadata_path or METADATA_PATH)
     posts_directory = Path(posts_dir or POSTS_DIR)
     repo_dir = Path(repo_path or REPO_ROOT)
@@ -152,12 +160,14 @@ def render_posts_to_html(
 
     LOGGER.info("Rendering posts to HTML")
     metadata_obj = read_metadata(metadata_file)
-    posts = load_posts(
-        metadata_path=metadata_file,
-        posts_dir=posts_directory,
-        repo_path=repo_dir,
-        metadata=metadata_obj,
-    )
+    posts_list = posts
+    if posts_list is None:
+        posts_list = load_posts(
+            metadata_path=metadata_file,
+            posts_dir=posts_directory,
+            repo_path=repo_dir,
+            metadata=metadata_obj,
+        )
     site_header = render_site_header(
         metadata_path=metadata_file,
         header_template_path=header_path,
@@ -168,8 +178,8 @@ def render_posts_to_html(
     template = JINJA_ENV.from_string(template_source)
     repo = Repo(repo_dir)
     rendered_paths: list[Path] = []
-    LOGGER.info("Found %d posts", len(posts))
-    for post in posts:
+    LOGGER.info("Found %d posts", len(posts_list))
+    for post in posts_list:
         LOGGER.info("Rendering post %s", post.name)
         post_context = build_post_context(post, include_body=True, base_slug="posts")
         rendered_markdown = template.render(site_header=site_header, post=post_context)
@@ -192,6 +202,8 @@ def render_posts_to_html(
             posts_dir=posts_directory,
             force_history=force_history,
         )
+    elapsed = perf_counter() - started
+    LOGGER.info("Rendered posts in %.2fs", elapsed)
     return rendered_paths
 
 
@@ -204,7 +216,9 @@ def render_notes_to_html(
     output_dir: Path | None = None,
     pandoc_extra_args: Iterable[str] | None = None,
     force_history: bool = False,
+    notes: list[Post] | None = None,
 ) -> list[Path]:
+    started = perf_counter()
     metadata_file = Path(metadata_path or METADATA_PATH)
     notes_directory = Path(notes_dir or NOTES_DIR)
     repo_dir = Path(repo_path or REPO_ROOT)
@@ -218,12 +232,14 @@ def render_notes_to_html(
 
     LOGGER.info("Rendering notes to HTML")
     metadata_obj = read_metadata(metadata_file)
-    notes = load_notes(
-        metadata_path=metadata_file,
-        notes_dir=notes_directory,
-        repo_path=repo_dir,
-        metadata=metadata_obj,
-    )
+    notes_list = notes
+    if notes_list is None:
+        notes_list = load_notes(
+            metadata_path=metadata_file,
+            notes_dir=notes_directory,
+            repo_path=repo_dir,
+            metadata=metadata_obj,
+        )
     site_header = render_site_header(
         metadata_path=metadata_file,
         header_template_path=header_path,
@@ -234,8 +250,8 @@ def render_notes_to_html(
     template = JINJA_ENV.from_string(template_source)
     repo = Repo(repo_dir)
     rendered_paths: list[Path] = []
-    LOGGER.info("Found %d notes", len(notes))
-    for note in notes:
+    LOGGER.info("Found %d notes", len(notes_list))
+    for note in notes_list:
         LOGGER.info("Rendering note %s", note.name)
         note_context = build_post_context(note, include_body=True, base_slug="notes")
         rendered_markdown = template.render(site_header=site_header, post=note_context)
@@ -258,36 +274,54 @@ def render_notes_to_html(
             notes_dir=notes_directory,
             force_history=force_history,
         )
+    elapsed = perf_counter() - started
+    LOGGER.info("Rendered notes in %.2fs", elapsed)
     return rendered_paths
 
 
-def _collect_listing_posts(metadata_file: Path, posts_directory: Path, repo_dir: Path, metadata: dict[str, Any]) -> list[dict[str, Any]]:
+def _collect_listing_posts(
+    metadata_file: Path,
+    posts_directory: Path,
+    repo_dir: Path,
+    metadata: dict[str, Any],
+    posts: list[Post] | None = None,
+) -> list[dict[str, Any]]:
     try:
-        posts = load_posts(
-            metadata_path=metadata_file,
-            posts_dir=posts_directory,
-            repo_path=repo_dir,
-            metadata=metadata,
-        )
+        posts_list = posts
+        if posts_list is None:
+            posts_list = load_posts(
+                metadata_path=metadata_file,
+                posts_dir=posts_directory,
+                repo_path=repo_dir,
+                metadata=metadata,
+            )
         return [
             build_post_context(post, base_slug="posts")
-            for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
+            for post in sorted(posts_list, key=lambda p: p.updated_at, reverse=True)
         ]
     except FileNotFoundError:
         return []
 
 
-def _collect_listing_notes(metadata_file: Path, notes_directory: Path, repo_dir: Path, metadata: dict[str, Any]) -> list[dict[str, Any]]:
+def _collect_listing_notes(
+    metadata_file: Path,
+    notes_directory: Path,
+    repo_dir: Path,
+    metadata: dict[str, Any],
+    notes: list[Post] | None = None,
+) -> list[dict[str, Any]]:
     try:
-        notes = load_notes(
-            metadata_path=metadata_file,
-            notes_dir=notes_directory,
-            repo_path=repo_dir,
-            metadata=metadata,
-        )
+        notes_list = notes
+        if notes_list is None:
+            notes_list = load_notes(
+                metadata_path=metadata_file,
+                notes_dir=notes_directory,
+                repo_path=repo_dir,
+                metadata=metadata,
+            )
         return [
             build_post_context(note, base_slug="notes")
-            for note in sorted(notes, key=lambda n: n.updated_at, reverse=True)
+            for note in sorted(notes_list, key=lambda n: n.updated_at, reverse=True)
         ]
     except FileNotFoundError:
         return []
