@@ -127,7 +127,7 @@ h3, h4 {
 - [Prism Launcher](https://prismlauncher.org/)
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [Sanoid/Syncoid](https://github.com/jimsalterjrs/sanoid)
-- [Signal](https://signal.org/)
+- [Signal](https://signal.org/)^[See also: <https://github.com/carderne/signal-export>]
 - [Sway WM](https://swaywm.org/)
 - [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics.]
 - [Timewarrior](https://timewarrior.net/)
