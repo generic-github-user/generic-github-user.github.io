@@ -7,6 +7,8 @@ pages:
     slug: blog
   - title: notes
     slug: notes
+  - title: random
+    slug: random
   - title: recommendations
     slug: recommendations
   - title: colophon

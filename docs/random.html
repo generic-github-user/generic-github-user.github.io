@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Backing up iOS devices on Linux</title>
+  <title>random</title>
   <style>
     html {
       color: #1a1a1a;
@@ -546,87 +546,66 @@ href="/random">random</a> | <a
 href="/recommendations">recommendations</a> | <a
 href="/colophon">colophon</a> | <a
 href="/files/anna-allen-resume.pdf">resume</a></em></p>
-</section>
-<section id="backing-up-ios-devices-on-linux" class="level1">
-<h1>Backing up iOS devices on Linux</h1>
-<p>started <strong>2026-03-16 at 00:04 EDT</strong> | updated
-<strong>2026-03-20 at 00:34 EDT</strong> | written in
-<strong>Maryland</strong></p>
-<div class="history-link-inline">
-<p><a href="/notes/ios_backups/history/">View revision history</a></p>
+<div class="history-link">
+<a href="/random/history/">View revision history</a>
 </div>
-<p>This is a <em>brief</em> note on taking and extracting (into a
-human-readable form closely resembling, as best I can tell, the
-on-device directory structure of the originating device) backups from
-iOS devices. I used this process for an Apple iPhone 13 Pro Max, but it
-should apply equally to ~any device supported by <a
-href="https://libimobiledevice.org/">libimobiledevice</a>. This allows
-one to access a great deal of on-device data not otherwise exposed to
-users, at the cost of having very limited support for
-granularity/incremental backups. If everything goes well, it includes
-data from most (all?) core applications and user-installed applications
-on an iPhone, including e.g., browsing data, photos (and associated
-metadata), notes, etc., generally in normal files and/or legible SQL
-databases. Maybe somebody will find the below useful.</p>
-<p>For backing up/transferring photos from my iPhone to my server, I
-have a separate workflow involving <a
-href="https://en.wikipedia.org/wiki/Shortcuts_(Apple)">iOS shortcuts</a>
-and a self-hosted REST API, which I will document at some point in the
-future – but this is quite janky and I find it reassuring to have a
-proper &amp; reasonably recent full-device backup in place before
-running any destructive actions.</p>
-<p>libimobiledevice exposes most of the necessary tools:</p>
-<pre><code>nix-shell -p libimobiledevice usbmuxd</code></pre>
-<p>Then, after plugging in the device and clicking “Trust” in the dialog
-box that appears on it:</p>
-<pre><code>idevicepair pair</code></pre>
-<p>If this succeeds, then:</p>
-<pre><code>idevicepair validate</code></pre>
-<p>Enabling encryption (even though we’ll decrypt and extract the
-contents immediately after making the backup) permits us to extract a
-much wider set of on-device domains, including normally protected
-health/browsing data (these would otherwise be silently excluded!):</p>
-<pre><code>idevicebackup2 encryption on -i</code></pre>
-<p><em>(this will prompt for a password)</em></p>
-<p>Then:</p>
-<pre><code>mkdir ./iphone-backup
-idevicebackup2 backup --full ./iphone-backup</code></pre>
-<p>We can then extract the raw encrypted backup using:</p>
-<pre><code>idevicebackup2 unback ./iphone-backup --password &lt;password&gt;</code></pre>
-<p>…but this requires the device to remain connected and paired
-throughout extraction. My phone’s charging port is fairly unreliable and
-the connection usually fails at some point in the process. There are
-some other options, like <a
-href="https://github.com/PeterUpfold/dump-iphone-backup">this
-script</a>:</p>
-<pre><code>python ./dump-iphone-backup.py -b ./iphone-backup/&lt;UUID&gt; -o ./iphone-backup-unpacked</code></pre>
-<p>However, I found the performance lacking, and preferred to use <a
-href="https://docs.mvt.re/en/latest/">MVT</a>’s backup decryption tool,
-which is better-optimized (I did not finish a full run using the other
-script and so cannot compare directly, but eyeballing it, this seems to
-be at least 30-50x faster).</p>
-<pre><code>NIXPKGS_ALLOW_UNFREE=1 nix-shell -p mvt
-mvt-ios decrypt-backup --password &#39;&lt;password&gt;&#39; --destination ./iphone-backup-unpacked ./iphone-backup</code></pre>
-<p>It decrypts the individual files comprising the backup, but does not
-seem to have a built-in way to remap these to their original on-device
-names/paths. For this, I had Claude (Opus 4.5) compose <a
-href="https://gist.github.com/generic-github-user/0f0fa0c01228d796c58b0e2cef2d09b9">a
-short script</a>:</p>
-<pre><code>python remap_backup.py ./iphone-backup-unpacked ./iphone-backup-unpacked-remapped</code></pre>
-<p>For me, this (seemingly successfully; I have yet to verify it more
-thoroughly) handled ~157k files totalling ~66GB in ~45 seconds. A
-cursory inspection indicated that the results had the expected size and
-shape, but I wasn’t urgently concerned about whether every single file
-was handled, since I retained the original encrypted backup, and since
-the unpacked version was in this case more for my own casual
-interest/archival than immediate use.</p>
-<p>The script creates hard links to the source files, so I merely
-deleted the original flattened archive generated by MVT (i.e., unlinked
-its contents) to save myself some storage space in the event that a
-hard-link-unaware backup process is run over this directory at some
-point in the future.</p>
-<p>That’s all; feel free to contact me with any questions or
-concerns.</p>
+<p>Redirecting you to something random on the site. If you are not
+redirected automatically,
+<a id="random-fallback-link" href="/index">pick a page manually</a>.</p>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const targets = [{"title": "home", "url": "/index"}, {"title": "contact", "url": "/contact"}, {"title": "blog", "url": "/blog"}, {"title": "notes", "url": "/notes"}, {"title": "recommendations", "url": "/recommendations"}, {"title": "colophon", "url": "/colophon"}, {"title": "How I Learned to Stop Worrying and Love the Technopole", "url": "/posts/bay_area.html"}, {"title": "Nondeterminism monad in Python", "url": "/posts/python_nondeterminism_monad.html"}, {"title": "Backing up iOS devices on Linux", "url": "/notes/ios_backups.html"}];
+  const fallbackLink = document.getElementById('random-fallback-link');
+  if (!Array.isArray(targets) || targets.length === 0) {
+    if (fallbackLink) {
+      fallbackLink.textContent = 'return home';
+      fallbackLink.href = '/index';
+    }
+    return;
+  }
+  const choice = targets[Math.floor(Math.random() * targets.length)];
+  if (fallbackLink && choice) {
+    fallbackLink.textContent = choice.title || choice.url;
+    fallbackLink.href = choice.url;
+  }
+  window.location.replace(choice.url);
+});
+</script>
+<noscript>
+<p>JavaScript is required to select a random destination automatically.
+Here are a few options you can choose manually:</p>
+<ul>
+<li>
+<a href="/index">home</a>
+</li>
+<li>
+<a href="/contact">contact</a>
+</li>
+<li>
+<a href="/blog">blog</a>
+</li>
+<li>
+<a href="/notes">notes</a>
+</li>
+<li>
+<a href="/recommendations">recommendations</a>
+</li>
+<li>
+<a href="/colophon">colophon</a>
+</li>
+<li>
+<a href="/posts/bay_area.html">How I Learned to Stop Worrying and Love
+the Technopole</a>
+</li>
+<li>
+<a href="/posts/python_nondeterminism_monad.html">Nondeterminism monad
+in Python</a>
+</li>
+<li>
+<a href="/notes/ios_backups.html">Backing up iOS devices on Linux</a>
+</li>
+</ul>
+</noscript>
 </section>
 </body>
 </html>

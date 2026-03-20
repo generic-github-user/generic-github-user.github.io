@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 from pathlib import Path
@@ -63,6 +64,8 @@ def render_pages_to_html(
     if not isinstance(page_entries, list):
         page_entries = [page_entries]
     LOGGER.info("Rendering %d pages", len(page_entries))
+    normalized_entries = [_normalize_page_entry(entry) for entry in page_entries]
+    site_pages = _build_page_targets(normalized_entries)
 
     site_header = render_site_header(
         metadata_path=metadata_file,
@@ -73,11 +76,11 @@ def render_pages_to_html(
 
     posts_for_listing = _collect_listing_posts(metadata_file, posts_directory, repo_dir, metadata_obj)
     notes_for_listing = _collect_listing_notes(metadata_file, notes_directory, repo_dir, metadata_obj)
+    random_targets_json = json.dumps(_build_random_targets(site_pages, posts_for_listing, notes_for_listing))
 
     repo = Repo(repo_dir)
     rendered_paths: list[Path] = []
-    for entry in page_entries:
-        slug, title, source_name, context = _normalize_page_entry(entry)
+    for slug, title, source_name, context in normalized_entries:
         if not slug or not source_name:
             continue
         page_path = pages_directory / f"{source_name}.md"
@@ -100,6 +103,8 @@ def render_pages_to_html(
             page=context,
             posts=posts_for_listing,
             notes=notes_for_listing,
+            site_pages=site_pages,
+            random_targets_json=random_targets_json,
         )
         html = markdown_to_html(
             rendered_markdown,
@@ -324,3 +329,43 @@ def _copy_static_files(source_dir: Path, destination_root: Path) -> Path | None:
     shutil.copytree(source_dir, destination)
     LOGGER.info("Copied static files from %s to %s", source_dir, destination)
     return destination
+
+
+def _build_page_targets(entries: list[tuple[str, str, str, dict[str, Any]]]) -> list[dict[str, str]]:
+    targets: list[dict[str, str]] = []
+    for slug, title, source_name, _ in entries:
+        normalized_slug = (slug or "").strip("/")
+        if not normalized_slug or normalized_slug == "random":
+            continue
+        if not source_name:
+            continue
+        targets.append(
+            {
+                "title": title or normalized_slug,
+                "slug": normalized_slug,
+                "url": f"/{normalized_slug}",
+            }
+        )
+    return targets
+
+
+def _build_random_targets(
+    pages: list[dict[str, str]],
+    posts: list[dict[str, Any]],
+    notes: list[dict[str, Any]],
+) -> list[dict[str, str]]:
+    targets: list[dict[str, str]] = []
+
+    def _append_target(title: str | None, url: str | None) -> None:
+        if not url:
+            return
+        resolved_title = (title or url).strip() or url
+        targets.append({"title": resolved_title, "url": url})
+
+    for page in pages:
+        _append_target(page.get("title"), page.get("url"))
+    for entry in posts:
+        _append_target(entry.get("title") or entry.get("name"), entry.get("url"))
+    for entry in notes:
+        _append_target(entry.get("title") or entry.get("name"), entry.get("url"))
+    return targets
