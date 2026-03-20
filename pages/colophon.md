@@ -6,7 +6,7 @@ My terminal emulator of choice is now [kitty](https://sw.kovidgoyal.net/kitty/),
 
 [^1]: This may sound extreme, but it is essentially the only way to regain control over your system state and be confident you are storing/backing up exactly what you need (and no more) in a world rife with software that does not respect user data, cleanliness, or separation of concerns. Moreover (and as is more commonly advertised), it [makes it much easier](https://grahamc.com/blog/erase-your-darlings/) to ~guarantee reproducibility of most parts of a system, which is surprisingly pleasant to have even for personal laptops and the like.
 
-This site is generated statically from [Markdown](https://en.wikipedia.org/wiki/Markdown) files using [jinja](https://jinja.palletsprojects.com/en/stable/) and [pandoc](https://pandoc.org/), and served using [GitHub Pages](https://docs.github.com/en/pages). It is designed to be (at least in part) a wiki-style blog in which posts are updated and reorganized at my discretion, with no particular posting schedule or guarantees of completeness.
+This site is generated statically from [Markdown](https://en.wikipedia.org/wiki/Markdown) files using [jinja](https://jinja.palletsprojects.com/en/stable/) (for template expansion) and [pandoc](https://pandoc.org/) (for rendering Markdown to HTML), and served using [GitHub Pages](https://docs.github.com/en/pages). It is designed to be (at least in part) a wiki-style blog in which posts are updated and reorganized at my discretion, with no particular posting schedule or guarantees of completeness.
 
 Some goals for the site, all very much works in progress:
 
@@ -14,7 +14,12 @@ Some goals for the site, all very much works in progress:
 - lucid but interesting (and manifestly human) writing about a range of topics that appeal to me
 - enhanced legibility for my competencies and values
 - easy navigability and responsiveness on screens of various shapes and sizes that doesn't compromise e.g., information density or any of the interesting features I'm hoping to build out
-- very quick time-to-first-contentful-paint on *every* page: computers are fast now, though you wouldn't know it from using a typical modern website/application. happily, I am unbound by many of the typical requirements that produce slow websites and software
+- very quick time-to-first-contentful-paint on *every* page: computers are fast now, though you wouldn't know it from using a typical modern website/application. happily, I am unbound by many of the typical constraints that produce slow websites and software
 - an easy point of access to other interesting people online and parts of the internet that I find meaningful/worth sharing
+
+Some other notes on the site's design & implementation:
+
+- the site is built using a custom static site generator, which can be found in [this repository](https://github.com/generic-github-user/generic-github-user.github.io)
+- blog posts and notes use justified text on desktop screens, where modern browsers (with `text-wrap: pretty;`) can do a reasonably good job of optimizing line breaks (so as not to leave large spaces between words, for example); this falls back to left-alignment on mobile screens
 
 If you have ideas for how I could better realize these, or other comments about the site, please feel free to contact me.
