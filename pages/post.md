@@ -12,6 +12,12 @@
   <span>{{ post.word_count }} words</span>
 </div>
 
+{% if post.history_url %}
+<div class="history-link-inline">
+  <a href="{{ post.history_url }}">View revision history</a>
+</div>
+{% endif %}
+
 {% if post.tags %}
 tags: {% for tag in post.tags %}`{{ tag }}`{% if not loop.last %}, {% endif %}{% endfor %}
 <br />

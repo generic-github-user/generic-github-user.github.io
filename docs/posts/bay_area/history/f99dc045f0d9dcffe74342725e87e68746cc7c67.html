@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>How I Learned to Stop Worrying and Love the Technopole
+(revision f99dc045f0d9)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <style>
+  body {
+    font-family: "PT Serif", serif;
+    max-width: 50em;
+  }
+
+  p {
+    text-align: justify;
+    text-wrap: pretty;
+    text-justify: inter-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Instrument Serif", serif;
+  }
+
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-color: #d6ccf2;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    background-color: #f4f0ff;
+    text-decoration-color: #c0b3f0;
+  }
+
+  hr {
+    background-color: #787878;
+    border: none;
+    height: 2px;
+    margin: 2em 0;
+  }
+
+  .history-link {
+    font-size: 0.85em;
+    text-align: right;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+
+  .history-link-inline {
+    font-size: 0.85em;
+    margin: 0.25rem 0 1.25rem;
+  }
+
+  .history-banner {
+    border-left: 4px solid #d6ccf2;
+    background-color: #f4f0ff;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+    font-size: 0.9em;
+  }
+
+  .diff-add {
+    color: #17823a;
+  }
+
+  .diff-del {
+    color: #b3261e;
+  }
+
+  .diff-lines {
+    color: #5f6368;
+  }
+
+  ul li::marker {
+    content: "– ";
+    font-weight: 600;
+  }
+
+  .footnote-ref-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .footnote-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    --footnote-horizontal-shift: 0px;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), calc(-100% - 0.75rem));
+    width: min(22rem, 80vw);
+    background-color: #fdfdfd;
+    border: 1px solid #d6ccf2;
+    border-radius: 6px;
+    box-shadow: 0px 15px 35px rgba(26, 26, 26, 0.2);
+    padding: 0.85rem 1rem;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #1a1a1a;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    z-index: 50;
+    background-clip: padding-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: calc(100vw - 24px);
+    will-change: transform;
+  }
+
+  .footnote-ref-wrapper.is-visible .footnote-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footnote-tooltip p:first-child {
+    margin-top: 0;
+  }
+
+  .footnote-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote-tooltip--below {
+    top: 100%;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+  }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
+
+    p {
+      text-align: left;
+      text-wrap: normal;
+      text-justify: auto;
+    }
+
+    .footnote-tooltip {
+      width: min(24rem, calc(100vw - 24px));
+      top: 100%;
+      transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+    }
+  }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = Array.from(document.querySelectorAll('a.footnote-ref'));
+    if (!footnoteRefs.length) {
+      return;
+    }
+
+    let openWrapper = null;
+    const hideTimeouts = new WeakMap();
+
+    const cancelScheduledClose = (wrapper) => {
+      const timeoutId = hideTimeouts.get(wrapper);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        hideTimeouts.delete(wrapper);
+      }
+    };
+
+    const scheduleClose = (wrapper) => {
+      cancelScheduledClose(wrapper);
+      const timeoutId = window.setTimeout(() => {
+        closeTooltip(wrapper);
+      }, 120);
+      hideTimeouts.set(wrapper, timeoutId);
+    };
+
+    const closeTooltip = (wrapper) => {
+      if (!wrapper) {
+        return;
+      }
+      cancelScheduledClose(wrapper);
+      wrapper.classList.remove('is-visible');
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      if (trigger) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('footnote-tooltip--below');
+        tooltip.style.removeProperty('--footnote-horizontal-shift');
+      }
+      if (openWrapper === wrapper) {
+        openWrapper = null;
+      }
+    };
+
+    const adjustTooltipPosition = (tooltip) => {
+      if (!tooltip) {
+        return;
+      }
+      tooltip.classList.remove('footnote-tooltip--below');
+      tooltip.style.removeProperty('--footnote-horizontal-shift');
+      const rect = tooltip.getBoundingClientRect();
+      const margin = 16;
+      let shift = 0;
+      if (rect.left < margin) {
+        shift = margin - rect.left;
+      } else if (rect.right > window.innerWidth - margin) {
+        shift = (window.innerWidth - margin) - rect.right;
+      }
+      if (shift !== 0) {
+        tooltip.style.setProperty('--footnote-horizontal-shift', `${shift}px`);
+      }
+      if (rect.top < margin) {
+        tooltip.classList.add('footnote-tooltip--below');
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
+    };
+
+    const showTooltip = (wrapper) => {
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (!trigger || !tooltip) {
+        return;
+      }
+      if (openWrapper && openWrapper !== wrapper) {
+        closeTooltip(openWrapper);
+      }
+      if (wrapper.classList.contains('is-visible')) {
+        cancelScheduledClose(wrapper);
+        return;
+      }
+      adjustTooltipPosition(tooltip);
+      wrapper.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      openWrapper = wrapper;
+      cancelScheduledClose(wrapper);
+    };
+
+    document.addEventListener('click', (event) => {
+      if (openWrapper && !openWrapper.contains(event.target)) {
+        closeAllTooltips();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllTooltips();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (openWrapper) {
+        const tooltip = openWrapper.querySelector('.footnote-tooltip');
+        adjustTooltipPosition(tooltip);
+      }
+    });
+
+    footnoteRefs.forEach((ref) => {
+      const targetId = ref.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        return;
+      }
+      const footnote = document.getElementById(targetId.slice(1));
+      if (!footnote) {
+        return;
+      }
+
+      const wrapper = document.createElement('span');
+      wrapper.className = 'footnote-ref-wrapper';
+      ref.parentNode.insertBefore(wrapper, ref);
+      wrapper.appendChild(ref);
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'footnote-tooltip';
+      const clone = footnote.cloneNode(true);
+      clone.querySelectorAll('.footnote-back').forEach((node) => node.remove());
+      tooltip.innerHTML = `
+        <span class="footnote-tooltip-body">${clone.innerHTML.trim()}</span>
+      `;
+      wrapper.appendChild(tooltip);
+
+      ref.setAttribute('aria-expanded', 'false');
+      ref.setAttribute('aria-haspopup', 'dialog');
+
+      ref.addEventListener('click', (event) => {
+        if (!wrapper.classList.contains('is-visible')) {
+          event.preventDefault();
+          showTooltip(wrapper);
+        } else {
+          closeTooltip(wrapper);
+        }
+      });
+
+      ref.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          showTooltip(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      ref.addEventListener('focus', () => {
+        showTooltip(wrapper);
+      });
+
+      wrapper.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (!wrapper.contains(active)) {
+            closeTooltip(wrapper);
+          }
+        });
+      });
+
+      tooltip.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      tooltip.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+    });
+  });
+  </script>
+</head>
+<body>
+<div class="history-banner">
+Viewing revision from 2026-03-16 at 15:49 EDT
+(<code>f99dc045f0d9</code>). <a href="/posts/bay_area.html">Return to
+current version</a>
+</div>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/blog">blog</a> | <a href="/notes">notes</a> | <a
+href="/recommendations">recommendations</a> | <a
+href="/colophon">colophon</a> | <a
+href="/files/anna-allen-resume.pdf">resume</a></em></p>
+<div class="history-link">
+<a href="/posts/bay_area/history/">View revision history</a>
+</div>
+</section>
+<section id="how-i-learned-to-stop-worrying-and-love-the-technopole"
+class="level1">
+<h1>How I Learned to Stop Worrying and Love the Technopole</h1>
+<div class="post-meta post-meta-inline">
+<p>started <strong>2026-03-16 at 15:11 EDT</strong> | updated
+<strong>2026-03-16 at 15:49 EDT</strong> | written in
+<strong>Maryland</strong> | 3353 words</p>
+</div>
+<div class="post-meta post-meta-stacked">
+<p><span>started <strong>2026-03-16 at 15:11 EDT</strong></span>
+<span>updated <strong>2026-03-16 at 15:49 EDT</strong></span>
+<span>written in <strong>Maryland</strong></span> <span>3353
+words</span></p>
+</div>
+<div class="history-link-inline">
+<p><a href="/posts/bay_area/history/">View revision history</a></p>
+</div>
+<blockquote>
+<p>Beyond the Judgement of God. Meltdown: planetary china-syndrome,
+dissolution of the biosphere into the technosphere, terminal speculative
+bubble crisis, ultravirus, and revolution stripped of all
+christian-socialist eschatology (down to its burn-core of crashed
+security). It is poised to eat your TV, infect your bank account, and
+hack xenodata from your mitochondria.</p>
+<p>Machinic Synthesis. Deleuzoguattarian schizoanalysis comes from the
+future. It is already engaging with nonlinear nano-engineering runaway
+in 1972; differentiating molecular or neotropic machineries from molar
+or entropic aggregates of nonassembled particles; functional
+connectivity from antiproductive static.</p>
+<p>[…]</p>
+<p>Converging upon terrestrial meltdown singularity, phase-out culture
+accelerates through its digitech-heated adaptive landscape, passing
+through compression thresholds normed to an intensive logistic curve:
+1500, 1756, 1884, 1948, 1980, 1996, 2004, 2008, 2010, 2011 …</p>
+</blockquote>
+<p>If you want to peer into the future, you can book a flight to San
+Francisco International Airport today. You can work your way downtown
+and watch (mostly) self-driving cars meander, sometimes clumsily, around
+what initially seems like a small section of urban Boston cut-and-pasted
+into the most naturally beautiful place you’ve ever been in your life
+(in the midst of incongruous, endless five-over-one sprawl); you can
+ride in one and be totally astounded for 20 minutes, and then mostly
+bored. You can meet people you’ve followed for years on the site
+formerly known as Twitter, and whom you always had difficulty imagining
+as having a corporeal form (as they say, in SF, Twitter is real life).
+You can see hundreds of peculiar SaaS and cloud compute advertisements,
+few less than three layers of abstraction removed from any concrete
+application, and most betraying a level of unseriousness and
+psychological unsophistication and aesthetic immaturity that you think
+ought to be incompatible with controlling a couple million dollars of
+capital, let alone a couple billion. You can visit a place where an
+entire city seems to be implicitly under the Chatham House Rule, if only
+because the sentiments many people will ~openly express are so extreme
+and appalling that it’s incumbent on you to protect the speakers’
+reputations from themselves.</p>
+<p>You can walk by the buildings, the normal office buildings, where the
+inhabitants might or might not be building God, or at least (much more
+credibly) an alien species made superficially in the image of man, and
+contemplate the lack of barbed wire and heavily armed guards. You can
+meet the individuals whose values, competencies, and luck are steering
+the development &amp; deployment of transformative AI – i.e., the rest
+of everything that happens forever – and observe that they’re
+essentially normal people, or at least not of a fundamentally different
+taxon than you (perhaps to your relief, or perhaps not). You may even
+argue with them about the finer details of the Situation, and most will
+gladly hear you out and seemingly not take offense, and prove themselves
+to be decent in many other little ways.</p>
+<p>You can readily notice the near-total stratification (which you had
+been warned of) of downtown San Francisco between ~software engineers
+and the service worker caste, and idly wonder which you’ll fall into in
+ten or twenty years; you can retreat to Berkeley, where “software
+engineers” is replaced with “wealthy students from abroad,” or one of
+the poorer and more heterogeneous suburban or exurban areas of the
+Bay.</p>
+<p>coldhealing has a tweet that goes like this: “my vision of new york
+is five boroughs filled entirely with laptop job elite galavanting
+around the playground city served by an underclass that commutes in from
+tiny five-over-ones in hoboken”. Whether they realized it or not, this
+post was about SF, the downtown area of which is probably the most
+powerwashed place I’ve ever been, including Washington, D.C., Wall
+Street, and Boston.</p>
+<p>Californians love their cars, and pedestrians and drivers alike are
+subservient to the automobile in a way that urban East Coast residents
+mostly are not (though this is in large part a function of distance
+&amp; sprawl). You get the sense that the real technocapital demon
+reaching through time to ensure its own survival is the specter of Henry
+Ford haunting America, many decades later. Nothing human makes it out of
+the near future, but compact SUVs probably will.</p>
+<p>This is to say nothing of the vagrants in various states of disrepair
+sunken into the corners of almost every block, nearly wherever you go.
+They seem more listless than their counterparts in New York City did,
+and seem ensnared by the otherwise pristine facets and metal thorns of
+the edifice of 22nd-century<sup>(sic)</sup> capital, like it is eating
+them. Every time I see one I feel the granite sidewalk pinching my skin
+against my vertebrae.</p>
+<p>Many of your peers that seem otherwise quite progressive and
+egalitarian have an obvious, persistent animus for “the bay area
+homeless population.” Residents of certain neighborhoods of SF have a
+conditioned apathy for human suffering that rivals that exhibited by ER
+nurses, and some take active pride in it.</p>
+<p>You can also meet people whose sole intention is – quite openly – to
+enrich themselves at the expense of others by gaining exposure to some
+part (however distal) of the shovel and pick supply chain for this gold
+rush, which they breathlessly inform you will be the last gold rush ever
+to occur in human history; and by them be offered strange drugs with
+names you’ve never heard before, and asked if you’re making it out of
+the permanent underclass.</p>
+<p>You can, conversely, notice the sheer relative concentration of
+competence and moral consistency at the top of the pyramid, very near to
+the compute itself, and how in this particular ecosystem, the most
+apparently productive organisms in the sunlit zone of the ocean are
+outnumbered several hundred to one by twilight zone dwelling mollusks
+and jellyfish and filter-feeders, and seabed scavengers; and idly wonder
+in two or five years which layer you’ll fall into. You can too easily
+develop a penchant for tortured analogies.</p>
+<p>You might suffer painful reminders that – extremely inconveniently –
+you still have (some) genuine moral compunctions, carried gingerly from
+the 2000s to here, that you have no realistic way to either fully
+satisfy nor fully expunge. Wealthier people than you may tell you
+there’s no reason to want to be rid of your scruples, and more moral
+ones may tell you that acting on your values is only so difficult in the
+imagination. Both are probably right, unfortunately.</p>
+<p>You can hand a few dollars to a roaming beggar on the train, since
+she’s with a baby, then idly wonder whether you’ve been scammed, then
+decide that any woman in a dire enough situation to end up begging on
+the train with a baby attached to her probably deserves the help anyway
+— then idly watch the BART police chase after her a few minutes
+later.</p>
+<p>You might meditate on the natures of competence, gratitude, progress,
+disillusionment, capital, luck, noblesse oblige, and the perhaps
+unexpectedly superlinear and sublinear relationships between several of
+these.</p>
+<p>SF is also one of the most secular-feeling places I’ve ever been, a
+kind of special economic zone God declines to enter.</p>
+<p>Hypergambling culture (see: prediction markets, memecoins, the
+Stanford dropout to Y Combinator pipeline, etc.) has been synthesized
+with rather extreme forms of classism and cynicism to form a uniquely
+repulsive new economic religion, one foremost of nihilism – one embraced
+in its milder forms by much of the disillusioned “gen Z” cohort, many of
+whom seem to itch for an excuse to declare normative economic
+participation a lost cause and indulge their zero-sum aspirations. Of
+course, many proponents of this complex of beliefs show a marked failure
+of imagination: tacit in their scheming and rhetoric is the assumption
+that many parts of the status quo will be preserved indefinitely, even
+through unprecedented transformation of our species and society. To many
+others, and perhaps to me to some lesser extent, “will property rights
+survive the singularity?” probably sounds akin to ““.</p>
+<p>Certainly not every professional who lives and works in the Bay Area
+subscribes to this religion, but nearly committed clergy-member of it
+that I’ve met so far was at the very least socially or culturally
+enmeshed in the place. The last twenty years of tech in California are,
+I’m told, the modern incarnation of last century’s local gold rush
+economy; the favored term of art is “high-variance,” i.e. the
+acknowledgement that by (for example) founding or joining a startup, one
+sacrifices expected value and accepts a likely poor outcome in exchange
+for a realistic chance at a right-tail outcome (“generational wealth”).
+The stakes are, of course, not so serious as long as there’s a 350k TC
+tech job for the founder to fall back on (longtime Twitter addicts may
+recall a discourse in which the startup class tried to get away with
+referring to themselves as being “in the arena,” and perhaps overplayed
+their hand a bit, resulting in some ridicule).</p>
+<p>The weather is exquisite; the first time I got to Berkeley, I mused
+about how my uninformed sardonic posts about</p>
+<p>In finance, there is a concept known as “volatility time” that refers
+to a scaling of some feature (e.g., a time series) by the cumulative
+volatility — volatility being a rolling measure of how “jumpy” or
+dispersed a price or other feature is, computed using the standard
+deviation of each window of log-returns. The intuition, AIUI, is that
+signals tend to carry much more information per unit time immediately
+before and immediately after major events, i.e., when asset prices are
+most volatile, and you therefore want to naturally upweight them when
+fitting forecasting models, for example.</p>
+<p>In the Bay, perceptual time slows to a crawl . You can retreat to
+Berkeley or Oakland if you want it to speed up again, or NYC if you want
+to skip a few months.</p>
+<p>I am writing this for multiple reasons — of course, to boast a
+little, and to indulge my itch to write something freeform and
+nontechnical, but mainly to assemble a consolidated and public record of
+the absurdity that I can point to when I want to impress upon someone
+the strangeness and realness of it all. That is: I get the sense that
+many people don’t believe me when I relate to them the <em>actual,
+real</em> epistemic status of the city, but . Another is that I plan to
+move back to the self-appointed center of the world within a few weeks,
+and want to indelibly record a sliver of my current impression of it
+before it all grows mundane to me.</p>
+<p>My new acquaintance Celeste Land writes less obliquely about the
+mood:</p>
+<blockquote>
+<p>The cars drive themselves, a seven-digit salary is considered the
+only way out of a nearly certain fate in the permanent underclass.
+Effective altruism is close to a norm. Billboards speak of pull
+requests, wage slaves go to sleep with their AI wives on heated
+mattresses that stop working when us-east-1 goes down.</p>
+<p>Everyone “hates” it. No one wants to leave.</p>
+</blockquote>
+<p>My experience has been overwhelmingly positive on a personal level,
+and I am better off for having met the people I have and spent the time
+I have with them, with vanishingly few exceptions. I must explicitly
+disclaim this because I am compelled to speak in such an oblique way
+that it might not be entirely clear.</p>
+<p>It feels much like being back in university, an environment I sorely
+missed.</p>
+<p>There is a refreshingness in entering a zone where the typical
+Overton window is several standard deviations closer to yours than to
+the general public’s, one in which ninety percent of a given
+conversation about the Situation by volume is <em>no longer</em>
+dedicated to unbearable microlitigation of sneers and derailments
+enabled by your casual invocation of “AGI,” or some
+unobjectionable-seeming mild assumption you made about X starting
+condition or Y modus ponens, or your interlocutors refusing to believe
+what is in front of their very eyes – to say nothing of a person like me
+enjoying other conversational, social, and geographic privileges that
+I’ve never before experienced in my life. It is simultaneously somewhat
+maddening to have, for casual conversation, a setpoint that lies
+squarely on, or at least an attractor state toward, <em>the rest of
+everything that’s going to happen [to you] forever</em>. Yudkowsky’s old
+note about <a
+href="https://www.lesswrong.com/posts/CKpByWmsZ8WmpHtYa/competent-elites">“competent
+elites”</a> crosses your mind frequently, but so do the various
+rationalist aphorisms about how there are only very rarely any “adults
+in the room” by default.</p>
+<p>But they are still relatively normal; the Zizians are extreme
+outliers. There is a difficult tension between the stereotypically
+“proportionate” reaction to</p>
+<p>And it has all been done to death, of course – the religious fervor
+in the air, the undue credulity in some areas, the unjustified
+skepticism in others,</p>
+<p>It is not, however, opaque or inscrutable. It’s fairly trivial to
+present a reasonably faithful distillation of a set of beliefs that many
+incredibly smart and well-informed people, both near to and far from the
+actual development of frontier AI systems, genuinely hold – here’s my
+attempt:</p>
+<ul>
+<li><p>Everyone alive today – or merely nearly everyone – might well
+literally die to misaligned ASI, or misaligned humans wielding ASI,
+within years (20, or 5, or 2, depending on who you ask). Human
+extinction is on the table, and might be more likely than not.</p></li>
+<li><p>Recursive self-improvement is in principle possible, and will
+likely “just happen” in a sense once computer programming (or ML
+research, if you prefer) is “solved.” RSI can probably be bootstrapped
+from sufficiently good LLMs. Progress is exponential (or latently
+super-exponential, potentially). This (along with the following couple
+reasons) is why some of the below concerns are justified even though
+present-day AI systems are tripped up by certain kinds of tasks, highly
+limited in difficult-to-quantify ways, etc.</p></li>
+<li><p>Capabilities are spiky/non-uniformly distributed/not necessarily
+predictive of each other (particularly not to the extent they tend to be
+in humans), and will remain spiky even as AI systems become superhuman
+over broad swathes of important intellectual tasks.</p></li>
+<li><p>It is worth <em>at least discussing</em> the concerns listed here
+for precautionary reasons, as outlandish as they are and as unlikely as
+many of them may be, because the potential downside is so immense and
+there are no credible disproofs of their possibility at hand.</p></li>
+<li><p>The value of human labor – first cognitive, then
+physical/dextrous – is rapidly going to zero, and nearly all returns to
+productivity generated by AI and most other economic endeavors will
+accrue to capital rather than labor, in a vicious cycle of accumulation.
+Total replacement at a cost well below the minimum living wage<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> is inherently <em>sui generis</em>,
+and has no historical precedent whatsoever: no previous kind of
+automation left nowhere for displaced workers to retreat to, nor
+actively strategized on its own integration into existing means of
+production, including those used to develop increasingly powerful AI
+systems. This will cause massive social unrest by default. It also <a
+href="https://www.citriniresearch.com/p/2028gic">raises nontrivial
+questions</a> about the teleological role of the consumer in the modern
+neoliberal-capitalist state mythology.</p></li>
+<li><p>Total surveillance, bordering on omniscience, of the kind
+classically dreamt of by despotic regimes, will be trivially possible
+within a few years. This will extend well beyond mere expert-level
+analysis of every message, web search, credit card transaction, GPS
+datapoint, photograph, phone call, or surveillance tape (etc) within
+Google’s or the NSA’s reach, into things like “a team of experts in a
+datacenter tirelessly analysing every American’s precise psychological
+disposition 24/7 based on all the aforementioned information, forever,”
+and even worse developments that are best not mentioned.</p></li>
+<li><p>Even if a proverbial black swan occurs, and global AI investment
+or technical progress is stalled, <em>the technology works</em> and its
+continued development and diffusion throughout society is an economic
+inevitability. If it’s waylaid in one place (e.g., the U.S.) and not
+others (China), one expects .</p></li>
+<li><p>Advanced AI development is a “winner takes all” game for nations,
+and might be best modeled as an existential consideration of the same
+kind as nuclear armament (true believers might claim the situation is
+even worse: nuclear proliferation can be monitored and controlled
+through a fairly unobtrusive international surveillance regime, unlike
+strong AI, and an authoritarian state having nuclear weapons doesn’t
+confer tools for extremely fine-grained control over the domestic
+population, unlike strong AI). Among other things, this means that
+erratic and extreme behavior might be game-theoretically expected from
+otherwise rational governments as ASI grows nearer.</p></li>
+<li><p>Those with the means – and if things go well, nearly everyone in
+the developed world – might literally be able to live arbitrarily long
+if/when ASI is used to develop radical life extension technologies
+(i.e., to allow currently living young people to “hit LEV” (longevity
+escape velocity)). Biological immortality is within reach for the first
+time in history.</p></li>
+<li><p>[Some of] the leading AI companies have very bad public optics,
+and even those that present a positive vision for the future and uphold
+their prior commitments tend to be saddled with public perceptions
+generated by the others. This will be relevant to outcomes to the extent
+that we continue to live in a democratic society (even, say, a violently
+democratic one).</p></li>
+<li><p>There is no trial run, and we may not get a warning shot before
+an AI-related catastrophe e.g., kills billions of people; alignment in
+particular must be “done right the first time,” even though it has very
+much proven to be an incrementally refineable empirical science under
+the current LLM regime.</p></li>
+<li><p>S-risks are both possible and sometimes preferentially generated
+by “capital” in the most general form possible (i.e., raw optimization
+power); we have existence proofs in the form of factory farms and third
+world nations rife with sweatshops, but also e.g. wild animal suffering
+of biblical scale (for the former). If emulation of sentient minds is
+possible, then there will be an unambiguous choice for society (or
+whatever entity/structure ultimately has the authority here) to make
+between an intense global surveillance regime and allowing crimes of
+unprecedented scale <em>in silico</em>.</p></li>
+<li><p>Currently existing frontier AI models are at least as smart as
+the median human in most ways that matter, with respect to so-called
+keyboard-mouse-display tasks. They cannot, e.g., quickly pick up a new
+3D video game and play it well in real time, but cases like this are
+increasingly due more to <a
+href="https://en.wikipedia.org/wiki/Moravec%27s_paradox">Moravec’s
+paradox</a> and memory primitives not being tightly integrated with
+model training than “raw intelligence” or failure to
+generalize.</p></li>
+<li><p>[etc.]</p></li>
+</ul>
+<p>I could go on. I want to emphasize that these are not
+<em>consensus</em> among any particular group of people, certainly not
+when all taken together. Almost all of them are however reasonably close
+to being modal beliefs among the “kind of people Anna talks to
+[irl].”</p>
+<p>For the record, I more or less believe most of these. They also all
+independently scare the shit out of me. These are often skirted around
+in day-to-day conversation, but one gradually gets the sense that this
+has more to do with boredom or weariness or tactfulness than any kind of
+intentional deceit or strategization. So pervasive is the air of
+autistic openness, at least in the higher-trust social environments.</p>
+<p>In a way, I have already been stuck in the Bay Area for years. Even
+though actual inhabitants thereof constituted a minority of my close
+friends and acquaintances until fairly recently, the rest – in
+Massachusetts, NYC, the PNW, and elsewhere – have been increasingly
+culturally downstream of far-west discourses, thoughtforms, and world
+models for several years. It became impossible to ignore after 2022 or
+so, to our eternal chagrin; being even moderately intelligent, “plugged
+in,” and tolerant to the outlandish implies that you care to some extent
+about/pay some attention to the Project, and accordingly steep in the
+wretched culture surrounding it. Every group chat is tacitly
+<em>permanentunderclasschat</em> now.</p>
+<p>It is perhaps, in some senses, the strangest and most fraught moment
+in history that one could have chosen to be recovering from severe
+health issues, and to be in the earlier months of gender transition, and
+trying to become net- economically and socially useful for the first
+time. On the other hand,</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>test<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

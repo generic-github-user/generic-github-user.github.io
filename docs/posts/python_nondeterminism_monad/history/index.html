@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Revision history for "Nondeterminism monad in Python"</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <style>
+  body {
+    font-family: "PT Serif", serif;
+    max-width: 50em;
+  }
+
+  p {
+    text-align: justify;
+    text-wrap: pretty;
+    text-justify: inter-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Instrument Serif", serif;
+  }
+
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-color: #d6ccf2;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    background-color: #f4f0ff;
+    text-decoration-color: #c0b3f0;
+  }
+
+  hr {
+    background-color: #787878;
+    border: none;
+    height: 2px;
+    margin: 2em 0;
+  }
+
+  .history-link {
+    font-size: 0.85em;
+    text-align: right;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+
+  .history-link-inline {
+    font-size: 0.85em;
+    margin: 0.25rem 0 1.25rem;
+  }
+
+  .history-banner {
+    border-left: 4px solid #d6ccf2;
+    background-color: #f4f0ff;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+    font-size: 0.9em;
+  }
+
+  .diff-add {
+    color: #17823a;
+  }
+
+  .diff-del {
+    color: #b3261e;
+  }
+
+  .diff-lines {
+    color: #5f6368;
+  }
+
+  ul li::marker {
+    content: "– ";
+    font-weight: 600;
+  }
+
+  .footnote-ref-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .footnote-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    --footnote-horizontal-shift: 0px;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), calc(-100% - 0.75rem));
+    width: min(22rem, 80vw);
+    background-color: #fdfdfd;
+    border: 1px solid #d6ccf2;
+    border-radius: 6px;
+    box-shadow: 0px 15px 35px rgba(26, 26, 26, 0.2);
+    padding: 0.85rem 1rem;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #1a1a1a;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    z-index: 50;
+    background-clip: padding-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: calc(100vw - 24px);
+    will-change: transform;
+  }
+
+  .footnote-ref-wrapper.is-visible .footnote-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footnote-tooltip p:first-child {
+    margin-top: 0;
+  }
+
+  .footnote-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote-tooltip--below {
+    top: 100%;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+  }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
+
+    p {
+      text-align: left;
+      text-wrap: normal;
+      text-justify: auto;
+    }
+
+    .footnote-tooltip {
+      width: min(24rem, calc(100vw - 24px));
+      top: 100%;
+      transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+    }
+  }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = Array.from(document.querySelectorAll('a.footnote-ref'));
+    if (!footnoteRefs.length) {
+      return;
+    }
+
+    let openWrapper = null;
+    const hideTimeouts = new WeakMap();
+
+    const cancelScheduledClose = (wrapper) => {
+      const timeoutId = hideTimeouts.get(wrapper);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        hideTimeouts.delete(wrapper);
+      }
+    };
+
+    const scheduleClose = (wrapper) => {
+      cancelScheduledClose(wrapper);
+      const timeoutId = window.setTimeout(() => {
+        closeTooltip(wrapper);
+      }, 120);
+      hideTimeouts.set(wrapper, timeoutId);
+    };
+
+    const closeTooltip = (wrapper) => {
+      if (!wrapper) {
+        return;
+      }
+      cancelScheduledClose(wrapper);
+      wrapper.classList.remove('is-visible');
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      if (trigger) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('footnote-tooltip--below');
+        tooltip.style.removeProperty('--footnote-horizontal-shift');
+      }
+      if (openWrapper === wrapper) {
+        openWrapper = null;
+      }
+    };
+
+    const adjustTooltipPosition = (tooltip) => {
+      if (!tooltip) {
+        return;
+      }
+      tooltip.classList.remove('footnote-tooltip--below');
+      tooltip.style.removeProperty('--footnote-horizontal-shift');
+      const rect = tooltip.getBoundingClientRect();
+      const margin = 16;
+      let shift = 0;
+      if (rect.left < margin) {
+        shift = margin - rect.left;
+      } else if (rect.right > window.innerWidth - margin) {
+        shift = (window.innerWidth - margin) - rect.right;
+      }
+      if (shift !== 0) {
+        tooltip.style.setProperty('--footnote-horizontal-shift', `${shift}px`);
+      }
+      if (rect.top < margin) {
+        tooltip.classList.add('footnote-tooltip--below');
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
+    };
+
+    const showTooltip = (wrapper) => {
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (!trigger || !tooltip) {
+        return;
+      }
+      if (openWrapper && openWrapper !== wrapper) {
+        closeTooltip(openWrapper);
+      }
+      if (wrapper.classList.contains('is-visible')) {
+        cancelScheduledClose(wrapper);
+        return;
+      }
+      adjustTooltipPosition(tooltip);
+      wrapper.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      openWrapper = wrapper;
+      cancelScheduledClose(wrapper);
+    };
+
+    document.addEventListener('click', (event) => {
+      if (openWrapper && !openWrapper.contains(event.target)) {
+        closeAllTooltips();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllTooltips();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (openWrapper) {
+        const tooltip = openWrapper.querySelector('.footnote-tooltip');
+        adjustTooltipPosition(tooltip);
+      }
+    });
+
+    footnoteRefs.forEach((ref) => {
+      const targetId = ref.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        return;
+      }
+      const footnote = document.getElementById(targetId.slice(1));
+      if (!footnote) {
+        return;
+      }
+
+      const wrapper = document.createElement('span');
+      wrapper.className = 'footnote-ref-wrapper';
+      ref.parentNode.insertBefore(wrapper, ref);
+      wrapper.appendChild(ref);
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'footnote-tooltip';
+      const clone = footnote.cloneNode(true);
+      clone.querySelectorAll('.footnote-back').forEach((node) => node.remove());
+      tooltip.innerHTML = `
+        <span class="footnote-tooltip-body">${clone.innerHTML.trim()}</span>
+      `;
+      wrapper.appendChild(tooltip);
+
+      ref.setAttribute('aria-expanded', 'false');
+      ref.setAttribute('aria-haspopup', 'dialog');
+
+      ref.addEventListener('click', (event) => {
+        if (!wrapper.classList.contains('is-visible')) {
+          event.preventDefault();
+          showTooltip(wrapper);
+        } else {
+          closeTooltip(wrapper);
+        }
+      });
+
+      ref.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          showTooltip(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      ref.addEventListener('focus', () => {
+        showTooltip(wrapper);
+      });
+
+      wrapper.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (!wrapper.contains(active)) {
+            closeTooltip(wrapper);
+          }
+        });
+      });
+
+      tooltip.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      tooltip.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+    });
+  });
+  </script>
+</head>
+<body>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/blog">blog</a> | <a href="/notes">notes</a> | <a
+href="/recommendations">recommendations</a> | <a
+href="/colophon">colophon</a> | <a
+href="/files/anna-allen-resume.pdf">resume</a></em></p>
+</section>
+<section id="revision-history-for-nondeterminism-monad-in-python"
+class="level1">
+<h1>Revision history for “Nondeterminism monad in Python”</h1>
+<p><a href="/posts/python_nondeterminism_monad.html">Return to current
+version</a></p>
+<section id="at-1649-est-0c759012ce57" class="level3">
+<h3>2025-12-21 at 16:49 EST — <a
+href="0c759012ce57fab803a1ea92ccb6758c0f563dd5.html"><code>0c759012ce57</code></a></h3>
+<p><code>0c759012ce57fab803a1ea92ccb6758c0f563dd5</code> · tweak wording
+  <span class="diff-add">+1</span> <span class="diff-del">-1</span></p>
+</section>
+<section id="at-1647-est-05714308a931" class="level3">
+<h3>2025-12-21 at 16:47 EST — <a
+href="05714308a9314e9a84c970d8136f0fefcf8c8328.html"><code>05714308a931</code></a></h3>
+<p><code>05714308a9314e9a84c970d8136f0fefcf8c8328</code> · fix a few
+minor issues in post   <span class="diff-add">+8</span> <span
+class="diff-del">-6</span></p>
+</section>
+<section id="at-1634-est-d5c43a0949b1" class="level3">
+<h3>2025-12-21 at 16:34 EST — <a
+href="d5c43a0949b1824ee909d1341490254a805e77e4.html"><code>d5c43a0949b1</code></a></h3>
+<p><code>d5c43a0949b1824ee909d1341490254a805e77e4</code> · some
+revisions to python nondeterminism post   <span
+class="diff-add">+11</span> <span class="diff-del">-5</span></p>
+</section>
+<section id="at-1621-est-944e599573bc" class="level3">
+<h3>2025-12-21 at 16:21 EST — <a
+href="944e599573bc57bdc6d467c05291e31fc46d3531.html"><code>944e599573bc</code></a></h3>
+<p><code>944e599573bc57bdc6d467c05291e31fc46d3531</code> · clean up
+nondeterminism post, move some content out into a part 2 draft   <span
+class="diff-add">+46</span> <span class="diff-del">-139</span></p>
+</section>
+<section id="at-2312-est-d6f8833dc081" class="level3">
+<h3>2025-12-20 at 23:12 EST — <a
+href="d6f8833dc08164694f13c8e3b021a83de4b85ead.html"><code>d6f8833dc081</code></a></h3>
+<p><code>d6f8833dc08164694f13c8e3b021a83de4b85ead</code> · miscellaneous
+  <span class="diff-add">+1</span> <span class="diff-del">-6</span></p>
+</section>
+<section id="at-2010-est-a9157dd99c00" class="level3">
+<h3>2025-11-12 at 20:10 EST — <a
+href="a9157dd99c00ea263cc83284ef71387406b6e2bd.html"><code>a9157dd99c00</code></a></h3>
+<p><code>a9157dd99c00ea263cc83284ef71387406b6e2bd</code> · misc.   <span
+class="diff-add">+7</span> <span class="diff-del">-5</span></p>
+</section>
+<section id="at-2354-est-c1dc128e4fd8" class="level3">
+<h3>2025-11-11 at 23:54 EST — <a
+href="c1dc128e4fd88c5fad705c0ee65027ed0540b4ed.html"><code>c1dc128e4fd8</code></a></h3>
+<p><code>c1dc128e4fd88c5fad705c0ee65027ed0540b4ed</code> · hide
+nondeterminism post until it’s complete (hopefully tomorrow…)   <span
+class="diff-add">+1</span> <span class="diff-del">-1</span></p>
+</section>
+<section id="at-2338-est-dfbee2260221" class="level3">
+<h3>2025-11-11 at 23:38 EST — <a
+href="dfbee2260221394f02795a7912c207c4e346134d.html"><code>dfbee2260221</code></a></h3>
+<p><code>dfbee2260221394f02795a7912c207c4e346134d</code> · miscellaneous
+  <span class="diff-add">+5</span> <span class="diff-del">-4</span></p>
+</section>
+<section id="at-2248-est-8b1973a731d4" class="level3">
+<h3>2025-11-11 at 22:48 EST — <a
+href="8b1973a731d463d13ba78401409e66b6d3995677.html"><code>8b1973a731d4</code></a></h3>
+<p><code>8b1973a731d463d13ba78401409e66b6d3995677</code> · various blog
+post rendering updates/improvements   <span class="diff-add">+0</span>
+<span class="diff-del">-2</span></p>
+</section>
+<section id="at-2240-est-2b60b4930d84" class="level3">
+<h3>2025-11-11 at 22:40 EST — <a
+href="2b60b4930d84d587e5e026a51fd24cc1f76d3a85.html"><code>2b60b4930d84</code></a></h3>
+<p><code>2b60b4930d84d587e5e026a51fd24cc1f76d3a85</code> · render blog
+pages using pandoc   <span class="diff-add">+8</span> <span
+class="diff-del">-7</span></p>
+</section>
+<section id="at-2213-est-708bc30a311b" class="level3">
+<h3>2025-11-11 at 22:13 EST — <a
+href="708bc30a311b7fca2357957ce7a6304c1df19d5b.html"><code>708bc30a311b</code></a></h3>
+<p><code>708bc30a311b7fca2357957ce7a6304c1df19d5b</code> · miscellaneous
+  <span class="diff-add">+5</span> <span class="diff-del">-1</span></p>
+</section>
+</section>
+</body>
+</html>

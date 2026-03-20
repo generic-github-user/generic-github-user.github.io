@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>recommendations (revision 47af2a8e2fa1)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <style>
+  body {
+    font-family: "PT Serif", serif;
+    max-width: 50em;
+  }
+
+  p {
+    text-align: justify;
+    text-wrap: pretty;
+    text-justify: inter-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Instrument Serif", serif;
+  }
+
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-color: #d6ccf2;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    background-color: #f4f0ff;
+    text-decoration-color: #c0b3f0;
+  }
+
+  hr {
+    background-color: #787878;
+    border: none;
+    height: 2px;
+    margin: 2em 0;
+  }
+
+  .history-link {
+    font-size: 0.85em;
+    text-align: right;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+
+  .history-link-inline {
+    font-size: 0.85em;
+    margin: 0.25rem 0 1.25rem;
+  }
+
+  .history-banner {
+    border-left: 4px solid #d6ccf2;
+    background-color: #f4f0ff;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+    font-size: 0.9em;
+  }
+
+  .diff-add {
+    color: #17823a;
+  }
+
+  .diff-del {
+    color: #b3261e;
+  }
+
+  .diff-lines {
+    color: #5f6368;
+  }
+
+  ul li::marker {
+    content: "– ";
+    font-weight: 600;
+  }
+
+  .footnote-ref-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .footnote-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    --footnote-horizontal-shift: 0px;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), calc(-100% - 0.75rem));
+    width: min(22rem, 80vw);
+    background-color: #fdfdfd;
+    border: 1px solid #d6ccf2;
+    border-radius: 6px;
+    box-shadow: 0px 15px 35px rgba(26, 26, 26, 0.2);
+    padding: 0.85rem 1rem;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #1a1a1a;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    z-index: 50;
+    background-clip: padding-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: calc(100vw - 24px);
+    will-change: transform;
+  }
+
+  .footnote-ref-wrapper.is-visible .footnote-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footnote-tooltip p:first-child {
+    margin-top: 0;
+  }
+
+  .footnote-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote-tooltip--below {
+    top: 100%;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+  }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
+
+    p {
+      text-align: left;
+      text-wrap: normal;
+      text-justify: auto;
+    }
+
+    .footnote-tooltip {
+      width: min(24rem, calc(100vw - 24px));
+      top: 100%;
+      transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+    }
+  }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = Array.from(document.querySelectorAll('a.footnote-ref'));
+    if (!footnoteRefs.length) {
+      return;
+    }
+
+    let openWrapper = null;
+    const hideTimeouts = new WeakMap();
+
+    const cancelScheduledClose = (wrapper) => {
+      const timeoutId = hideTimeouts.get(wrapper);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        hideTimeouts.delete(wrapper);
+      }
+    };
+
+    const scheduleClose = (wrapper) => {
+      cancelScheduledClose(wrapper);
+      const timeoutId = window.setTimeout(() => {
+        closeTooltip(wrapper);
+      }, 120);
+      hideTimeouts.set(wrapper, timeoutId);
+    };
+
+    const closeTooltip = (wrapper) => {
+      if (!wrapper) {
+        return;
+      }
+      cancelScheduledClose(wrapper);
+      wrapper.classList.remove('is-visible');
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      if (trigger) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('footnote-tooltip--below');
+        tooltip.style.removeProperty('--footnote-horizontal-shift');
+      }
+      if (openWrapper === wrapper) {
+        openWrapper = null;
+      }
+    };
+
+    const adjustTooltipPosition = (tooltip) => {
+      if (!tooltip) {
+        return;
+      }
+      tooltip.classList.remove('footnote-tooltip--below');
+      tooltip.style.removeProperty('--footnote-horizontal-shift');
+      const rect = tooltip.getBoundingClientRect();
+      const margin = 16;
+      let shift = 0;
+      if (rect.left < margin) {
+        shift = margin - rect.left;
+      } else if (rect.right > window.innerWidth - margin) {
+        shift = (window.innerWidth - margin) - rect.right;
+      }
+      if (shift !== 0) {
+        tooltip.style.setProperty('--footnote-horizontal-shift', `${shift}px`);
+      }
+      if (rect.top < margin) {
+        tooltip.classList.add('footnote-tooltip--below');
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
+    };
+
+    const showTooltip = (wrapper) => {
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (!trigger || !tooltip) {
+        return;
+      }
+      if (openWrapper && openWrapper !== wrapper) {
+        closeTooltip(openWrapper);
+      }
+      if (wrapper.classList.contains('is-visible')) {
+        cancelScheduledClose(wrapper);
+        return;
+      }
+      adjustTooltipPosition(tooltip);
+      wrapper.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      openWrapper = wrapper;
+      cancelScheduledClose(wrapper);
+    };
+
+    document.addEventListener('click', (event) => {
+      if (openWrapper && !openWrapper.contains(event.target)) {
+        closeAllTooltips();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllTooltips();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (openWrapper) {
+        const tooltip = openWrapper.querySelector('.footnote-tooltip');
+        adjustTooltipPosition(tooltip);
+      }
+    });
+
+    footnoteRefs.forEach((ref) => {
+      const targetId = ref.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        return;
+      }
+      const footnote = document.getElementById(targetId.slice(1));
+      if (!footnote) {
+        return;
+      }
+
+      const wrapper = document.createElement('span');
+      wrapper.className = 'footnote-ref-wrapper';
+      ref.parentNode.insertBefore(wrapper, ref);
+      wrapper.appendChild(ref);
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'footnote-tooltip';
+      const clone = footnote.cloneNode(true);
+      clone.querySelectorAll('.footnote-back').forEach((node) => node.remove());
+      tooltip.innerHTML = `
+        <span class="footnote-tooltip-body">${clone.innerHTML.trim()}</span>
+      `;
+      wrapper.appendChild(tooltip);
+
+      ref.setAttribute('aria-expanded', 'false');
+      ref.setAttribute('aria-haspopup', 'dialog');
+
+      ref.addEventListener('click', (event) => {
+        if (!wrapper.classList.contains('is-visible')) {
+          event.preventDefault();
+          showTooltip(wrapper);
+        } else {
+          closeTooltip(wrapper);
+        }
+      });
+
+      ref.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          showTooltip(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      ref.addEventListener('focus', () => {
+        showTooltip(wrapper);
+      });
+
+      wrapper.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (!wrapper.contains(active)) {
+            closeTooltip(wrapper);
+          }
+        });
+      });
+
+      tooltip.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      tooltip.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+    });
+  });
+  </script>
+</head>
+<body>
+<div class="history-banner">
+Viewing revision from 2025-12-22 at 02:34 EST
+(<code>47af2a8e2fa1</code>). <a href="/recommendations.html">Return to
+current version</a>
+</div>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/blog">blog</a> | <a href="/notes">notes</a> | <a
+href="/recommendations">recommendations</a> | <a
+href="/colophon">colophon</a> | <a
+href="/files/anna-allen-resume.pdf">resume</a></em></p>
+<div class="history-link">
+<a href="/recommendations/history/">View revision history</a>
+</div>
+<p>Some things I enjoy or find useful and think others might enjoy or
+find useful. Please don’t be offended if we disagree on the enjoyability
+and/or usefulness of a particular entry. Listed in no particular
+order.</p>
+<p>Items marked with a “+” are exceptionally high-quality or otherwise
+distinguished among the other members of their category, in my view. (In
+a few cases this refers only to the immediate reference class relevant
+to that item and not to the entire category.)</p>
+<style>
+body {
+    min-width: 70% !important;
+}
+
+.multicol {
+  column-count: 3;
+  column-gap: 2rem;
+}
+
+.multicol section {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid; /* Safari */
+  page-break-inside: avoid;           /* older */
+  display: inline-block;              /* helps some browsers honor avoid */
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 2rem 0;
+
+  border: solid;
+  border-width: 6px;
+  border-color: #f2e6ff;
+  padding: 10px;
+}
+
+h3 {
+  margin: 0px;
+}
+
+@media (max-width: 900px){
+  .multicol{ column-count: 2; }
+}
+@media (max-width: 600px){
+  .multicol{ column-count: 1; }
+}
+</style>
+<div class="multicol">
+<section id="newsletters-blogs-etc." class="level3">
+<h3>Newsletters, blogs, etc.</h3>
+<ul>
+<li><a href="https://mcyoung.xyz/" class="uri">mcyoung.xyz</a></li>
+<li><a href="https://gwern.net/" class="uri">gwern.net</a></li>
+<li><a href="https://www.bitsaboutmoney.com/"
+class="uri">www.bitsaboutmoney.com</a><sup>+</sup></li>
+<li><a href="https://jyn.dev/" class="uri">jyn.dev</a></li>
+<li><a href="https://www.haskellforall.com/"
+class="uri">www.haskellforall.com</a></li>
+<li><a href="https://www.elizas.website/"
+class="uri">www.elizas.website</a></li>
+<li><a href="https://loginasroot.net/"
+class="uri">loginasroot.net</a></li>
+<li><a href="https://www.bloomberg.com/account/newsletters/money-stuff"
+class="uri">www.bloomberg.com/account/newsletters/money-stuff</a></li>
+</ul>
+</section>
+<section id="films" class="level3">
+<h3>Films</h3>
+<ul>
+<li><a
+href="https://en.wikipedia.org/wiki/Avatar_(2009_film)">Avatar</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dune_(2021_film)">Dune
+(2021)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dune:_Part_Two">Dune: Part
+Two (2024)</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Fargo_(1996_film)">Fargo</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Heat_(1995_film)">Heat</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Inception">Inception</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Interstellar_(film)">Interstellar</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Margin_Call">Margin
+Call</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Megalopolis_(film)">Megalopolis</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Memento_(film)">Memento</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Pulp_Fiction">Pulp
+Fiction</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Scarface_(1983_film)">Scarface</a></li>
+<li><a href="https://en.wikipedia.org/wiki/The_Godfather_Part_II">The
+Godfather Part II</a></li>
+<li><a href="https://en.wikipedia.org/wiki/The_Godfather">The
+Godfather</a><sup>+</sup></li>
+<li><a href="https://en.wikipedia.org/wiki/The_Prestige_(film)">The
+Prestige</a></li>
+<li><a href="https://en.wikipedia.org/wiki/The_Usual_Suspects">The Usual
+Suspects</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Uncut_Gems">Uncut
+Gems</a></li>
+</ul>
+</section>
+<section id="shows" class="level3">
+<h3>Shows</h3>
+<ul>
+<li><a
+href="https://en.wikipedia.org/wiki/Arrested_Development">Arrested
+Development</a><a href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> <sup>+</sup></li>
+<li><a href="https://en.wikipedia.org/wiki/Better_Call_Saul">Better Call
+Saul</a><sup>+</sup></li>
+<li><a href="https://en.wikipedia.org/wiki/Breaking_Bad">Breaking
+Bad</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dark_(TV_series)">Dark</a><a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Mr._Robot">Mr. Robot</a><sup>+</sup></li>
+<li><a href="https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion">Neon
+Genesis Evangelion</a><sup>+</sup></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Ozark_(TV_series)">Ozark</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Stranger_Things">Stranger
+Things</a> (season 1 only)</li>
+<li><a href="https://en.wikipedia.org/wiki/True_Detective">True
+Detective</a> (season 1<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>)</li>
+</ul>
+</section>
+<section id="software" class="level3">
+<h3>Software</h3>
+<ul>
+<li><a href="https://www.blender.org/">Blender</a><sup>+</sup></li>
+<li><a href="https://www.borgbackup.org/">BorgBackup</a></li>
+<li><a href="https://www.firefox.com/en-US/">Firefox</a></li>
+<li><a href="https://jqlang.org/">jq</a></li>
+<li><a href="https://kde.org/">KDE</a> and <a
+href="https://kde.org/plasma-desktop/">KDE Plasma</a><a href="#fn4"
+class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a></li>
+<li><a href="https://sw.kovidgoyal.net/kitty/">kitty</a></li>
+<li><a href="https://www.latex-project.org/">LaTeX</a></li>
+<li><a href="https://mypy-lang.org/">mypy</a></li>
+<li><a href="https://neovim.io/">Neovim</a><sup>+</sup></li>
+<li><a href="https://nixos.org/">NixOS</a><sup>+</sup></li>
+<li><a href="https://www.nushell.sh/">nushell</a></li>
+<li><a href="https://ohmyz.sh/">oh my zsh</a></li>
+<li><a href="https://openzfs.github.io/openzfs-docs/">OpenZFS</a></li>
+<li><a href="https://pandoc.org/">Pandoc</a></li>
+<li><a href="https://prismlauncher.org/">Prism Launcher</a></li>
+<li><a href="https://github.com/BurntSushi/ripgrep">ripgrep</a></li>
+<li><a
+href="https://github.com/jimsalterjrs/sanoid">Sanoid/Syncoid</a></li>
+<li><a href="https://signal.org/">Signal</a></li>
+<li><a href="https://swaywm.org/">Sway WM</a></li>
+<li><a href="https://taskwarrior.org/">Taskwarrior</a><a href="#fn5"
+class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a></li>
+<li><a href="https://timewarrior.net/">Timewarrior</a></li>
+<li><a href="https://tldr.sh/">tldr</a></li>
+<li><a href="https://github.com/tmux/tmux">tmux</a> (see also: <a
+href="https://tmuxcheatsheet.com/">tmux cheat sheet</a>)</li>
+<li><a href="https://github.com/astral-sh/uv">uv</a></li>
+<li><a href="https://xon.sh/">xonsh</a></li>
+</ul>
+</section>
+<section id="programming-languages" class="level3">
+<h3>Programming languages</h3>
+<ul>
+<li><a href="https://www.haskell.org/">Haskell</a></li>
+<li><a href="https://rust-lang.org/">Rust</a></li>
+<li><a href="https://common-lisp.net/">Common Lisp</a></li>
+<li><a href="https://www.idris-lang.org/">Idris</a><a href="#fn6"
+class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a></li>
+</ul>
+</section>
+<section id="short-stories" class="level3">
+<h3>Short stories</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Survivor_Type">“Survivor
+Type”</a> (Stephen King)<a href="#fn7" class="footnote-ref" id="fnref7"
+role="doc-noteref"><sup>7</sup></a></li>
+<li><a href="https://poemuseum.org/the-cask-of-amontillado/">“The Cask
+of Amontillado”</a> (Edgar Allan Poe)</li>
+<li><a href="https://en.wikipedia.org/wiki/The_Necklace">“The
+Necklace”</a> (Guy de Maupassant)</li>
+</ul>
+</section>
+<section id="games" class="level3">
+<h3>Games</h3>
+<ul>
+<li><a href="https://www.minecraft.net/en-us">Minecraft</a><sup>+</sup>
+<ul>
+<li>(see also: <a href="https://tweaked.cc/">CC: Tweaked</a> and the <a
+href="https://create.fandom.com/wiki/Create_Mod_Wiki">Create Mod</a>; <a
+href="https://prismlauncher.org/">Prism Launcher</a>)</li>
+</ul></li>
+<li><a href="https://www.kerbalspaceprogram.com/">Kerbal Space
+Program</a></li>
+<li><a
+href="https://en.wikipedia.org/wiki/Portal_(video_game)">Portal</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Portal_2">Portal 2</a></li>
+<li><a
+href="https://store.steampowered.com/app/1318690/shapez/">Shapez</a></li>
+</ul>
+</section>
+<section id="music" class="level3">
+<h3>Music</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Requiem_(Mozart)">Requiem in
+D minor, K. 626</a> (Mozart); particularly the <a
+href="https://open.spotify.com/album/2mAq4V9WfnKBIMmKGLS653">1991
+Academy of St. Martin in the Fields recording</a><sup>+</sup></li>
+<li><a
+href="https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical)">The
+Phantom of the Opera</a></li>
+</ul>
+</section>
+<section id="literature" class="level3">
+<h3>Literature</h3>
+<ul>
+<li><a
+href="https://shakespeare.mit.edu/hamlet/full.html">Hamlet</a></li>
+</ul>
+</section>
+<section id="poetry" class="level3">
+<h3>Poetry</h3>
+<ul>
+<li><a
+href="https://www.poetryfoundation.org/poems/46565/ozymandias">Ozymandias</a>
+(Percy Bysshe Shelley)</li>
+<li><a
+href="https://www.poetryfoundation.org/poems/46569/do-not-go-gentle-into-that-good-night">Do
+Not Go Gentle into That Good Night</a> (Dylan Thomas)</li>
+<li><a
+href="https://adyingeye.wordpress.com/2011/07/02/the-sensual-world-louise-gluck/">The
+Sensual World</a> (Louise Glück)</li>
+<li><a
+href="https://www.poetryfoundation.org/poems/50465/thanatopsis">Thanatopsis</a>
+(William Cullen Bryant)</li>
+</ul>
+</section>
+<section id="miscellaneous" class="level3">
+<h3>Miscellaneous</h3>
+<ul>
+<li><a href="https://www.flatironpepper.com/">Flatiron Pepper Co</a><a
+href="#fn8" class="footnote-ref" id="fnref8"
+role="doc-noteref"><sup>8</sup></a></li>
+<li><a href="https://scrandle.com/">Scrandle</a></li>
+</ul>
+</section>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>As far as I can remember, I have not seen the original
+cut of season 4, only the Netflix “remix”; despite the mixed reception,
+I think that on the whole the last two seasons are at least as strong as
+the first three in most respects<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>As far as I can remember, the English dub on Netflix is
+not very good; prefer the original German audio with subtitles<a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>not that I disrecommend the later seasons, but I have
+not seen them yet<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>I seldom use KDE anymore, for several reasons, but it’s
+generally a robust and well-designed desktop environment. I recommend it
+over GNOME, even for people new to Linux.<a href="#fnref4"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>I no longer use this, but formerly did for quite a
+while, and was pleased with its quality and ergonomics.<a href="#fnref5"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>I have used this very little myself, but it’s still
+interesting enough to be worth mentioning<a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>reader discretion advised<a href="#fnref7"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>my favorite variety is the <a
+href="https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion">Chipotle
+- Roasted Garlic - Toasted Onion</a> mixture<a href="#fnref8"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
