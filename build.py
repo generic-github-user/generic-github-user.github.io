@@ -29,6 +29,7 @@ NOTE_OUTPUT_DIR = REPO_ROOT / "docs" / "notes"
 POST_HEADER_INCLUDE_PATH = PAGES_DIR / "post_head.html"
 H2_ANCHOR_FILTER_PATH = PAGES_DIR / "h2_anchors.lua"
 ARROW_FILTER_PATH = PAGES_DIR / "replace_arrows.lua"
+SHORTEN_LINKS_FILTER_PATH = PAGES_DIR / "shorten_bare_links.lua"
 PAGES_OUTPUT_DIR = REPO_ROOT / "docs"
 DISPLAY_TIMEZONE = ZoneInfo("America/New_York")
 JINJA_ENV = Environment(autoescape=False, trim_blocks=True, lstrip_blocks=True)
@@ -615,6 +616,8 @@ def _build_pandoc_base_args(
         args.append(f"--include-in-header={POST_HEADER_INCLUDE_PATH}")
     if H2_ANCHOR_FILTER_PATH.exists():
         args.append(f"--lua-filter={H2_ANCHOR_FILTER_PATH}")
+    if SHORTEN_LINKS_FILTER_PATH.exists():
+        args.append(f"--lua-filter={SHORTEN_LINKS_FILTER_PATH}")
     if include_arrow_filter and ARROW_FILTER_PATH.exists():
         args.append(f"--lua-filter={ARROW_FILTER_PATH}")
     args.append("--section-divs")
