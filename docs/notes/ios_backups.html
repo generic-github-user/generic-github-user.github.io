@@ -299,7 +299,7 @@
 
     p {
       text-align: left;
-      text-wrap: balance;
+      text-wrap: normal;
       text-justify: auto;
     }
 
@@ -543,7 +543,7 @@ running any destructive actions.</p>
 <p>libimobiledevice exposes most of the necessary tools:</p>
 <pre><code>nix-shell -p libimobiledevice usbmuxd</code></pre>
 <p>Then, after plugging in the device and clicking “Trust” in the dialog
-box that appears:</p>
+box that appears on it:</p>
 <pre><code>idevicepair pair</code></pre>
 <p>If this succeeds, then:</p>
 <pre><code>idevicepair validate</code></pre>

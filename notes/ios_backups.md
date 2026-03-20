@@ -13,7 +13,7 @@ libimobiledevice exposes most of the necessary tools:
 nix-shell -p libimobiledevice usbmuxd
 ```
 
-Then, after plugging in the device and clicking "Trust" in the dialog box that appears:
+Then, after plugging in the device and clicking "Trust" in the dialog box that appears on it:
 
 ```
 idevicepair pair
