@@ -17,9 +17,9 @@ Some goals for the site, all very much works in progress:
 - very quick time-to-first-contentful-paint on *every* page: computers are fast now, though you wouldn't know it from using a typical modern website/application. happily, I am unbound by many of the typical constraints that produce slow websites and software
 - an easy point of access to other interesting people online and parts of the internet that I find meaningful/worth sharing
 
-Some other notes on the site's design & implementation:
+If you have ideas for how I could better realize these, or other comments about the site, please feel free to contact me.
+
+Some other notes on design & implementation:
 
 - the site is built using a custom static site generator, which can be found in [this repository](https://github.com/generic-github-user/generic-github-user.github.io)
 - blog posts and notes use justified text on desktop screens, where modern browsers (with `text-wrap: pretty;`) can do a reasonably good job of optimizing line breaks (so as not to leave large spaces between words, for example); this falls back to left-alignment on mobile screens
-
-If you have ideas for how I could better realize these, or other comments about the site, please feel free to contact me.
