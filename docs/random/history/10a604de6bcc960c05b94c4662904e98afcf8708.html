@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>random (revision 10a604de6bcc)</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <style>
+  body {
+    font-family: "PT Serif", serif;
+    max-width: 50em;
+  }
+
+  p {
+    text-align: justify;
+    text-wrap: pretty;
+    text-justify: inter-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Instrument Serif", serif;
+  }
+
+  .post-meta {
+    margin: 1em 0;
+  }
+
+  .post-meta-stacked {
+    display: none;
+  }
+
+  .post-meta-stacked span {
+    display: block;
+  }
+
+  h2 .heading-anchor {
+    margin-left: 0.5rem;
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.85em;
+    color: inherit;
+  }
+
+  h2:hover .heading-anchor,
+  h2:focus-within .heading-anchor {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-color: #d6ccf2;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    transition: background-color 0.15s ease, text-decoration-color 0.15s ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    background-color: #f4f0ff;
+    text-decoration-color: #c0b3f0;
+  }
+
+  hr {
+    background-color: #787878;
+    border: none;
+    height: 2px;
+    margin: 2em 0;
+  }
+
+  .history-link {
+    font-size: 0.85em;
+    text-align: right;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+
+  .history-link-inline {
+    font-size: 0.85em;
+    margin: 0.25rem 0 1.25rem;
+  }
+
+  .history-banner {
+    border-left: 4px solid #d6ccf2;
+    background-color: #f4f0ff;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+    font-size: 0.9em;
+  }
+
+  .diff-add {
+    color: #17823a;
+  }
+
+  .diff-del {
+    color: #b3261e;
+  }
+
+  .diff-lines {
+    color: #5f6368;
+  }
+
+  ul li::marker {
+    content: "– ";
+    font-weight: 600;
+  }
+
+  .footnote-ref-wrapper {
+    position: relative;
+    display: inline;
+  }
+
+  .footnote-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    --footnote-horizontal-shift: 0px;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), calc(-100% - 0.75rem));
+    width: min(22rem, 80vw);
+    background-color: #fdfdfd;
+    border: 1px solid #d6ccf2;
+    border-radius: 6px;
+    box-shadow: 0px 15px 35px rgba(26, 26, 26, 0.2);
+    padding: 0.85rem 1rem;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #1a1a1a;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    z-index: 50;
+    background-clip: padding-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: calc(100vw - 24px);
+    will-change: transform;
+  }
+
+  .footnote-ref-wrapper.is-visible .footnote-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footnote-tooltip p:first-child {
+    margin-top: 0;
+  }
+
+  .footnote-tooltip p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footnote-tooltip--below {
+    top: 100%;
+    transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+  }
+
+  @media (max-width: 600px) {
+    .post-meta-inline {
+      display: none;
+    }
+
+    .post-meta-stacked {
+      display: block;
+    }
+
+    p {
+      text-align: left;
+      text-wrap: normal;
+      text-justify: auto;
+    }
+
+    .footnote-tooltip {
+      width: min(24rem, calc(100vw - 24px));
+      top: 100%;
+      transform: translate(calc(-50% + var(--footnote-horizontal-shift)), 0.75rem);
+    }
+  }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const footnoteRefs = Array.from(document.querySelectorAll('a.footnote-ref'));
+    if (!footnoteRefs.length) {
+      return;
+    }
+
+    let openWrapper = null;
+    const hideTimeouts = new WeakMap();
+
+    const cancelScheduledClose = (wrapper) => {
+      const timeoutId = hideTimeouts.get(wrapper);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        hideTimeouts.delete(wrapper);
+      }
+    };
+
+    const scheduleClose = (wrapper) => {
+      cancelScheduledClose(wrapper);
+      const timeoutId = window.setTimeout(() => {
+        closeTooltip(wrapper);
+      }, 120);
+      hideTimeouts.set(wrapper, timeoutId);
+    };
+
+    const closeTooltip = (wrapper) => {
+      if (!wrapper) {
+        return;
+      }
+      cancelScheduledClose(wrapper);
+      wrapper.classList.remove('is-visible');
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      if (trigger) {
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (tooltip) {
+        tooltip.classList.remove('footnote-tooltip--below');
+        tooltip.style.removeProperty('--footnote-horizontal-shift');
+      }
+      if (openWrapper === wrapper) {
+        openWrapper = null;
+      }
+    };
+
+    const adjustTooltipPosition = (tooltip) => {
+      if (!tooltip) {
+        return;
+      }
+      tooltip.classList.remove('footnote-tooltip--below');
+      tooltip.style.removeProperty('--footnote-horizontal-shift');
+      const rect = tooltip.getBoundingClientRect();
+      const margin = 16;
+      let shift = 0;
+      if (rect.left < margin) {
+        shift = margin - rect.left;
+      } else if (rect.right > window.innerWidth - margin) {
+        shift = (window.innerWidth - margin) - rect.right;
+      }
+      if (shift !== 0) {
+        tooltip.style.setProperty('--footnote-horizontal-shift', `${shift}px`);
+      }
+      if (rect.top < margin) {
+        tooltip.classList.add('footnote-tooltip--below');
+      }
+    };
+
+    const closeAllTooltips = () => {
+      if (openWrapper) {
+        closeTooltip(openWrapper);
+      }
+    };
+
+    const showTooltip = (wrapper) => {
+      const trigger = wrapper.querySelector('a.footnote-ref');
+      const tooltip = wrapper.querySelector('.footnote-tooltip');
+      if (!trigger || !tooltip) {
+        return;
+      }
+      if (openWrapper && openWrapper !== wrapper) {
+        closeTooltip(openWrapper);
+      }
+      if (wrapper.classList.contains('is-visible')) {
+        cancelScheduledClose(wrapper);
+        return;
+      }
+      adjustTooltipPosition(tooltip);
+      wrapper.classList.add('is-visible');
+      trigger.setAttribute('aria-expanded', 'true');
+      openWrapper = wrapper;
+      cancelScheduledClose(wrapper);
+    };
+
+    document.addEventListener('click', (event) => {
+      if (openWrapper && !openWrapper.contains(event.target)) {
+        closeAllTooltips();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllTooltips();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (openWrapper) {
+        const tooltip = openWrapper.querySelector('.footnote-tooltip');
+        adjustTooltipPosition(tooltip);
+      }
+    });
+
+    footnoteRefs.forEach((ref) => {
+      const targetId = ref.getAttribute('href');
+      if (!targetId || !targetId.startsWith('#')) {
+        return;
+      }
+      const footnote = document.getElementById(targetId.slice(1));
+      if (!footnote) {
+        return;
+      }
+
+      const wrapper = document.createElement('span');
+      wrapper.className = 'footnote-ref-wrapper';
+      ref.parentNode.insertBefore(wrapper, ref);
+      wrapper.appendChild(ref);
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'footnote-tooltip';
+      const clone = footnote.cloneNode(true);
+      clone.querySelectorAll('.footnote-back').forEach((node) => node.remove());
+      tooltip.innerHTML = `
+        <span class="footnote-tooltip-body">${clone.innerHTML.trim()}</span>
+      `;
+      wrapper.appendChild(tooltip);
+
+      ref.setAttribute('aria-expanded', 'false');
+      ref.setAttribute('aria-haspopup', 'dialog');
+
+      ref.addEventListener('click', (event) => {
+        if (!wrapper.classList.contains('is-visible')) {
+          event.preventDefault();
+          showTooltip(wrapper);
+        } else {
+          closeTooltip(wrapper);
+        }
+      });
+
+      ref.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          showTooltip(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+
+      wrapper.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      ref.addEventListener('focus', () => {
+        showTooltip(wrapper);
+      });
+
+      wrapper.addEventListener('focusout', () => {
+        requestAnimationFrame(() => {
+          const active = document.activeElement;
+          if (!wrapper.contains(active)) {
+            closeTooltip(wrapper);
+          }
+        });
+      });
+
+      tooltip.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          cancelScheduledClose(wrapper);
+        }
+      });
+
+      tooltip.addEventListener('pointerleave', (event) => {
+        if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+          scheduleClose(wrapper);
+        }
+      });
+    });
+  });
+  </script>
+</head>
+<body>
+<div class="history-banner">
+Viewing revision from 2026-03-20 at 01:55 EDT
+(<code>10a604de6bcc</code>). <a href="/random.html">Return to current
+version</a>
+</div>
+<section id="anna-a" class="level1">
+<h1>anna a</h1>
+<p><em><a href="/index">home</a> | <a href="/contact">contact</a> | <a
+href="/blog">blog</a> | <a href="/notes">notes</a> | <a
+href="/random">random</a> | <a
+href="/recommendations">recommendations</a> | <a
+href="/colophon">colophon</a> | <a
+href="/files/anna-allen-resume.pdf">resume</a></em></p>
+<div class="history-link">
+<a href="/random/history/">View revision history</a>
+</div>
+<p>Redirecting you to something random on the site. If you are not
+redirected automatically,
+<a id="random-fallback-link" href="/index">pick a page manually</a>.</p>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const targets = ;
+  const fallbackLink = document.getElementById('random-fallback-link');
+  if (!Array.isArray(targets) || targets.length === 0) {
+    if (fallbackLink) {
+      fallbackLink.textContent = 'return home';
+      fallbackLink.href = '/index';
+    }
+    return;
+  }
+  const choice = targets[Math.floor(Math.random() * targets.length)];
+  if (fallbackLink && choice) {
+    fallbackLink.textContent = choice.title || choice.url;
+    fallbackLink.href = choice.url;
+  }
+  window.location.replace(choice.url);
+});
+</script>
+<noscript>
+<p>JavaScript is required to select a random destination automatically.
+Here are a few options you can choose manually:</p>
+<ul>
+<li>
+<a href="/posts/bay_area.html">How I Learned to Stop Worrying and Love
+the Technopole</a>
+</li>
+<li>
+<a href="/posts/python_nondeterminism_monad.html">Nondeterminism monad
+in Python</a>
+</li>
+<li>
+<a href="/notes/ios_backups.html">Backing up iOS devices on Linux</a>
+</li>
+</ul>
+</noscript>
+</section>
+</body>
+</html>
