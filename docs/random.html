@@ -107,8 +107,8 @@
      overflow: visible;
     }
     hr {
-      background-color: #1a1a1a;
       border: none;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -545,7 +545,8 @@ href="/blog">blog</a> | <a href="/notes">notes</a> | <a
 href="/random">random</a> | <a
 href="/recommendations">recommendations</a> | <a
 href="/colophon">colophon</a> | <a
-href="/files/anna-allen-resume.pdf">resume</a></em></p>
+href="/files/anna-allen-resume.pdf">resume</a> | <a
+href="/support">support</a></em></p>
 <div class="history-link">
 <a href="/random/history/">View revision history</a>
 </div>
@@ -554,7 +555,7 @@ redirected automatically,
 <a id="random-fallback-link" href="/index">pick a page manually</a>.</p>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const targets = [{"title": "home", "url": "/index"}, {"title": "contact", "url": "/contact"}, {"title": "blog", "url": "/blog"}, {"title": "notes", "url": "/notes"}, {"title": "recommendations", "url": "/recommendations"}, {"title": "colophon", "url": "/colophon"}, {"title": "How I Learned to Stop Worrying and Love the Technopole", "url": "/posts/bay_area.html"}, {"title": "Nondeterminism monad in Python", "url": "/posts/python_nondeterminism_monad.html"}, {"title": "Backing up iOS devices on Linux", "url": "/notes/ios_backups.html"}];
+  const targets = [{"title": "home", "url": "/index"}, {"title": "contact", "url": "/contact"}, {"title": "blog", "url": "/blog"}, {"title": "notes", "url": "/notes"}, {"title": "recommendations", "url": "/recommendations"}, {"title": "colophon", "url": "/colophon"}, {"title": "support", "url": "/support"}, {"title": "How I Learned to Stop Worrying and Love the Technopole", "url": "/posts/bay_area.html"}, {"title": "Nondeterminism monad in Python", "url": "/posts/python_nondeterminism_monad.html"}, {"title": "Backing up iOS devices on Linux", "url": "/notes/ios_backups.html"}];
   const fallbackLink = document.getElementById('random-fallback-link');
   if (!Array.isArray(targets) || targets.length === 0) {
     if (fallbackLink) {
@@ -592,6 +593,9 @@ Here are a few options you can choose manually:</p>
 </li>
 <li>
 <a href="/colophon">colophon</a>
+</li>
+<li>
+<a href="/support">support</a>
 </li>
 <li>
 <a href="/posts/bay_area.html">How I Learned to Stop Worrying and Love

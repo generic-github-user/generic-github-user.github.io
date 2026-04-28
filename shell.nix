@@ -1,6 +1,6 @@
 let
   pkgs = import <nixpkgs> {};
-  python = pkgs.python311;
+  python = pkgs.python312;
   pythonPackages = python.pkgs;
 in
 
@@ -19,6 +19,7 @@ mkShell {
   ];
   buildInputs = with pythonPackages; [
     zlib
+    python
     pkgs.uv
     pkgs.less
 
