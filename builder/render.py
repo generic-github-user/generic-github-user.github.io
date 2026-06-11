@@ -51,6 +51,7 @@ def render_pages_to_html(
     force_history: bool = False,
     listing_posts: list[dict[str, Any]] | None = None,
     listing_notes: list[dict[str, Any]] | None = None,
+    page_context_overrides: dict[str, dict[str, Any]] | None = None,
 ) -> list[Path]:
     started = perf_counter()
     metadata_file = Path(metadata_path or METADATA_PATH)
@@ -70,6 +71,7 @@ def render_pages_to_html(
     LOGGER.info("Rendering %d pages", len(page_entries))
     normalized_entries = [_normalize_page_entry(entry) for entry in page_entries]
     site_pages = _build_page_targets(normalized_entries)
+    context_overrides = page_context_overrides or {}
 
     site_header = render_site_header(
         metadata_path=metadata_file,
@@ -87,6 +89,7 @@ def render_pages_to_html(
     for slug, title, source_name, context in normalized_entries:
         if not slug or not source_name:
             continue
+        context = dict(context)
         page_path = pages_directory / f"{source_name}.md"
         if not page_path.exists():
             raise FileNotFoundError(f"page source not found: {page_path}")
@@ -96,6 +99,7 @@ def render_pages_to_html(
         history_url: str | None = None
         if slug != "index":
             history_url = f"/{slug}/history/"
+        context.update(context_overrides.get(slug, {}))
         context.update({
             "posts": posts_for_listing,
             "notes": notes_for_listing,
