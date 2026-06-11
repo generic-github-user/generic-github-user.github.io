@@ -14,6 +14,8 @@ from typing import Any
 
 from .constants import (
     PHOTO_OUTPUT_DIR,
+    PHOTO_PREVIEW_DIR,
+    PHOTO_PREVIEW_MAX_DIMENSION,
     PHOTO_PUBLIC_BASE_URL,
     PHOTOS_DIR,
     R2_CREDENTIALS_PATH,
@@ -31,12 +33,16 @@ TIMESTAMP_PATTERN = re.compile(r"^(?P<date>\d{8})_(?P<time>\d{6})(?:_(?P<micros>
 @dataclass(slots=True)
 class PhotoAsset:
     filename: str
-    output_path: Path
+    full_output_path: Path
+    preview_output_path: Path
     captured_at: datetime
     width: int
     height: int
+    preview_width: int
+    preview_height: int
     orientation: str
-    public_url: str
+    full_public_url: str
+    preview_public_url: str
 
 
 @dataclass(slots=True)
@@ -50,18 +56,24 @@ class R2Config:
 def prepare_photo_gallery(
     raw_dir: Path | None = None,
     output_dir: Path | None = None,
+    preview_dir: Path | None = None,
     public_base_url: str = PHOTO_PUBLIC_BASE_URL,
 ) -> list[PhotoAsset]:
     source_dir = Path(raw_dir or RAW_PHOTOS_DIR)
     destination_dir = Path(output_dir or PHOTO_OUTPUT_DIR)
+    preview_directory = Path(preview_dir or PHOTO_PREVIEW_DIR)
 
     destination_dir.parent.mkdir(parents=True, exist_ok=True)
-    temp_dir = Path(
+    temp_root = Path(
         tempfile.mkdtemp(
-            prefix=f".{destination_dir.name}.tmp-",
+            prefix=".photos.tmp-",
             dir=destination_dir.parent,
         )
     )
+    temp_full_dir = temp_root / destination_dir.name
+    temp_preview_dir = temp_root / preview_directory.name
+    temp_full_dir.mkdir(parents=True, exist_ok=True)
+    temp_preview_dir.mkdir(parents=True, exist_ok=True)
 
     magick_binary = shutil.which("magick")
     source_files = _iter_source_images(source_dir)
@@ -76,27 +88,40 @@ def prepare_photo_gallery(
     photo_assets: list[PhotoAsset] = []
     for source_path, captured_at in source_records:
         output_name = f"{source_path.stem}.jpg"
-        output_path = temp_dir / output_name
-        _convert_image(magick_binary or "magick", source_path, output_path)
-        os.utime(output_path, (0, 0))
-        width, height = _identify_dimensions(magick_binary or "magick", output_path)
+        full_output_path = temp_full_dir / output_name
+        preview_output_path = temp_preview_dir / output_name
+        _convert_image(magick_binary or "magick", source_path, full_output_path)
+        _convert_preview_image(magick_binary or "magick", full_output_path, preview_output_path)
+        os.utime(full_output_path, (0, 0))
+        os.utime(preview_output_path, (0, 0))
+        width, height = _identify_dimensions(magick_binary or "magick", full_output_path)
+        preview_width, preview_height = _identify_dimensions(magick_binary or "magick", preview_output_path)
         orientation = "landscape" if width >= height else "portrait"
         photo_assets.append(
             PhotoAsset(
                 filename=output_name,
-                output_path=output_path,
+                full_output_path=full_output_path,
+                preview_output_path=preview_output_path,
                 captured_at=captured_at,
                 width=width,
                 height=height,
+                preview_width=preview_width,
+                preview_height=preview_height,
                 orientation=orientation,
-                public_url=f"{public_base_url.rstrip('/')}/full_size/{output_name}",
+                full_public_url=f"{public_base_url.rstrip('/')}/full_size/{output_name}",
+                preview_public_url=f"{public_base_url.rstrip('/')}/previews/{output_name}",
             )
         )
 
     if destination_dir.exists():
         shutil.rmtree(destination_dir)
-    temp_dir.replace(destination_dir)
-    LOGGER.info("Prepared %d photographs in %s", len(photo_assets), destination_dir)
+    destination_dir.parent.mkdir(parents=True, exist_ok=True)
+    temp_full_dir.replace(destination_dir)
+    if preview_directory.exists():
+        shutil.rmtree(preview_directory)
+    temp_preview_dir.replace(preview_directory)
+    shutil.rmtree(temp_root, ignore_errors=True)
+    LOGGER.info("Prepared %d photographs in %s and %s", len(photo_assets), destination_dir, preview_directory)
     return photo_assets
 
 
@@ -106,9 +131,10 @@ def build_photo_page_context(photos: list[PhotoAsset]) -> dict[str, Any]:
         grouped[photo.orientation].append(
             {
                 "filename": photo.filename,
-                "url": photo.public_url,
-                "width": photo.width,
-                "height": photo.height,
+                "url": photo.full_public_url,
+                "preview_url": photo.preview_public_url,
+                "width": photo.preview_width,
+                "height": photo.preview_height,
                 "alt": _build_alt_text(photo.captured_at),
             }
         )
@@ -198,6 +224,24 @@ def _convert_image(magick_binary: str, source_path: Path, output_path: Path) -> 
             str(output_path),
         ],
         error_prefix=f"failed to convert {source_path.name}",
+    )
+
+
+def _convert_preview_image(magick_binary: str, source_path: Path, output_path: Path) -> None:
+    _run_command(
+        [
+            magick_binary,
+            str(source_path),
+            "-resize",
+            f"{PHOTO_PREVIEW_MAX_DIMENSION}x{PHOTO_PREVIEW_MAX_DIMENSION}>",
+            "-strip",
+            "-interlace",
+            "Plane",
+            "-quality",
+            "85",
+            str(output_path),
+        ],
+        error_prefix=f"failed to generate preview for {source_path.name}",
     )
 
 
@@ -321,6 +365,7 @@ def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:
         lines = [f'<div class="photograph-cluster photograph-cluster-{orientation}">']
         for photo in photos:
             url = escape(str(photo["url"]), quote=True)
+            preview_url = escape(str(photo["preview_url"]), quote=True)
             alt = escape(str(photo["alt"]), quote=True)
             width = int(photo["width"])
             height = int(photo["height"])
@@ -331,7 +376,7 @@ def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:
                     (
                         '<img'
                         f' class="photograph-image"'
-                        f' src="{url}"'
+                        f' src="{preview_url}"'
                         f' alt="{alt}"'
                         f' width="{width}"'
                         f' height="{height}"'

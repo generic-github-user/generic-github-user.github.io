@@ -1,0 +1,6 @@
+raw_photos/
+photos/
+r2.txt
+rclone-r2.conf
+.venv/
+__pycache__/
