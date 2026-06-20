@@ -79,14 +79,20 @@ def prepare_photo_gallery(
     source_files = _iter_source_images(source_dir)
     if source_files and not magick_binary:
         raise RuntimeError("ImageMagick is required to process photographs; install `magick` and retry")
+    LOGGER.info("Preparing %d photographs from %s", len(source_files), source_dir)
+    if source_files:
+        LOGGER.info("Reading embedded capture timestamps")
     source_records = [
         (source_path, _read_capture_timestamp(magick_binary or "magick", source_path))
         for source_path in source_files
     ]
-    source_records.sort(key=lambda record: (record[1], record[0].name))
+    source_records.sort(key=lambda record: (_capture_sort_key(record[1]), record[0].name))
 
     photo_assets: list[PhotoAsset] = []
-    for source_path, captured_at in source_records:
+    total_sources = len(source_records)
+    for index, (source_path, captured_at) in enumerate(source_records, start=1):
+        if _should_log_progress(index, total_sources):
+            LOGGER.info("Processing photograph %d/%d: %s", index, total_sources, source_path.name)
         output_name = f"{source_path.stem}.jpg"
         full_output_path = temp_full_dir / output_name
         preview_output_path = temp_preview_dir / output_name
@@ -127,7 +133,7 @@ def prepare_photo_gallery(
 
 def build_photo_page_context(photos: list[PhotoAsset]) -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = {"landscape": [], "portrait": []}
-    for photo in sorted(photos, key=lambda asset: asset.captured_at):
+    for photo in sorted(photos, key=lambda asset: _capture_sort_key(asset.captured_at)):
         grouped[photo.orientation].append(
             {
                 "filename": photo.filename,
@@ -183,6 +189,7 @@ def sync_photos_to_r2(
     source_dir = Path(photos_dir or PHOTOS_DIR)
     resolved_config_path = Path(config_path or RCLONE_CONFIG_PATH)
     destination = f"anna-r2:{r2_config.bucket_name}/photos"
+    LOGGER.info("Syncing photographs to %s", destination)
     _run_command(
         [
             rclone_binary,
@@ -354,6 +361,20 @@ def _parse_exif_datetime(raw_timestamp: str, raw_offset: str, raw_subsec: str) -
 
 def _build_alt_text(captured_at: datetime) -> str:
     return f"Photograph from {captured_at.strftime('%Y-%m-%d at %H:%M:%S')}"
+
+
+def _capture_sort_key(captured_at: datetime) -> datetime:
+    if captured_at.tzinfo is None:
+        return captured_at
+    return captured_at.replace(tzinfo=None)
+
+
+def _should_log_progress(index: int, total: int) -> bool:
+    if index == 1 or index == total:
+        return True
+    if total <= 10:
+        return True
+    return index % 5 == 0
 
 
 def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:
