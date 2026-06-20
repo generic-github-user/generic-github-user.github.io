@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from html import escape
+import json
 import logging
 import os
 from pathlib import Path
@@ -13,6 +14,7 @@ import tempfile
 from typing import Any
 
 from .constants import (
+    PHOTO_BUILD_CACHE_PATH,
     PHOTO_OUTPUT_DIR,
     PHOTO_PREVIEW_DIR,
     PHOTO_PREVIEW_MAX_DIMENSION,
@@ -28,6 +30,7 @@ LOGGER = logging.getLogger(__name__)
 
 SUPPORTED_SUFFIXES = {".heic", ".heif", ".jpeg", ".jpg", ".png", ".webp"}
 TIMESTAMP_PATTERN = re.compile(r"^(?P<date>\d{8})_(?P<time>\d{6})(?:_(?P<micros>\d{1,6}))?")
+PHOTO_BUILD_CACHE_VERSION = 1
 
 
 @dataclass(slots=True)
@@ -62,6 +65,7 @@ def prepare_photo_gallery(
     source_dir = Path(raw_dir or RAW_PHOTOS_DIR)
     destination_dir = Path(output_dir or PHOTO_OUTPUT_DIR)
     preview_directory = Path(preview_dir or PHOTO_PREVIEW_DIR)
+    cache_path = PHOTO_BUILD_CACHE_PATH
 
     destination_dir.parent.mkdir(parents=True, exist_ok=True)
     temp_root = Path(
@@ -80,19 +84,52 @@ def prepare_photo_gallery(
     if source_files and not magick_binary:
         raise RuntimeError("ImageMagick is required to process photographs; install `magick` and retry")
     LOGGER.info("Preparing %d photographs from %s", len(source_files), source_dir)
-    if source_files:
-        LOGGER.info("Reading embedded capture timestamps")
-    source_records = [
-        (source_path, _read_capture_timestamp(magick_binary or "magick", source_path))
-        for source_path in source_files
-    ]
-    source_records.sort(key=lambda record: (_capture_sort_key(record[1]), record[0].name))
+    existing_cache = _load_photo_build_cache(cache_path)
 
     photo_assets: list[PhotoAsset] = []
-    total_sources = len(source_records)
-    for index, (source_path, captured_at) in enumerate(source_records, start=1):
-        if _should_log_progress(index, total_sources):
-            LOGGER.info("Processing photograph %d/%d: %s", index, total_sources, source_path.name)
+    cache_entries: dict[str, dict[str, Any]] = {}
+    uncached_sources: list[tuple[Path, os.stat_result]] = []
+    reused_count = 0
+    for source_path in source_files:
+        source_stat = source_path.stat()
+        output_name = f"{source_path.stem}.jpg"
+        cached_entry = existing_cache.get(source_path.name)
+        if cached_entry and _cache_entry_matches(cached_entry, source_stat):
+            full_source = destination_dir / output_name
+            preview_source = preview_directory / output_name
+            if full_source.exists() and preview_source.exists():
+                full_output_path = temp_full_dir / output_name
+                preview_output_path = temp_preview_dir / output_name
+                _stage_existing_derivative(full_source, full_output_path)
+                _stage_existing_derivative(preview_source, preview_output_path)
+                photo_assets.append(
+                    _photo_asset_from_cache(
+                        cached_entry,
+                        output_name=output_name,
+                        full_output_path=full_output_path,
+                        preview_output_path=preview_output_path,
+                        public_base_url=public_base_url,
+                    )
+                )
+                cache_entries[source_path.name] = cached_entry
+                reused_count += 1
+                continue
+        uncached_sources.append((source_path, source_stat))
+
+    if reused_count:
+        LOGGER.info("Reused cached derivatives for %d/%d photographs", reused_count, len(source_files))
+    if uncached_sources:
+        LOGGER.info("Reading embedded capture timestamps for %d changed/new photographs", len(uncached_sources))
+    capture_timestamps = _read_capture_timestamps(
+        magick_binary or "magick",
+        [source_path for source_path, _ in uncached_sources],
+    )
+
+    total_uncached = len(uncached_sources)
+    for index, (source_path, source_stat) in enumerate(uncached_sources, start=1):
+        if _should_log_progress(index, total_uncached):
+            LOGGER.info("Processing changed photograph %d/%d: %s", index, total_uncached, source_path.name)
+        captured_at = capture_timestamps[source_path]
         output_name = f"{source_path.stem}.jpg"
         full_output_path = temp_full_dir / output_name
         preview_output_path = temp_preview_dir / output_name
@@ -118,6 +155,15 @@ def prepare_photo_gallery(
                 preview_public_url=f"{public_base_url.rstrip('/')}/previews/{output_name}",
             )
         )
+        cache_entries[source_path.name] = _build_cache_entry(
+            source_stat=source_stat,
+            captured_at=captured_at,
+            width=width,
+            height=height,
+            preview_width=preview_width,
+            preview_height=preview_height,
+            orientation=orientation,
+        )
 
     if destination_dir.exists():
         shutil.rmtree(destination_dir)
@@ -127,6 +173,7 @@ def prepare_photo_gallery(
         shutil.rmtree(preview_directory)
     temp_preview_dir.replace(preview_directory)
     shutil.rmtree(temp_root, ignore_errors=True)
+    _write_photo_build_cache(cache_path, cache_entries)
     LOGGER.info("Prepared %d photographs in %s and %s", len(photo_assets), destination_dir, preview_directory)
     return photo_assets
 
@@ -263,6 +310,35 @@ def _identify_dimensions(magick_binary: str, image_path: Path) -> tuple[int, int
     return int(parts[0]), int(parts[1])
 
 
+def _read_capture_timestamps(magick_binary: str, image_paths: list[Path]) -> dict[Path, datetime]:
+    if not image_paths:
+        return {}
+
+    results: dict[Path, datetime] = {}
+    for batch in _batched(image_paths, 32):
+        try:
+            completed = _run_command(
+                [
+                    magick_binary,
+                    "identify",
+                    "-format",
+                    "%[EXIF:DateTimeOriginal]|%[EXIF:OffsetTimeOriginal]|%[EXIF:SubSecTimeOriginal]\n",
+                    *[str(path) for path in batch],
+                ],
+                error_prefix="failed to read batched capture timestamps",
+            )
+            lines = completed.stdout.splitlines()
+            if len(lines) != len(batch):
+                raise RuntimeError("unexpected batched identify output length")
+            for source_path, line in zip(batch, lines, strict=True):
+                parsed = _parse_capture_timestamp_line(line)
+                results[source_path] = parsed if parsed is not None else _parse_filename_timestamp(source_path)
+        except RuntimeError:
+            for source_path in batch:
+                results[source_path] = _read_capture_timestamp(magick_binary, source_path)
+    return results
+
+
 def _read_capture_timestamp(magick_binary: str, image_path: Path) -> datetime:
     completed = _run_command(
         [
@@ -274,12 +350,9 @@ def _read_capture_timestamp(magick_binary: str, image_path: Path) -> datetime:
         ],
         error_prefix=f"failed to read capture timestamp for {image_path.name}",
     )
-    parts = completed.stdout.strip().split("|")
-    if len(parts) == 3 and parts[0]:
-        raw_timestamp, raw_offset, raw_subsec = parts
-        parsed = _parse_exif_datetime(raw_timestamp, raw_offset, raw_subsec)
-        if parsed is not None:
-            return parsed
+    parsed = _parse_capture_timestamp_line(completed.stdout.strip())
+    if parsed is not None:
+        return parsed
     return _parse_filename_timestamp(image_path)
 
 
@@ -359,6 +432,14 @@ def _parse_exif_datetime(raw_timestamp: str, raw_offset: str, raw_subsec: str) -
     return parsed.replace(tzinfo=timezone(sign * tz_delta))
 
 
+def _parse_capture_timestamp_line(line: str) -> datetime | None:
+    parts = line.split("|")
+    if len(parts) != 3 or not parts[0]:
+        return None
+    raw_timestamp, raw_offset, raw_subsec = parts
+    return _parse_exif_datetime(raw_timestamp, raw_offset, raw_subsec)
+
+
 def _build_alt_text(captured_at: datetime) -> str:
     return f"Photograph from {captured_at.strftime('%Y-%m-%d at %H:%M:%S')}"
 
@@ -370,11 +451,109 @@ def _capture_sort_key(captured_at: datetime) -> datetime:
 
 
 def _should_log_progress(index: int, total: int) -> bool:
+    if total <= 0:
+        return False
     if index == 1 or index == total:
         return True
     if total <= 10:
         return True
     return index % 5 == 0
+
+
+def _load_photo_build_cache(cache_path: Path) -> dict[str, dict[str, Any]]:
+    if not cache_path.exists():
+        return {}
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    if payload.get("version") != PHOTO_BUILD_CACHE_VERSION:
+        return {}
+    entries = payload.get("entries")
+    if not isinstance(entries, dict):
+        return {}
+    return {str(key): value for key, value in entries.items() if isinstance(value, dict)}
+
+
+def _write_photo_build_cache(cache_path: Path, entries: dict[str, dict[str, Any]]) -> None:
+    cache_path.write_text(
+        json.dumps(
+            {
+                "version": PHOTO_BUILD_CACHE_VERSION,
+                "entries": entries,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _cache_entry_matches(entry: dict[str, Any], source_stat: os.stat_result) -> bool:
+    return (
+        int(entry.get("source_size", -1)) == source_stat.st_size
+        and int(entry.get("source_mtime_ns", -1)) == source_stat.st_mtime_ns
+    )
+
+
+def _build_cache_entry(
+    *,
+    source_stat: os.stat_result,
+    captured_at: datetime,
+    width: int,
+    height: int,
+    preview_width: int,
+    preview_height: int,
+    orientation: str,
+) -> dict[str, Any]:
+    return {
+        "source_size": source_stat.st_size,
+        "source_mtime_ns": source_stat.st_mtime_ns,
+        "captured_at": captured_at.isoformat(),
+        "width": width,
+        "height": height,
+        "preview_width": preview_width,
+        "preview_height": preview_height,
+        "orientation": orientation,
+    }
+
+
+def _photo_asset_from_cache(
+    entry: dict[str, Any],
+    *,
+    output_name: str,
+    full_output_path: Path,
+    preview_output_path: Path,
+    public_base_url: str,
+) -> PhotoAsset:
+    captured_at = datetime.fromisoformat(str(entry["captured_at"]))
+    return PhotoAsset(
+        filename=output_name,
+        full_output_path=full_output_path,
+        preview_output_path=preview_output_path,
+        captured_at=captured_at,
+        width=int(entry["width"]),
+        height=int(entry["height"]),
+        preview_width=int(entry["preview_width"]),
+        preview_height=int(entry["preview_height"]),
+        orientation=str(entry["orientation"]),
+        full_public_url=f"{public_base_url.rstrip('/')}/full_size/{output_name}",
+        preview_public_url=f"{public_base_url.rstrip('/')}/previews/{output_name}",
+    )
+
+
+def _stage_existing_derivative(source_path: Path, destination_path: Path) -> None:
+    try:
+        os.link(source_path, destination_path)
+    except OSError:
+        shutil.copy2(source_path, destination_path)
+
+
+def _batched(items: list[Path], batch_size: int) -> list[list[Path]]:
+    return [items[index : index + batch_size] for index in range(0, len(items), batch_size)]
 
 
 def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:
