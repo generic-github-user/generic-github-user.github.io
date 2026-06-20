@@ -4,6 +4,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 
 from builder import render_pages_to_html, render_posts_to_html, render_notes_to_html
+from builder.build_lock import acquire_build_lock
 from builder.content import load_notes, load_posts
 from builder.models import build_post_context
 from builder.photos import (
@@ -29,52 +30,53 @@ def main(argv: list[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
 
-    photo_gallery_specs = default_photo_gallery_specs()
-    page_context_overrides: dict[str, dict[str, object]] = {}
-    for gallery_spec in photo_gallery_specs:
-        gallery_assets = prepare_photo_gallery_for_spec(gallery_spec)
-        page_context_overrides[gallery_spec.page_slug] = build_photo_page_context(gallery_assets)
-    r2_config = None
-    if not args.skip_photo_sync:
-        r2_config = ensure_local_rclone_config()
-
-    posts = load_posts()
-    notes = load_notes()
-    post_listings = [
-        build_post_context(post, base_slug="posts")
-        for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
-    ]
-    note_listings = [
-        build_post_context(note, base_slug="notes")
-        for note in sorted(notes, key=lambda n: n.updated_at, reverse=True)
-    ]
-
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [
-            executor.submit(
-                render_pages_to_html,
-                force_history=args.rebuild_history,
-                listing_posts=post_listings,
-                listing_notes=note_listings,
-                page_context_overrides=page_context_overrides,
-            ),
-            executor.submit(
-                render_posts_to_html,
-                force_history=args.rebuild_history,
-                posts=posts,
-            ),
-            executor.submit(
-                render_notes_to_html,
-                force_history=args.rebuild_history,
-                notes=notes,
-            ),
-        ]
-        for future in futures:
-            future.result()
-
-    if r2_config is not None:
+    with acquire_build_lock():
+        photo_gallery_specs = default_photo_gallery_specs()
+        page_context_overrides: dict[str, dict[str, object]] = {}
         for gallery_spec in photo_gallery_specs:
-            sync_photos_to_r2(r2_config, gallery_spec=gallery_spec)
+            gallery_assets = prepare_photo_gallery_for_spec(gallery_spec)
+            page_context_overrides[gallery_spec.page_slug] = build_photo_page_context(gallery_assets)
+        r2_config = None
+        if not args.skip_photo_sync:
+            r2_config = ensure_local_rclone_config()
+
+        posts = load_posts()
+        notes = load_notes()
+        post_listings = [
+            build_post_context(post, base_slug="posts")
+            for post in sorted(posts, key=lambda p: p.updated_at, reverse=True)
+        ]
+        note_listings = [
+            build_post_context(note, base_slug="notes")
+            for note in sorted(notes, key=lambda n: n.updated_at, reverse=True)
+        ]
+
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [
+                executor.submit(
+                    render_pages_to_html,
+                    force_history=args.rebuild_history,
+                    listing_posts=post_listings,
+                    listing_notes=note_listings,
+                    page_context_overrides=page_context_overrides,
+                ),
+                executor.submit(
+                    render_posts_to_html,
+                    force_history=args.rebuild_history,
+                    posts=posts,
+                ),
+                executor.submit(
+                    render_notes_to_html,
+                    force_history=args.rebuild_history,
+                    notes=notes,
+                ),
+            ]
+            for future in futures:
+                future.result()
+
+        if r2_config is not None:
+            for gallery_spec in photo_gallery_specs:
+                sync_photos_to_r2(r2_config, gallery_spec=gallery_spec)
 
 
 if __name__ == "__main__":
