@@ -8,8 +8,9 @@ from builder.content import load_notes, load_posts
 from builder.models import build_post_context
 from builder.photos import (
     build_photo_page_context,
+    default_photo_gallery_specs,
     ensure_local_rclone_config,
-    prepare_photo_gallery,
+    prepare_photo_gallery_for_spec,
     sync_photos_to_r2,
 )
 
@@ -28,8 +29,11 @@ def main(argv: list[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
 
-    photos = prepare_photo_gallery()
-    photo_page_context = build_photo_page_context(photos)
+    photo_gallery_specs = default_photo_gallery_specs()
+    page_context_overrides: dict[str, dict[str, object]] = {}
+    for gallery_spec in photo_gallery_specs:
+        gallery_assets = prepare_photo_gallery_for_spec(gallery_spec)
+        page_context_overrides[gallery_spec.page_slug] = build_photo_page_context(gallery_assets)
     r2_config = None
     if not args.skip_photo_sync:
         r2_config = ensure_local_rclone_config()
@@ -52,7 +56,7 @@ def main(argv: list[str] | None = None) -> None:
                 force_history=args.rebuild_history,
                 listing_posts=post_listings,
                 listing_notes=note_listings,
-                page_context_overrides={"photographs": photo_page_context},
+                page_context_overrides=page_context_overrides,
             ),
             executor.submit(
                 render_posts_to_html,
@@ -69,7 +73,8 @@ def main(argv: list[str] | None = None) -> None:
             future.result()
 
     if r2_config is not None:
-        sync_photos_to_r2(r2_config)
+        for gallery_spec in photo_gallery_specs:
+            sync_photos_to_r2(r2_config, gallery_spec=gallery_spec)
 
 
 if __name__ == "__main__":

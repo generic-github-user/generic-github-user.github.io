@@ -1,5 +1,7 @@
 raw_photos/
+raw_photos_all/
 photos/
+all_photos/
 r2.txt
 rclone-r2.conf
 .venv/

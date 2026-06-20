@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 from html import escape
 import json
 import logging
@@ -14,13 +15,11 @@ import tempfile
 from typing import Any
 
 from .constants import (
-    PHOTO_BUILD_CACHE_PATH,
-    PHOTO_OUTPUT_DIR,
-    PHOTO_PREVIEW_DIR,
+    ALL_PHOTOS_DIR,
     PHOTO_PREVIEW_MAX_DIMENSION,
-    PHOTO_PUBLIC_BASE_URL,
     PHOTOS_DIR,
     R2_CREDENTIALS_PATH,
+    RAW_PHOTOS_ALL_DIR,
     RAW_PHOTOS_DIR,
     RCLONE_CONFIG_PATH,
 )
@@ -30,7 +29,30 @@ LOGGER = logging.getLogger(__name__)
 
 SUPPORTED_SUFFIXES = {".heic", ".heif", ".jpeg", ".jpg", ".png", ".webp"}
 TIMESTAMP_PATTERN = re.compile(r"^(?P<date>\d{8})_(?P<time>\d{6})(?:_(?P<micros>\d{1,6}))?")
-PHOTO_BUILD_CACHE_VERSION = 1
+PHOTO_BUILD_CACHE_VERSION = 2
+PHOTO_BUILD_CACHE_FILENAME = ".build_cache.json"
+
+
+@dataclass(slots=True)
+class GallerySpec:
+    name: str
+    page_slug: str
+    source_dir: Path
+    output_root: Path
+    public_base_url: str
+    remote_dir: str
+
+    @property
+    def full_output_dir(self) -> Path:
+        return self.output_root / "full_size"
+
+    @property
+    def preview_output_dir(self) -> Path:
+        return self.output_root / "previews"
+
+    @property
+    def cache_path(self) -> Path:
+        return self.output_root / PHOTO_BUILD_CACHE_FILENAME
 
 
 @dataclass(slots=True)
@@ -56,47 +78,93 @@ class R2Config:
     secret_access_key: str
 
 
+@dataclass(slots=True)
+class SourceRecord:
+    source_path: Path
+    source_stat: os.stat_result
+    source_hash: str
+    cached_entry: dict[str, Any] | None
+    captured_at: datetime | None
+
+
+def default_photo_gallery_specs() -> list[GallerySpec]:
+    return [
+        GallerySpec(
+            name="photographs",
+            page_slug="photographs",
+            source_dir=RAW_PHOTOS_DIR,
+            output_root=PHOTOS_DIR,
+            public_base_url="https://images.anna.engineering/photos",
+            remote_dir="photos",
+        ),
+        GallerySpec(
+            name="all_photographs",
+            page_slug="all_photographs",
+            source_dir=RAW_PHOTOS_ALL_DIR,
+            output_root=ALL_PHOTOS_DIR,
+            public_base_url="https://images.anna.engineering/all_photos",
+            remote_dir="all_photos",
+        ),
+    ]
+
+
 def prepare_photo_gallery(
     raw_dir: Path | None = None,
     output_dir: Path | None = None,
-    preview_dir: Path | None = None,
-    public_base_url: str = PHOTO_PUBLIC_BASE_URL,
+    public_base_url: str = "https://images.anna.engineering/photos",
 ) -> list[PhotoAsset]:
     source_dir = Path(raw_dir or RAW_PHOTOS_DIR)
-    destination_dir = Path(output_dir or PHOTO_OUTPUT_DIR)
-    preview_directory = Path(preview_dir or PHOTO_PREVIEW_DIR)
-    cache_path = PHOTO_BUILD_CACHE_PATH
+    output_root = Path(output_dir).parent if output_dir is not None else PHOTOS_DIR
+    spec = GallerySpec(
+        name="photographs",
+        page_slug="photographs",
+        source_dir=source_dir,
+        output_root=output_root,
+        public_base_url=public_base_url,
+        remote_dir="photos",
+    )
+    return prepare_photo_gallery_for_spec(spec)
 
-    destination_dir.parent.mkdir(parents=True, exist_ok=True)
+
+def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
+    spec.output_root.mkdir(parents=True, exist_ok=True)
     temp_root = Path(
         tempfile.mkdtemp(
-            prefix=".photos.tmp-",
-            dir=destination_dir.parent,
+            prefix=f".{spec.output_root.name}.tmp-",
+            dir=spec.output_root,
         )
     )
-    temp_full_dir = temp_root / destination_dir.name
-    temp_preview_dir = temp_root / preview_directory.name
+    temp_full_dir = temp_root / "full_size"
+    temp_preview_dir = temp_root / "previews"
     temp_full_dir.mkdir(parents=True, exist_ok=True)
     temp_preview_dir.mkdir(parents=True, exist_ok=True)
 
     magick_binary = shutil.which("magick")
-    source_files = _iter_source_images(source_dir)
+    source_files = _iter_source_images(spec.source_dir)
     if source_files and not magick_binary:
         raise RuntimeError("ImageMagick is required to process photographs; install `magick` and retry")
-    LOGGER.info("Preparing %d photographs from %s", len(source_files), source_dir)
-    existing_cache = _load_photo_build_cache(cache_path)
+
+    LOGGER.info("Preparing %d %s from %s", len(source_files), spec.name, spec.source_dir)
+    existing_cache = _load_photo_build_cache(spec.cache_path)
+    source_records = _build_source_records(source_files, existing_cache)
+
+    canonical_records, duplicate_records = _deduplicate_source_records(source_records)
+    duplicate_count = len(duplicate_records)
+    if duplicate_count:
+        LOGGER.info("Deduplicated %d duplicate files within %s", duplicate_count, spec.name)
 
     photo_assets: list[PhotoAsset] = []
     cache_entries: dict[str, dict[str, Any]] = {}
-    uncached_sources: list[tuple[Path, os.stat_result]] = []
+    canonical_cache_entries: dict[str, dict[str, Any]] = {}
+    uncached_records: list[SourceRecord] = []
     reused_count = 0
-    for source_path in source_files:
-        source_stat = source_path.stat()
-        output_name = f"{source_path.stem}.jpg"
-        cached_entry = existing_cache.get(source_path.name)
-        if cached_entry and _cache_entry_matches(cached_entry, source_stat):
-            full_source = destination_dir / output_name
-            preview_source = preview_directory / output_name
+
+    for record in canonical_records:
+        output_name = f"{record.source_path.stem}.jpg"
+        cached_entry = record.cached_entry
+        if cached_entry and _cache_entry_has_asset_metadata(cached_entry):
+            full_source = spec.full_output_dir / output_name
+            preview_source = spec.preview_output_dir / output_name
             if full_source.exists() and preview_source.exists():
                 full_output_path = temp_full_dir / output_name
                 preview_output_path = temp_preview_dir / output_name
@@ -108,73 +176,103 @@ def prepare_photo_gallery(
                         output_name=output_name,
                         full_output_path=full_output_path,
                         preview_output_path=preview_output_path,
-                        public_base_url=public_base_url,
+                        public_base_url=spec.public_base_url,
                     )
                 )
-                cache_entries[source_path.name] = cached_entry
+                cache_entry = dict(cached_entry)
+                cache_entries[record.source_path.name] = cache_entry
+                canonical_cache_entries[record.source_hash] = cache_entry
                 reused_count += 1
                 continue
-        uncached_sources.append((source_path, source_stat))
+        uncached_records.append(record)
 
     if reused_count:
-        LOGGER.info("Reused cached derivatives for %d/%d photographs", reused_count, len(source_files))
-    if uncached_sources:
-        LOGGER.info("Reading embedded capture timestamps for %d changed/new photographs", len(uncached_sources))
+        LOGGER.info("Reused cached derivatives for %d/%d %s", reused_count, len(canonical_records), spec.name)
+    if uncached_records:
+        LOGGER.info("Reading embedded capture timestamps for %d changed/new %s", len(uncached_records), spec.name)
+
+    records_needing_metadata = [record for record in uncached_records if record.captured_at is None]
     capture_timestamps = _read_capture_timestamps(
         magick_binary or "magick",
-        [source_path for source_path, _ in uncached_sources],
+        [record.source_path for record in records_needing_metadata],
     )
 
-    total_uncached = len(uncached_sources)
-    for index, (source_path, source_stat) in enumerate(uncached_sources, start=1):
+    total_uncached = len(uncached_records)
+    for index, record in enumerate(uncached_records, start=1):
         if _should_log_progress(index, total_uncached):
-            LOGGER.info("Processing changed photograph %d/%d: %s", index, total_uncached, source_path.name)
-        captured_at = capture_timestamps[source_path]
-        output_name = f"{source_path.stem}.jpg"
+            LOGGER.info("Processing changed %s %d/%d: %s", spec.name, index, total_uncached, record.source_path.name)
+        captured_at = record.captured_at or capture_timestamps[record.source_path]
+        output_name = f"{record.source_path.stem}.jpg"
         full_output_path = temp_full_dir / output_name
         preview_output_path = temp_preview_dir / output_name
-        _convert_image(magick_binary or "magick", source_path, full_output_path)
+        _convert_image(magick_binary or "magick", record.source_path, full_output_path)
         _convert_preview_image(magick_binary or "magick", full_output_path, preview_output_path)
         os.utime(full_output_path, (0, 0))
         os.utime(preview_output_path, (0, 0))
         width, height = _identify_dimensions(magick_binary or "magick", full_output_path)
         preview_width, preview_height = _identify_dimensions(magick_binary or "magick", preview_output_path)
         orientation = "landscape" if width >= height else "portrait"
-        photo_assets.append(
-            PhotoAsset(
-                filename=output_name,
-                full_output_path=full_output_path,
-                preview_output_path=preview_output_path,
-                captured_at=captured_at,
-                width=width,
-                height=height,
-                preview_width=preview_width,
-                preview_height=preview_height,
-                orientation=orientation,
-                full_public_url=f"{public_base_url.rstrip('/')}/full_size/{output_name}",
-                preview_public_url=f"{public_base_url.rstrip('/')}/previews/{output_name}",
-            )
-        )
-        cache_entries[source_path.name] = _build_cache_entry(
-            source_stat=source_stat,
+        asset = PhotoAsset(
+            filename=output_name,
+            full_output_path=full_output_path,
+            preview_output_path=preview_output_path,
             captured_at=captured_at,
             width=width,
             height=height,
             preview_width=preview_width,
             preview_height=preview_height,
             orientation=orientation,
+            full_public_url=f"{spec.public_base_url.rstrip('/')}/full_size/{output_name}",
+            preview_public_url=f"{spec.public_base_url.rstrip('/')}/previews/{output_name}",
+        )
+        cache_entry = _build_cache_entry(
+            source_stat=record.source_stat,
+            source_hash=record.source_hash,
+            captured_at=captured_at,
+            width=width,
+            height=height,
+            preview_width=preview_width,
+            preview_height=preview_height,
+            orientation=orientation,
+            deduplicated=False,
+        )
+        photo_assets.append(asset)
+        cache_entries[record.source_path.name] = cache_entry
+        canonical_cache_entries[record.source_hash] = cache_entry
+
+    for duplicate_record, canonical_record in duplicate_records:
+        canonical_entry = canonical_cache_entries.get(canonical_record.source_hash)
+        if canonical_entry is None:
+            raise RuntimeError(
+                f"missing canonical cache entry for duplicate {duplicate_record.source_path.name} in {spec.name}"
+            )
+        cache_entries[duplicate_record.source_path.name] = _build_cache_entry(
+            source_stat=duplicate_record.source_stat,
+            source_hash=duplicate_record.source_hash,
+            captured_at=datetime.fromisoformat(str(canonical_entry["captured_at"])),
+            width=int(canonical_entry["width"]),
+            height=int(canonical_entry["height"]),
+            preview_width=int(canonical_entry["preview_width"]),
+            preview_height=int(canonical_entry["preview_height"]),
+            orientation=str(canonical_entry["orientation"]),
+            deduplicated=True,
         )
 
-    if destination_dir.exists():
-        shutil.rmtree(destination_dir)
-    destination_dir.parent.mkdir(parents=True, exist_ok=True)
-    temp_full_dir.replace(destination_dir)
-    if preview_directory.exists():
-        shutil.rmtree(preview_directory)
-    temp_preview_dir.replace(preview_directory)
+    if spec.full_output_dir.exists():
+        shutil.rmtree(spec.full_output_dir)
+    temp_full_dir.replace(spec.full_output_dir)
+    if spec.preview_output_dir.exists():
+        shutil.rmtree(spec.preview_output_dir)
+    temp_preview_dir.replace(spec.preview_output_dir)
     shutil.rmtree(temp_root, ignore_errors=True)
-    _write_photo_build_cache(cache_path, cache_entries)
-    LOGGER.info("Prepared %d photographs in %s and %s", len(photo_assets), destination_dir, preview_directory)
+    _write_photo_build_cache(spec.cache_path, cache_entries)
+    LOGGER.info(
+        "Prepared %d %s in %s and %s",
+        len(photo_assets),
+        spec.name,
+        spec.full_output_dir,
+        spec.preview_output_dir,
+    )
     return photo_assets
 
 
@@ -227,39 +325,87 @@ def ensure_local_rclone_config(
 def sync_photos_to_r2(
     r2_config: R2Config,
     *,
-    photos_dir: Path | None = None,
+    gallery_spec: GallerySpec,
     config_path: Path | None = None,
 ) -> None:
     rclone_binary = shutil.which("rclone")
     if not rclone_binary:
         raise RuntimeError("rclone is required to upload photographs; install it and retry")
-    source_dir = Path(photos_dir or PHOTOS_DIR)
     resolved_config_path = Path(config_path or RCLONE_CONFIG_PATH)
-    destination = f"anna-r2:{r2_config.bucket_name}/photos"
-    LOGGER.info("Syncing photographs to %s", destination)
+    destination = f"anna-r2:{r2_config.bucket_name}/{gallery_spec.remote_dir}"
+    LOGGER.info("Syncing %s to %s", gallery_spec.name, destination)
     _run_command(
         [
             rclone_binary,
             "sync",
-            str(source_dir),
+            str(gallery_spec.output_root),
             destination,
             "--config",
             str(resolved_config_path),
             "--fast-list",
         ],
-        error_prefix="rclone photo sync failed",
+        error_prefix=f"rclone sync failed for {gallery_spec.name}",
     )
-    LOGGER.info("Synced photographs from %s to %s", source_dir, destination)
+    LOGGER.info("Synced %s from %s to %s", gallery_spec.name, gallery_spec.output_root, destination)
 
 
 def _iter_source_images(source_dir: Path) -> list[Path]:
     if not source_dir.exists():
         return []
-    return [
-        path
-        for path in source_dir.iterdir()
-        if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES
-    ]
+    return sorted(
+        [
+            path
+            for path in source_dir.iterdir()
+            if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES
+        ],
+        key=lambda path: path.name,
+    )
+
+
+def _build_source_records(
+    source_files: list[Path],
+    existing_cache: dict[str, dict[str, Any]],
+) -> list[SourceRecord]:
+    records: list[SourceRecord] = []
+    for source_path in source_files:
+        source_stat = source_path.stat()
+        cached_entry = existing_cache.get(source_path.name)
+        cache_matches = cached_entry is not None and _cache_entry_matches(cached_entry, source_stat)
+        if cache_matches and cached_entry is not None and cached_entry.get("source_hash"):
+            source_hash = str(cached_entry["source_hash"])
+        else:
+            source_hash = _hash_file(source_path)
+        captured_at = None
+        if cached_entry is not None and str(cached_entry.get("source_hash") or "") == source_hash:
+            captured_at_raw = cached_entry.get("captured_at")
+            if isinstance(captured_at_raw, str) and captured_at_raw:
+                captured_at = datetime.fromisoformat(captured_at_raw)
+        records.append(
+            SourceRecord(
+                source_path=source_path,
+                source_stat=source_stat,
+                source_hash=source_hash,
+                cached_entry=cached_entry,
+                captured_at=captured_at,
+            )
+        )
+    return records
+
+
+def _deduplicate_source_records(
+    source_records: list[SourceRecord],
+) -> tuple[list[SourceRecord], list[tuple[SourceRecord, SourceRecord]]]:
+    canonical_by_hash: dict[str, SourceRecord] = {}
+    canonical_records: list[SourceRecord] = []
+    duplicate_records: list[tuple[SourceRecord, SourceRecord]] = []
+    for record in source_records:
+        canonical = canonical_by_hash.get(record.source_hash)
+        if canonical is None:
+            canonical_by_hash[record.source_hash] = record
+            canonical_records.append(record)
+            continue
+        duplicate_records.append((record, canonical))
+    return canonical_records, duplicate_records
 
 
 def _convert_image(magick_binary: str, source_path: Path, output_path: Path) -> None:
@@ -315,7 +461,16 @@ def _read_capture_timestamps(magick_binary: str, image_paths: list[Path]) -> dic
         return {}
 
     results: dict[Path, datetime] = {}
-    for batch in _batched(image_paths, 32):
+    batches = _batched(image_paths, 32)
+    total_batches = len(batches)
+    for batch_index, batch in enumerate(batches, start=1):
+        if total_batches > 1 and _should_log_progress(batch_index, total_batches):
+            LOGGER.info(
+                "Reading capture timestamps batch %d/%d (%d files)",
+                batch_index,
+                total_batches,
+                len(batch),
+            )
         try:
             completed = _run_command(
                 [
@@ -499,25 +654,34 @@ def _cache_entry_matches(entry: dict[str, Any], source_stat: os.stat_result) -> 
     )
 
 
+def _cache_entry_has_asset_metadata(entry: dict[str, Any]) -> bool:
+    required_keys = ("captured_at", "width", "height", "preview_width", "preview_height", "orientation", "source_hash")
+    return not bool(entry.get("deduplicated")) and all(key in entry for key in required_keys)
+
+
 def _build_cache_entry(
     *,
     source_stat: os.stat_result,
+    source_hash: str,
     captured_at: datetime,
     width: int,
     height: int,
     preview_width: int,
     preview_height: int,
     orientation: str,
+    deduplicated: bool,
 ) -> dict[str, Any]:
     return {
         "source_size": source_stat.st_size,
         "source_mtime_ns": source_stat.st_mtime_ns,
+        "source_hash": source_hash,
         "captured_at": captured_at.isoformat(),
         "width": width,
         "height": height,
         "preview_width": preview_width,
         "preview_height": preview_height,
         "orientation": orientation,
+        "deduplicated": deduplicated,
     }
 
 
@@ -554,6 +718,17 @@ def _stage_existing_derivative(source_path: Path, destination_path: Path) -> Non
 
 def _batched(items: list[Path], batch_size: int) -> list[list[Path]]:
     return [items[index : index + batch_size] for index in range(0, len(items), batch_size)]
+
+
+def _hash_file(path: Path) -> str:
+    digest = sha256()
+    with path.open("rb") as handle:
+        while True:
+            chunk = handle.read(1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:

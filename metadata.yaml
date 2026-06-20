@@ -9,6 +9,10 @@ pages:
     slug: notes
   - title: photographs
     slug: photographs
+  - title: all_photographs
+    slug: all_photographs
+    source: photographs
+    nav: false
   - title: random
     slug: random
   - title: recommendations

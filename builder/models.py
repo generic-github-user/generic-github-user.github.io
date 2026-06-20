@@ -148,6 +148,8 @@ def _iter_navigation_items(pages_meta: Any) -> list[str]:
         slug: str | None
         direct_href: str | None = None
         if isinstance(entry, dict):
+            if entry.get("nav") is False or entry.get("include_in_nav") is False:
+                continue
             label = _first_non_empty(entry, "label", "title", "name", "slug", "path")
             slug = _first_non_empty(entry, "slug", "path", "name")
             direct_href = _first_non_empty(entry, "href", "url")
