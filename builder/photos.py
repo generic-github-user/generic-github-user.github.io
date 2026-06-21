@@ -16,6 +16,14 @@ from typing import Any
 
 from .constants import (
     ALL_PHOTOS_DIR,
+    EGOBLUR_COMMAND,
+    EGOBLUR_DOCKER_IMAGE,
+    EGOBLUR_FACE_MODEL_PATH,
+    EGOBLUR_FACE_SCORE_THRESHOLD,
+    EGOBLUR_LP_MODEL_PATH,
+    EGOBLUR_LP_SCORE_THRESHOLD,
+    EGOBLUR_MODELS_DIR,
+    LOCAL_PHOTO_CACHE_ROOT,
     PHOTO_PREVIEW_MAX_DIMENSION,
     PHOTOS_DIR,
     R2_CREDENTIALS_PATH,
@@ -29,8 +37,9 @@ LOGGER = logging.getLogger(__name__)
 
 SUPPORTED_SUFFIXES = {".heic", ".heif", ".jpeg", ".jpg", ".png", ".webp"}
 TIMESTAMP_PATTERN = re.compile(r"^(?P<date>\d{8})_(?P<time>\d{6})(?:_(?P<micros>\d{1,6}))?")
-PHOTO_BUILD_CACHE_VERSION = 2
+PHOTO_BUILD_CACHE_VERSION = 3
 PHOTO_BUILD_CACHE_FILENAME = ".build_cache.json"
+REDACTION_CACHE_DIRNAME = "redacted"
 
 
 @dataclass(slots=True)
@@ -52,7 +61,15 @@ class GallerySpec:
 
     @property
     def cache_path(self) -> Path:
-        return self.output_root / PHOTO_BUILD_CACHE_FILENAME
+        return self.cache_root / PHOTO_BUILD_CACHE_FILENAME
+
+    @property
+    def cache_root(self) -> Path:
+        return LOCAL_PHOTO_CACHE_ROOT / self.name
+
+    @property
+    def redaction_cache_dir(self) -> Path:
+        return self.cache_root / REDACTION_CACHE_DIRNAME
 
 
 @dataclass(slots=True)
@@ -128,6 +145,8 @@ def prepare_photo_gallery(
 
 def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
     spec.output_root.mkdir(parents=True, exist_ok=True)
+    spec.cache_root.mkdir(parents=True, exist_ok=True)
+    spec.redaction_cache_dir.mkdir(parents=True, exist_ok=True)
     temp_root = Path(
         tempfile.mkdtemp(
             prefix=f".{spec.output_root.name}.tmp-",
@@ -136,13 +155,12 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
     )
     temp_full_dir = temp_root / "full_size"
     temp_preview_dir = temp_root / "previews"
+    temp_redaction_dir = temp_root / "redaction"
     temp_full_dir.mkdir(parents=True, exist_ok=True)
     temp_preview_dir.mkdir(parents=True, exist_ok=True)
+    temp_redaction_dir.mkdir(parents=True, exist_ok=True)
 
-    magick_binary = shutil.which("magick")
     source_files = _iter_source_images(spec.source_dir)
-    if source_files and not magick_binary:
-        raise RuntimeError("ImageMagick is required to process photographs; install `magick` and retry")
 
     LOGGER.info("Preparing %d %s from %s", len(source_files), spec.name, spec.source_dir)
     existing_cache = _load_photo_build_cache(spec.cache_path)
@@ -158,6 +176,8 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
     canonical_cache_entries: dict[str, dict[str, Any]] = {}
     uncached_records: list[SourceRecord] = []
     reused_count = 0
+    rebuilt_from_redaction_cache_count = 0
+    magick_binary: str | None = None
 
     for record in canonical_records:
         output_name = f"{record.source_path.stem}.jpg"
@@ -184,18 +204,58 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
                 canonical_cache_entries[record.source_hash] = cache_entry
                 reused_count += 1
                 continue
+            redacted_source = _redaction_cache_path(spec, record.source_hash, cached_entry)
+            if redacted_source.exists():
+                magick_binary = magick_binary or _require_binary("magick", "ImageMagick is required to process photographs; install `magick` and retry")
+                full_output_path = temp_full_dir / output_name
+                preview_output_path = temp_preview_dir / output_name
+                _convert_image(magick_binary, redacted_source, full_output_path)
+                _convert_preview_image(magick_binary, full_output_path, preview_output_path)
+                os.utime(full_output_path, (0, 0))
+                os.utime(preview_output_path, (0, 0))
+                photo_assets.append(
+                    _photo_asset_from_cache(
+                        cached_entry,
+                        output_name=output_name,
+                        full_output_path=full_output_path,
+                        preview_output_path=preview_output_path,
+                        public_base_url=spec.public_base_url,
+                    )
+                )
+                cache_entry = dict(cached_entry)
+                cache_entries[record.source_path.name] = cache_entry
+                canonical_cache_entries[record.source_hash] = cache_entry
+                rebuilt_from_redaction_cache_count += 1
+                continue
         uncached_records.append(record)
 
     if reused_count:
         LOGGER.info("Reused cached derivatives for %d/%d %s", reused_count, len(canonical_records), spec.name)
+    if rebuilt_from_redaction_cache_count:
+        LOGGER.info(
+            "Rebuilt derivatives from cached redactions for %d/%d %s",
+            rebuilt_from_redaction_cache_count,
+            len(canonical_records),
+            spec.name,
+        )
     if uncached_records:
         LOGGER.info("Reading embedded capture timestamps for %d changed/new %s", len(uncached_records), spec.name)
 
     records_needing_metadata = [record for record in uncached_records if record.captured_at is None]
-    capture_timestamps = _read_capture_timestamps(
-        magick_binary or "magick",
-        [record.source_path for record in records_needing_metadata],
-    )
+    capture_timestamps: dict[Path, datetime] = {}
+    if records_needing_metadata:
+        magick_binary = magick_binary or _require_binary("magick", "ImageMagick is required to process photographs; install `magick` and retry")
+        capture_timestamps = _read_capture_timestamps(
+            magick_binary,
+            [record.source_path for record in records_needing_metadata],
+        )
+
+    redaction_fingerprint = ""
+    docker_binary: str | None = None
+    if uncached_records:
+        magick_binary = magick_binary or _require_binary("magick", "ImageMagick is required to process photographs; install `magick` and retry")
+        redaction_fingerprint = _build_redaction_fingerprint()
+        docker_binary = _require_binary("docker", "Docker is required to run EgoBlur redaction; install it and retry")
 
     total_uncached = len(uncached_records)
     for index, record in enumerate(uncached_records, start=1):
@@ -205,12 +265,21 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
         output_name = f"{record.source_path.stem}.jpg"
         full_output_path = temp_full_dir / output_name
         preview_output_path = temp_preview_dir / output_name
-        _convert_image(magick_binary or "magick", record.source_path, full_output_path)
-        _convert_preview_image(magick_binary or "magick", full_output_path, preview_output_path)
+        redacted_source_path = _redaction_cache_path(spec, record.source_hash, redaction_fingerprint)
+        if not redacted_source_path.exists():
+            _run_redaction(
+                docker_binary=docker_binary or "",
+                magick_binary=magick_binary or "",
+                source_path=record.source_path,
+                redacted_output_path=redacted_source_path,
+                temp_redaction_dir=temp_redaction_dir,
+            )
+        _convert_image(magick_binary or "", redacted_source_path, full_output_path)
+        _convert_preview_image(magick_binary or "", full_output_path, preview_output_path)
         os.utime(full_output_path, (0, 0))
         os.utime(preview_output_path, (0, 0))
-        width, height = _identify_dimensions(magick_binary or "magick", full_output_path)
-        preview_width, preview_height = _identify_dimensions(magick_binary or "magick", preview_output_path)
+        width, height = _identify_dimensions(magick_binary or "", full_output_path)
+        preview_width, preview_height = _identify_dimensions(magick_binary or "", preview_output_path)
         orientation = "landscape" if width >= height else "portrait"
         asset = PhotoAsset(
             filename=output_name,
@@ -235,6 +304,7 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
             preview_height=preview_height,
             orientation=orientation,
             deduplicated=False,
+            redaction_fingerprint=redaction_fingerprint,
         )
         photo_assets.append(asset)
         cache_entries[record.source_path.name] = cache_entry
@@ -256,6 +326,7 @@ def prepare_photo_gallery_for_spec(spec: GallerySpec) -> list[PhotoAsset]:
             preview_height=int(canonical_entry["preview_height"]),
             orientation=str(canonical_entry["orientation"]),
             deduplicated=True,
+            redaction_fingerprint=str(canonical_entry.get("redaction_fingerprint") or ""),
         )
 
     if spec.full_output_dir.exists():
@@ -343,6 +414,8 @@ def sync_photos_to_r2(
             "--config",
             str(resolved_config_path),
             "--fast-list",
+            "--exclude",
+            PHOTO_BUILD_CACHE_FILENAME,
         ],
         error_prefix=f"rclone sync failed for {gallery_spec.name}",
     )
@@ -655,7 +728,16 @@ def _cache_entry_matches(entry: dict[str, Any], source_stat: os.stat_result) -> 
 
 
 def _cache_entry_has_asset_metadata(entry: dict[str, Any]) -> bool:
-    required_keys = ("captured_at", "width", "height", "preview_width", "preview_height", "orientation", "source_hash")
+    required_keys = (
+        "captured_at",
+        "width",
+        "height",
+        "preview_width",
+        "preview_height",
+        "orientation",
+        "source_hash",
+        "redaction_fingerprint",
+    )
     return not bool(entry.get("deduplicated")) and all(key in entry for key in required_keys)
 
 
@@ -670,6 +752,7 @@ def _build_cache_entry(
     preview_height: int,
     orientation: str,
     deduplicated: bool,
+    redaction_fingerprint: str,
 ) -> dict[str, Any]:
     return {
         "source_size": source_stat.st_size,
@@ -682,6 +765,7 @@ def _build_cache_entry(
         "preview_height": preview_height,
         "orientation": orientation,
         "deduplicated": deduplicated,
+        "redaction_fingerprint": redaction_fingerprint,
     }
 
 
@@ -720,6 +804,13 @@ def _batched(items: list[Path], batch_size: int) -> list[list[Path]]:
     return [items[index : index + batch_size] for index in range(0, len(items), batch_size)]
 
 
+def _require_binary(binary_name: str, error_message: str) -> str:
+    resolved = shutil.which(binary_name)
+    if not resolved:
+        raise RuntimeError(error_message)
+    return resolved
+
+
 def _hash_file(path: Path) -> str:
     digest = sha256()
     with path.open("rb") as handle:
@@ -729,6 +820,90 @@ def _hash_file(path: Path) -> str:
                 break
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _build_redaction_fingerprint() -> str:
+    if not EGOBLUR_FACE_MODEL_PATH.exists():
+        raise FileNotFoundError(f"EgoBlur face model not found: {EGOBLUR_FACE_MODEL_PATH}")
+    if not EGOBLUR_LP_MODEL_PATH.exists():
+        raise FileNotFoundError(f"EgoBlur license plate model not found: {EGOBLUR_LP_MODEL_PATH}")
+    payload = {
+        "docker_image": EGOBLUR_DOCKER_IMAGE,
+        "command": EGOBLUR_COMMAND,
+        "face_model_path": str(EGOBLUR_FACE_MODEL_PATH.name),
+        "lp_model_path": str(EGOBLUR_LP_MODEL_PATH.name),
+        "face_model_hash": _hash_file(EGOBLUR_FACE_MODEL_PATH),
+        "lp_model_hash": _hash_file(EGOBLUR_LP_MODEL_PATH),
+        "face_threshold": EGOBLUR_FACE_SCORE_THRESHOLD,
+        "lp_threshold": EGOBLUR_LP_SCORE_THRESHOLD,
+    }
+    return sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
+def _redaction_cache_path(spec: GallerySpec, source_hash: str, cache_entry_or_fingerprint: dict[str, Any] | str) -> Path:
+    if isinstance(cache_entry_or_fingerprint, dict):
+        fingerprint = str(cache_entry_or_fingerprint.get("redaction_fingerprint") or "")
+    else:
+        fingerprint = cache_entry_or_fingerprint
+    return spec.redaction_cache_dir / f"{source_hash}-{fingerprint}.jpg"
+
+
+def _run_redaction(
+    *,
+    docker_binary: str,
+    magick_binary: str,
+    source_path: Path,
+    redacted_output_path: Path,
+    temp_redaction_dir: Path,
+) -> None:
+    redacted_output_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_input_path = temp_redaction_dir / f"{source_path.stem}-{sha256(str(source_path).encode('utf-8')).hexdigest()[:12]}.jpg"
+    temp_output_path = temp_redaction_dir / f"{source_path.stem}-{sha256((str(source_path) + '-blurred').encode('utf-8')).hexdigest()[:12]}.jpg"
+    _convert_redaction_input(magick_binary, source_path, temp_input_path)
+    _run_command(
+        [
+            docker_binary,
+            "run",
+            "--rm",
+            "-v",
+            f"{temp_redaction_dir.resolve()}:/data",
+            "-v",
+            f"{EGOBLUR_MODELS_DIR.resolve()}:/models",
+            EGOBLUR_DOCKER_IMAGE,
+            EGOBLUR_COMMAND,
+            "--face_model_path",
+            f"/models/{EGOBLUR_FACE_MODEL_PATH.name}",
+            "--lp_model_path",
+            f"/models/{EGOBLUR_LP_MODEL_PATH.name}",
+            "--face_model_score_threshold",
+            str(EGOBLUR_FACE_SCORE_THRESHOLD),
+            "--lp_model_score_threshold",
+            str(EGOBLUR_LP_SCORE_THRESHOLD),
+            "--input_image_path",
+            f"/data/{temp_input_path.name}",
+            "--output_image_path",
+            f"/data/{temp_output_path.name}",
+        ],
+        error_prefix=f"failed to run EgoBlur redaction for {source_path.name}",
+    )
+    shutil.move(str(temp_output_path), redacted_output_path)
+    temp_input_path.unlink(missing_ok=True)
+
+
+def _convert_redaction_input(magick_binary: str, source_path: Path, output_path: Path) -> None:
+    _run_command(
+        [
+            magick_binary,
+            str(source_path),
+            "-auto-orient",
+            "-colorspace",
+            "sRGB",
+            "-quality",
+            "95",
+            str(output_path),
+        ],
+        error_prefix=f"failed to prepare redaction input for {source_path.name}",
+    )
 
 
 def _build_gallery_markup(grouped: dict[str, list[dict[str, Any]]]) -> str:
