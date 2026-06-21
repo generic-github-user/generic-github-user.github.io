@@ -164,6 +164,7 @@ h3, h4 {
 - ["The Cask of Amontillado"](https://poemuseum.org/the-cask-of-amontillado/) (Edgar Allan Poe)
 - ["The Necklace"](https://en.wikipedia.org/wiki/The_Necklace) (Guy de Maupassant)
 - ["Manna -- Two Views of Humanity's Future"](https://marshallbrain.com/manna1) (Marshall Brain)
+- ["Lena"](https://qntm.org/mmacevedo) (qntm)
 
 ### Games
 
