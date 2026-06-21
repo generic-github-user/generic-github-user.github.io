@@ -2,6 +2,8 @@
 
 Some things I enjoy or find useful and think others might enjoy or find useful. Please don't be offended if we disagree on the enjoyability and/or usefulness of a particular entry. Listed in no particular order^[Some sections are alphabetized but I haven't been consistent about this so far].
 
+A suitable alternative name for this page would be "Favorites" (especially as concerns the music and film/TV sections); however, the two overlap too heavily to justify actually separating them into two separate pages.
+
 Items marked with a "+" are exceptionally high-quality or otherwise distinguished among the other members of their category, in my view. (In a few cases this refers only to the immediate reference class relevant to that item and not to the entire category. Sometimes they are just things I have a strong personal preference for.)
 
 <style>
@@ -27,10 +29,16 @@ body {
   border-width: 6px;
   border-color: #f2e6ff;
   padding: 10px;
+
+  gap: 1rem;
 }
 
 .multicol section section {
   margin: 0;
+}
+
+.multicol section section + section {
+  margin-top: 1rem;
 }
 
 .col2 {
@@ -62,6 +70,9 @@ h3, h4 {
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
 - <https://loginasroot.net/>
 - <https://www.owlposting.com/>
+- <https://catern.com/>
+- <https://www.astralcodexten.com/>
+- <https://morallawwithin.substack.com/>
 
 #### Friends & acquaintances
 
@@ -74,15 +85,17 @@ h3, h4 {
 
 - [Amadeus](https://en.wikipedia.org/wiki/Amadeus_(film))^+^
 - [Avatar](https://en.wikipedia.org/wiki/Avatar_(2009_film))
+- [Cloverfield](https://en.wikipedia.org/wiki/Cloverfield)
 - [Dune (2021)](https://en.wikipedia.org/wiki/Dune_(2021_film))
 - [Dune: Part Two (2024)](https://en.wikipedia.org/wiki/Dune:_Part_Two)
-- [Fargo](https://en.wikipedia.org/wiki/Fargo_(1996_film))
+- [Fargo](https://en.wikipedia.org/wiki/Fargo_(1996_film))^[The [anthology series of the same name](https://en.wikipedia.org/wiki/Fargo_(TV_series)) is also entertaining, though I've only seen the first season]
 - [Heat](https://en.wikipedia.org/wiki/Heat_(1995_film))
 - [Inception](https://en.wikipedia.org/wiki/Inception)
 - [Interstellar](https://en.wikipedia.org/wiki/Interstellar_(film))
 - [Margin Call](https://en.wikipedia.org/wiki/Margin_Call)
 - [Megalopolis](https://en.wikipedia.org/wiki/Megalopolis_(film))
 - [Memento](https://en.wikipedia.org/wiki/Memento_(film))
+- [Nope](https://en.wikipedia.org/wiki/Nope_(film))
 - [Pulp Fiction](https://en.wikipedia.org/wiki/Pulp_Fiction)
 - [Scarface](https://en.wikipedia.org/wiki/Scarface_(1983_film))
 - [The Godfather Part II](https://en.wikipedia.org/wiki/The_Godfather_Part_II)
@@ -90,7 +103,6 @@ h3, h4 {
 - [The Prestige](https://en.wikipedia.org/wiki/The_Prestige_(film))
 - [The Usual Suspects](https://en.wikipedia.org/wiki/The_Usual_Suspects)
 - [Uncut Gems](https://en.wikipedia.org/wiki/Uncut_Gems)
-- [Cloverfield](https://en.wikipedia.org/wiki/Cloverfield)
 
 ### Shows
 
@@ -135,6 +147,7 @@ h3, h4 {
 - [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
 - [uv](https://github.com/astral-sh/uv)
 - [xonsh](https://xon.sh/)
+- [fzf](https://junegunn.github.io/fzf/)
 
 :::
 
@@ -150,6 +163,7 @@ h3, h4 {
 - ["Survivor Type"](https://en.wikipedia.org/wiki/Survivor_Type) (Stephen King)^[reader discretion advised]
 - ["The Cask of Amontillado"](https://poemuseum.org/the-cask-of-amontillado/) (Edgar Allan Poe)
 - ["The Necklace"](https://en.wikipedia.org/wiki/The_Necklace) (Guy de Maupassant)
+- ["Manna -- Two Views of Humanity's Future"](https://marshallbrain.com/manna1) (Marshall Brain)
 
 ### Games
 
@@ -163,7 +177,40 @@ h3, h4 {
 ### Music
 
 - [Requiem in D minor, K. 626](https://en.wikipedia.org/wiki/Requiem_(Mozart)) (Mozart); particularly the [1991 Academy of St. Martin in the Fields recording](https://open.spotify.com/album/2mAq4V9WfnKBIMmKGLS653)^+^
-- [The Phantom of the Opera](https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical))
+- [The Phantom of the Opera](https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical)) (Andrew Lloyd Webber)
+- [The Planets, Op. 32: IV. Jupiter, the Bringer of Jollity](https://www.youtube.com/watch?v=wvfz23jZz6c) (Gustav Holst)
+
+#### Albums
+
+- *10,000 gecs* (100 gecs)
+- *Beauty Behind the Madness* (The Weeknd)
+- *Graduation* (Kanye West)
+- *Intro Bonito* (Kero Kero Bonito)
+- *Pure Heroine* (Lorde)
+- *Starboy* (The Weeknd)
+- *The Fame Monster* (Lady Gaga)
+- *The Family Jewels* (Marina and the Diamonds)
+- *good kid, m.A.A.d city* (Kendrick Lamar)
+
+#### Artists
+
+- 100 gecs/Laura Les
+- Billy Joel
+- Chappell Roan
+- David Bowie
+- Elton John
+- Frank Sinatra
+- Frédéric Chopin
+- Hans Zimmer
+- Kanye West
+- Kendrick Lamar
+- Kero Kero Bonito
+- Lady Gaga
+- Lorde
+- Marina^[Formerly "Marina and the Diamonds"]
+- Mozart
+- Nena
+- The Weeknd
 
 ### Literature
 
@@ -180,6 +227,8 @@ h3, h4 {
 
 - [Ophelia (Heyser)](https://en.wikipedia.org/wiki/Ophelia_(Heyser))
 - [Bacchante (Bouguereau)](https://www.wikiart.org/en/william-adolphe-bouguereau/bacchante-1894)
+- [The Garden of Earthly Delights (Bosch)](https://en.wikipedia.org/wiki/The_Garden_of_Earthly_Delights)
+- [Christ in Limbo (follower of Bosch)](https://commons.wikimedia.org/wiki/File:Follower_of_Jheronimus_Bosch_Christ_in_Limbo.jpg)
 
 ### Miscellaneous
 
@@ -187,5 +236,6 @@ h3, h4 {
 - [Meltdown](http://www.ccru.net/swarm1/1_melt.htm)
 - [The Intelligence Curse](https://intelligence-curse.ai/)
 - [Scrandle](https://scrandle.com/)
+- [Catfishing](https://catfishing.net/)
 
 :::

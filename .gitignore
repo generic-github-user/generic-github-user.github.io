@@ -2,6 +2,8 @@ raw_photos/
 raw_photos_all/
 photos/
 all_photos/
+.photo_processing_cache/
+.build.lock
 r2.txt
 rclone-r2.conf
 .venv/
