@@ -69,7 +69,7 @@ h3, h4 {
 - <https://www.haskellforall.com/>
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
 - <https://loginasroot.net/>
-- <https://www.owlposting.com/>
+- <https://www.owlposting.com/>^[Favorites: <https://www.owlposting.com/p/cancer-has-a-surprising-amount-of>, <https://www.owlposting.com/p/on-creating-new-knobs-of-control>, <https://www.owlposting.com/p/reasons-to-be-pessimistic-and-optimistic>]
 - <https://catern.com/>
 - <https://www.astralcodexten.com/>
 - <https://morallawwithin.substack.com/>
@@ -141,7 +141,7 @@ h3, h4 {
 - [Sanoid/Syncoid](https://github.com/jimsalterjrs/sanoid)
 - [Signal](https://signal.org/)^[See also: <https://github.com/carderne/signal-export>]
 - [Sway WM](https://swaywm.org/)
-- [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics.]
+- [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics. [Todoist](https://www.todoist.com/) is a sane alternative for less technical users (or those who merely want a nice mobile device UX) that I also used happily for quite a while.]
 - [Timewarrior](https://timewarrior.net/)
 - [tldr](https://tldr.sh/)
 - [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
@@ -160,7 +160,7 @@ h3, h4 {
 
 ### Short stories
 
-- ["Survivor Type"](https://en.wikipedia.org/wiki/Survivor_Type) (Stephen King)^[reader discretion advised]
+- ["Survivor Type"](https://en.wikipedia.org/wiki/Survivor_Type) (Stephen King)^[reader discretion advised] ^[Apparently, the story was considered so gruesome at the time that King was unable to get it published until years after writing]
 - ["The Cask of Amontillado"](https://poemuseum.org/the-cask-of-amontillado/) (Edgar Allan Poe)
 - ["The Necklace"](https://en.wikipedia.org/wiki/The_Necklace) (Guy de Maupassant)
 - ["Manna -- Two Views of Humanity's Future"](https://marshallbrain.com/manna1) (Marshall Brain)
@@ -229,7 +229,18 @@ h3, h4 {
 - [Ophelia (Heyser)](https://en.wikipedia.org/wiki/Ophelia_(Heyser))
 - [Bacchante (Bouguereau)](https://www.wikiart.org/en/william-adolphe-bouguereau/bacchante-1894)
 - [The Garden of Earthly Delights (Bosch)](https://en.wikipedia.org/wiki/The_Garden_of_Earthly_Delights)
-- [Christ in Limbo (follower of Bosch)](https://commons.wikimedia.org/wiki/File:Follower_of_Jheronimus_Bosch_Christ_in_Limbo.jpg)
+- [Christ in Limbo (follower of Bosch)](https://commons.wikimedia.org/wiki/File:Follower_of_Jheronimus_Bosch_Christ_in_Limbo.jpg)^[While looking up this painting, I learned that Bosch [inspired](https://www.theartnewspaper.com/2017/03/10/the-devil-is-always-lurking-on-hieronymous-bosch) a notoriously large population of imitators, to the point that "follower of Bosch" is a relatively common attribution for works in this style. His Wikipedia article even [notes](https://en.wikipedia.org/wiki/Hieronymus_Bosch#Debates_on_attribution) that: "Over the years, scholars have attributed to him fewer and fewer of the works once thought to be his."]
+
+### Restaurants, etc.
+
+- [Caffè Panna](https://www.caffepanna.com/) (NYC^[multiple locations])
+- [Buntopia](https://www.buntopiany.com/) (Bushwick)
+- [Dayglow](https://dayglow.coffee/pages/locations-1) (Bushwick)
+- [Taiyaki NYC](https://taiyakinyc.com/) (NYC)
+- [Ange Noir Cafe](https://angenoircafe.com/) (Bushwick)
+- [Anna's Taqueria](https://annas.com/) (Boston)
+- [Gott's Roadside](https://www.gotts.com/) (San Francisco)
+- [Nook](https://www.nookbk.com/) (Bushwick)
 
 ### Miscellaneous
 
