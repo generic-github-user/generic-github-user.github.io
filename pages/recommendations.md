@@ -73,6 +73,8 @@ h3, h4 {
 - <https://catern.com/>
 - <https://www.astralcodexten.com/>
 - <https://morallawwithin.substack.com/>
+- <https://www.science.org/blogs/pipeline>
+- <https://grahamc.com>
 
 #### Friends & acquaintances
 
@@ -151,6 +153,14 @@ h3, h4 {
 
 :::
 
+### Services/companies
+
+- [Tailscale](https://tailscale.com/)
+- [Backblaze](https://www.backblaze.com/)
+- [rsync.net](https://www.rsync.net/)
+- [Mullvad](https://mullvad.net/en)
+- [Lichess](https://lichess.org/)
+
 ### Programming languages
 
 - [Haskell](https://www.haskell.org/)
@@ -217,6 +227,15 @@ h3, h4 {
 
 - [Hamlet](https://shakespeare.mit.edu/hamlet/full.html)
 
+### Books
+
+- [Dive into Systems](https://diveintosystems.org/)
+- [Superintelligence: Paths, Dangers, Strategies](https://en.wikipedia.org/wiki/Superintelligence:_Paths,_Dangers,_Strategies)
+
+### Essays
+
+- [The Love of God and Affliction](https://dbanach.com/Weil/The%20Love%20of%20God%20and%20Affliction.pdf)
+
 ### Poetry
 
 - [Ozymandias](https://www.poetryfoundation.org/poems/46565/ozymandias) (Percy Bysshe Shelley)
@@ -241,6 +260,29 @@ h3, h4 {
 - [Anna's Taqueria](https://annas.com/) (Boston)
 - [Gott's Roadside](https://www.gotts.com/) (San Francisco)
 - [Nook](https://www.nookbk.com/) (Bushwick)
+
+### Other places
+
+#### NYC
+
+- [Books Kinokuniya](https://usa.kinokuniya.com/stores-kinokuniya-new-york)^[among many other locations]
+- Westfield World Trade Center mall
+- Governors Island
+- Wall Street; Trinity Church
+- Central Park
+
+#### Boston
+
+- Museum of Fine Arts
+
+#### SF Bay Area
+
+- Berkeley Rose Garden
+- Palace of Fine Arts
+- Golden Gate Beach
+- Buena Vista Park
+- Ferry Building
+- Japantown, SF
 
 ### Miscellaneous
 
