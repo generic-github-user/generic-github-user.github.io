@@ -62,15 +62,22 @@ h3, h4 {
 
 ### Newsletters, blogs, etc.
 
+- <https://bartoszmilewski.com/>
 - <https://blog.janestreet.com/>
 - <https://catern.com/>
+- <https://engineering.fb.com/>
 - <https://grahamc.com>
 - <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
 - <https://jade.fyi/>
 - <https://jyn.dev/>
+- <https://karpathy.github.io/>
+- <https://lexi-lambda.github.io/>
+- <https://lilianweng.github.io/>
 - <https://loginasroot.net/>
 - <https://mcyoung.xyz/>
 - <https://morallawwithin.substack.com/>
+- <https://near.blog/>
+- <https://thezvi.substack.com/>
 - <https://www.astralcodexten.com/>
 - <https://www.bitsaboutmoney.com/>^+^
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
@@ -78,7 +85,9 @@ h3, h4 {
 - <https://www.hudsonrivertrading.com/hrtbeat/>
 - <https://www.owlposting.com/>^[Favorites: <https://www.owlposting.com/p/cancer-has-a-surprising-amount-of>, <https://www.owlposting.com/p/on-creating-new-knobs-of-control>, <https://www.owlposting.com/p/reasons-to-be-pessimistic-and-optimistic>]
 - <https://www.science.org/blogs/pipeline>
+- <https://www.tweag.io/blog/>
 - <https://www.uber.com/us/en/blog/engineering/>
+- <https://xeiaso.net/>^+^
 
 #### Friends & acquaintances
 
@@ -86,6 +95,10 @@ h3, h4 {
 - <https://packet.science/>
 - <https://rvns.moe/>
 - <https://www.elizas.website/>
+- <https://tst.sh/>
+- <https://garvy.site/>
+- <https://hayl.in/>
+- <https://jordane.day/>
 
 ### Films
 
@@ -113,17 +126,29 @@ h3, h4 {
 
 ### Shows
 
+- [Arcane](https://en.wikipedia.org/wiki/Arcane_(TV_series))^[especially season 1; season 2 is still quite visually & technically impressive, but soulless/narratively scattered]
 - [Arrested Development](https://en.wikipedia.org/wiki/Arrested_Development)^[As far as I can remember, I have not seen the original cut of season 4, only the Netflix "remix"; despite the mixed reception, I think that on the whole the last two seasons are at least as strong as the first three in most respects] ^+^
+- [BNA: Brand New Animal](https://en.wikipedia.org/wiki/BNA:_Brand_New_Animal)
 - [Better Call Saul](https://en.wikipedia.org/wiki/Better_Call_Saul)^+^
 - [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)
 - [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))^[As far as I can remember, the English dub on Netflix is not very good; prefer the original German audio with subtitles]
 - [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)^+^
-- [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)^+^
-- [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
+- [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)^+^ ^[also *The End of Evangelion*]
 - [Pluribus](https://en.wikipedia.org/wiki/Pluribus_(TV_series))
 - [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
 - [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 - [Twin Peaks](https://en.wikipedia.org/wiki/Twin_Peaks)
+
+<details>
+    <summary>`slop`</summary>
+
+other things I've personally enjoyed watching that really aren't very good:
+
+- [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
+- [3 Body Problem](https://en.wikipedia.org/wiki/3_Body_Problem_(TV_series))
+- [The Queen's Gambit](https://en.wikipedia.org/wiki/The_Queen%27s_Gambit_(miniseries))
+- [Into the Night](https://en.wikipedia.org/wiki/Into_the_Night_(TV_series))
+</details>
 
 ### Software
 
@@ -137,9 +162,11 @@ h3, h4 {
 - [LaTeX](https://www.latex-project.org/)
 - [Neovim](https://neovim.io/)^+^
 - [NixOS](https://nixos.org/)^+^
+- [Obsidian](https://obsidian.md/)
 - [OpenZFS](https://openzfs.github.io/openzfs-docs/)
 - [Pandoc](https://pandoc.org/)
 - [Prism Launcher](https://prismlauncher.org/)
+- [SSHFS](https://github.com/libfuse/sshfs)
 - [Sanoid/Syncoid](https://github.com/jimsalterjrs/sanoid)
 - [Signal](https://signal.org/)^[See also: <https://github.com/carderne/signal-export>]
 - [Sway WM](https://swaywm.org/)
@@ -161,12 +188,15 @@ h3, h4 {
 
 :::
 
-### Services/companies
+### Services/companies^[Hopefully this goes without saying, but none of these companies have sponsored me nor endorsed any of the content presented on this site (or other content I've shared/published); they merely provide services or products that I like, generally at a price point I consider reasonable. As with the other sections on this page, this list is not exhaustive.]
 
 - [Tailscale](https://tailscale.com/)
 - [Backblaze](https://www.backblaze.com/)
 - [rsync.net](https://www.rsync.net/)
 - [Lichess](https://lichess.org/)
+- [Western Digital](https://en.wikipedia.org/wiki/Western_Digital)
+- [Lambda Labs](https://lambda.ai/)
+- [Peter Pan Bus Lines](https://peterpanbus.com/)
 
 ### Programming languages
 
@@ -212,6 +242,8 @@ h3, h4 {
 - *The Family Jewels* (Marina and the Diamonds)
 - *good kid, m.A.A.d city* (Kendrick Lamar)
 - *DAMN.* (Kendrick Lamar)
+- *21* (Adele)
+- *American Teen* (Khalid)
 
 #### Artists
 
@@ -256,9 +288,15 @@ h3, h4 {
 ### Paintings
 
 - [Ophelia (Heyser)](https://en.wikipedia.org/wiki/Ophelia_(Heyser))
-- [Bacchante (Bouguereau)](https://www.wikiart.org/en/william-adolphe-bouguereau/bacchante-1894)
+- [Bacchante (Bouguereau)](https://www.wikiart.org/en/william-adolphe-bouguereau/bacchante-1894)^+^
 - [The Garden of Earthly Delights (Bosch)](https://en.wikipedia.org/wiki/The_Garden_of_Earthly_Delights)
 - [Christ in Limbo (follower of Bosch)](https://commons.wikimedia.org/wiki/File:Follower_of_Jheronimus_Bosch_Christ_in_Limbo.jpg)^[While looking up this painting, I learned that Bosch [inspired](https://www.theartnewspaper.com/2017/03/10/the-devil-is-always-lurking-on-hieronymous-bosch) a notoriously large population of imitators, to the point that "follower of Bosch" is a relatively common attribution for works in this style. His Wikipedia article even [notes](https://en.wikipedia.org/wiki/Hieronymus_Bosch#Debates_on_attribution) that: "Over the years, scholars have attributed to him fewer and fewer of the works once thought to be his."]
+
+### Artists
+
+- [Dale Chihuly](https://en.wikipedia.org/wiki/Dale_Chihuly)
+- [William-Adolphe Bouguereau](https://en.wikipedia.org/wiki/William-Adolphe_Bouguereau)
+- [Hieronymus Bosch](https://en.wikipedia.org/wiki/Hieronymus_Bosch)
 
 ### Restaurants, etc.
 
@@ -287,7 +325,7 @@ h3, h4 {
 
 #### SF Bay Area
 
-- [Berkeley Rose Garden](https://en.wikipedia.org/wiki/Berkeley_Rose_Garden)^[One of my favorite places in Berkeley; brought to us by the New Deal and the Civil Works Administration/Works Progress Administration, in fact (<https://old.berkeleyheritage.com/berkeley_landmarks/municipal-rose-garden.html>)]
+- [Berkeley Rose Garden](https://en.wikipedia.org/wiki/Berkeley_Rose_Garden)^[One of my favorite places in Berkeley; brought to us by the New Deal and the Civil Works Administration/Works Progress Administration, in fact (<https://old.berkeleyheritage.com/berkeley_landmarks/municipal-rose-garden.html>)] ^[Codornices Park, across the street, is also quite nice and feels very "east coast" in its topography]
 - Buena Vista Park
 - Ferry Building
 - Golden Gate Beach
@@ -306,11 +344,21 @@ h3, h4 {
 
 - [Wendover Productions](https://www.youtube.com/@Wendoverproductions)
 - [3Blue1Brown](https://www.youtube.com/@3blue1brown)
-- [ilmango](https://www.youtube.com/@ilmango)
-- [cubicmetre](https://www.youtube.com/@cubicmetre)
 - [Welch Labs](https://www.youtube.com/@WelchLabs)
 - [Tom Scott](https://www.youtube.com/@TomScottGo)
 - [Jane Street](https://www.youtube.com/@janestreet)
+
+#### Technical Minecraft/redstone
+
+- [ilmango](https://www.youtube.com/@ilmango)
+- [cubicmetre](https://www.youtube.com/@cubicmetre)
+- [JL2579](https://www.youtube.com/user/JL2579)
+- [SethBling](https://www.youtube.com/@SethBling)
+
+### Footgun awareness
+
+- [Beware of fast-math](https://simonbyrne.github.io/notes/fastmath/)
+- [Eval really is dangerous](https://nedbatchelder.com/blog/201206/eval_really_is_dangerous)
 
 ### Miscellaneous
 
