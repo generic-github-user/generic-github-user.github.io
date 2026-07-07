@@ -62,19 +62,19 @@ h3, h4 {
 
 ### Newsletters, blogs, etc.
 
-- <https://mcyoung.xyz/>
-- <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
-- <https://www.bitsaboutmoney.com/>^+^
-- <https://jyn.dev/>
-- <https://www.haskellforall.com/>
-- <https://www.bloomberg.com/account/newsletters/money-stuff>
-- <https://loginasroot.net/>
-- <https://www.owlposting.com/>^[Favorites: <https://www.owlposting.com/p/cancer-has-a-surprising-amount-of>, <https://www.owlposting.com/p/on-creating-new-knobs-of-control>, <https://www.owlposting.com/p/reasons-to-be-pessimistic-and-optimistic>]
 - <https://catern.com/>
-- <https://www.astralcodexten.com/>
-- <https://morallawwithin.substack.com/>
-- <https://www.science.org/blogs/pipeline>
 - <https://grahamc.com>
+- <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
+- <https://jyn.dev/>
+- <https://loginasroot.net/>
+- <https://mcyoung.xyz/>
+- <https://morallawwithin.substack.com/>
+- <https://www.astralcodexten.com/>
+- <https://www.bitsaboutmoney.com/>^+^
+- <https://www.bloomberg.com/account/newsletters/money-stuff>
+- <https://www.haskellforall.com/>
+- <https://www.owlposting.com/>^[Favorites: <https://www.owlposting.com/p/cancer-has-a-surprising-amount-of>, <https://www.owlposting.com/p/on-creating-new-knobs-of-control>, <https://www.owlposting.com/p/reasons-to-be-pessimistic-and-optimistic>]
+- <https://www.science.org/blogs/pipeline>
 
 #### Friends & acquaintances
 
@@ -115,10 +115,10 @@ h3, h4 {
 - [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)^+^
 - [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)^+^
 - [Ozark](https://en.wikipedia.org/wiki/Ozark_(TV_series))
+- [Pluribus](https://en.wikipedia.org/wiki/Pluribus_(TV_series))
 - [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
 - [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 - [Twin Peaks](https://en.wikipedia.org/wiki/Twin_Peaks)
-- [Pluribus](https://en.wikipedia.org/wiki/Pluribus_(TV_series))
 
 ### Software
 
@@ -127,29 +127,29 @@ h3, h4 {
 - [Blender](https://www.blender.org/)^+^
 - [BorgBackup](https://www.borgbackup.org/)
 - [Firefox](https://www.firefox.com/en-US/)
-- [jq](https://jqlang.org/)
 - [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux. I *have* experienced nontrivial performance issues with it, including crashes on certain hardware, but these have been fairly infrequent. I'd advise new users, unless they plan to do a lot of searching for files/dirs in [Dolphin](https://apps.kde.org/dolphin/), to disable the [Baloo](https://community.kde.org/Baloo) search indexer; [fd](https://github.com/sharkdp/fd), [fzf](https://github.com/junegunn/fzf), and [ripgrep](https://github.com/BurntSushi/ripgrep) are fast enough for most use cases.]
-- [kitty](https://sw.kovidgoyal.net/kitty/)
 - [LaTeX](https://www.latex-project.org/)
-- [mypy](https://mypy-lang.org/)
 - [Neovim](https://neovim.io/)^+^
 - [NixOS](https://nixos.org/)^+^
-- [nushell](https://www.nushell.sh/)
-- [oh my zsh](https://ohmyz.sh/)
 - [OpenZFS](https://openzfs.github.io/openzfs-docs/)
 - [Pandoc](https://pandoc.org/)
 - [Prism Launcher](https://prismlauncher.org/)
-- [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [Sanoid/Syncoid](https://github.com/jimsalterjrs/sanoid)
 - [Signal](https://signal.org/)^[See also: <https://github.com/carderne/signal-export>]
 - [Sway WM](https://swaywm.org/)
 - [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics. [Todoist](https://www.todoist.com/) is a sane alternative for less technical users (or those who merely want a nice mobile device UX) that I also used happily for quite a while.]
 - [Timewarrior](https://timewarrior.net/)
+- [fzf](https://junegunn.github.io/fzf/)
+- [jq](https://jqlang.org/)
+- [kitty](https://sw.kovidgoyal.net/kitty/)
+- [mypy](https://mypy-lang.org/)
+- [nushell](https://www.nushell.sh/)
+- [oh my zsh](https://ohmyz.sh/)
+- [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [tldr](https://tldr.sh/)
 - [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
 - [uv](https://github.com/astral-sh/uv)
 - [xonsh](https://xon.sh/)
-- [fzf](https://junegunn.github.io/fzf/)
 
 :::
 
@@ -251,24 +251,24 @@ h3, h4 {
 
 ### Restaurants, etc.
 
-- [Caffè Panna](https://www.caffepanna.com/) (NYC^[multiple locations])
-- [Buntopia](https://www.buntopiany.com/) (Bushwick)
-- [Dayglow](https://dayglow.coffee/pages/locations-1) (Bushwick)
-- [Taiyaki NYC](https://taiyakinyc.com/) (NYC)
 - [Ange Noir Cafe](https://angenoircafe.com/) (Bushwick)
 - [Anna's Taqueria](https://annas.com/) (Boston)
+- [Buntopia](https://www.buntopiany.com/) (Bushwick)
+- [Caffè Panna](https://www.caffepanna.com/) (NYC^[multiple locations])
+- [Dayglow](https://dayglow.coffee/pages/locations-1) (Bushwick)
 - [Gott's Roadside](https://www.gotts.com/) (San Francisco)
 - [Nook](https://www.nookbk.com/) (Bushwick)
+- [Taiyaki NYC](https://taiyakinyc.com/) (NYC)
 
 ### Other places
 
 #### NYC
 
-- [Books Kinokuniya](https://usa.kinokuniya.com/stores-kinokuniya-new-york)^[among many other locations]
-- Westfield World Trade Center mall
+- Central Park
 - Governors Island
 - Wall Street; Trinity Church
-- Central Park
+- Westfield World Trade Center mall
+- [Books Kinokuniya](https://usa.kinokuniya.com/stores-kinokuniya-new-york)^[among many other locations]
 
 #### Boston
 
@@ -277,19 +277,19 @@ h3, h4 {
 #### SF Bay Area
 
 - Berkeley Rose Garden
-- Palace of Fine Arts
-- Golden Gate Beach
 - Buena Vista Park
 - Ferry Building
+- Golden Gate Beach
 - Japantown, SF
+- Palace of Fine Arts
 
 ### Buildings
 
-- [Brooklyn Tower](https://en.wikipedia.org/wiki/Brooklyn_Tower)
 - [111 West 57th Street](https://en.wikipedia.org/wiki/111_West_57th_Street)
-- [The Oculus (Westfield World Trade Center)](https://en.wikipedia.org/wiki/Westfield_World_Trade_Center)
-- [33 Thomas Street (AT&T Long Lines Building)](https://en.wikipedia.org/wiki/33_Thomas_Street)
 - [270 Park Avenue (JPMorganChase Tower)](https://en.wikipedia.org/wiki/270_Park_Avenue_(2025%E2%80%93present))
+- [33 Thomas Street (AT&T Long Lines Building)](https://en.wikipedia.org/wiki/33_Thomas_Street)
+- [Brooklyn Tower](https://en.wikipedia.org/wiki/Brooklyn_Tower)
+- [The Oculus (Westfield World Trade Center)](https://en.wikipedia.org/wiki/Westfield_World_Trade_Center)
 
 ### Miscellaneous
 
