@@ -66,6 +66,7 @@ h3, h4 {
 - <https://catern.com/>
 - <https://grahamc.com>
 - <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
+- <https://jade.fyi/>
 - <https://jyn.dev/>
 - <https://loginasroot.net/>
 - <https://mcyoung.xyz/>
@@ -88,6 +89,7 @@ h3, h4 {
 
 ### Films
 
+- [21](https://en.wikipedia.org/wiki/21_(2008_film))
 - [Amadeus](https://en.wikipedia.org/wiki/Amadeus_(film))^+^
 - [Avatar](https://en.wikipedia.org/wiki/Avatar_(2009_film))
 - [Cloverfield](https://en.wikipedia.org/wiki/Cloverfield)
@@ -201,8 +203,8 @@ h3, h4 {
 
 - *10,000 gecs* (100 gecs)
 - *Beauty Behind the Madness* (The Weeknd)
-- *Starboy* (The Weeknd)
 - *Graduation* (Kanye West)
+- *My Beautiful Dark Twisted Fantasy* (Kanye West)
 - *Intro Bonito* (Kero Kero Bonito)
 - *Pure Heroine* (Lorde)
 - *Starboy* (The Weeknd)
@@ -285,7 +287,7 @@ h3, h4 {
 
 #### SF Bay Area
 
-- Berkeley Rose Garden
+- [Berkeley Rose Garden](https://en.wikipedia.org/wiki/Berkeley_Rose_Garden)^[One of my favorite places in Berkeley; brought to us by the New Deal and the Civil Works Administration/Works Progress Administration, in fact (<https://old.berkeleyheritage.com/berkeley_landmarks/municipal-rose-garden.html>)]
 - Buena Vista Park
 - Ferry Building
 - Golden Gate Beach
