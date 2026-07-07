@@ -158,7 +158,6 @@ h3, h4 {
 - [Tailscale](https://tailscale.com/)
 - [Backblaze](https://www.backblaze.com/)
 - [rsync.net](https://www.rsync.net/)
-- [Mullvad](https://mullvad.net/en)
 - [Lichess](https://lichess.org/)
 
 ### Programming languages
