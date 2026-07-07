@@ -62,6 +62,7 @@ h3, h4 {
 
 ### Newsletters, blogs, etc.
 
+- <https://blog.janestreet.com/>
 - <https://catern.com/>
 - <https://grahamc.com>
 - <https://gwern.net/>^[Maybe it is obvious that the design of this site took some inspiration from Gwern's.]
@@ -129,6 +130,7 @@ h3, h4 {
 - [Blender](https://www.blender.org/)^+^
 - [BorgBackup](https://www.borgbackup.org/)
 - [Firefox](https://www.firefox.com/en-US/)
+- [Grafana](https://grafana.com/)
 - [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux. I *have* experienced nontrivial performance issues with it, including crashes on certain hardware, but these have been fairly infrequent. I'd advise new users, unless they plan to do a lot of searching for files/dirs in [Dolphin](https://apps.kde.org/dolphin/), to disable the [Baloo](https://community.kde.org/Baloo) search indexer; [fd](https://github.com/sharkdp/fd), [fzf](https://github.com/junegunn/fzf), and [ripgrep](https://github.com/BurntSushi/ripgrep) are fast enough for most use cases.]
 - [LaTeX](https://www.latex-project.org/)
 - [Neovim](https://neovim.io/)^+^
@@ -141,12 +143,14 @@ h3, h4 {
 - [Sway WM](https://swaywm.org/)
 - [Taskwarrior](https://taskwarrior.org/)^[I no longer use this, but formerly did for quite a while, and was pleased with its quality and ergonomics. [Todoist](https://www.todoist.com/) is a sane alternative for less technical users (or those who merely want a nice mobile device UX) that I also used happily for quite a while.]
 - [Timewarrior](https://timewarrior.net/)
+- [VictoriaMetrics](https://victoriametrics.com/)
 - [fzf](https://junegunn.github.io/fzf/)
 - [jq](https://jqlang.org/)
 - [kitty](https://sw.kovidgoyal.net/kitty/)
 - [mypy](https://mypy-lang.org/)
 - [nushell](https://www.nushell.sh/)
 - [oh my zsh](https://ohmyz.sh/)
+- [rclone](https://rclone.org/)
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 - [tldr](https://tldr.sh/)
 - [tmux](https://github.com/tmux/tmux) (see also: [tmux cheat sheet](https://tmuxcheatsheet.com/))
@@ -197,6 +201,7 @@ h3, h4 {
 
 - *10,000 gecs* (100 gecs)
 - *Beauty Behind the Madness* (The Weeknd)
+- *Starboy* (The Weeknd)
 - *Graduation* (Kanye West)
 - *Intro Bonito* (Kero Kero Bonito)
 - *Pure Heroine* (Lorde)
@@ -204,6 +209,7 @@ h3, h4 {
 - *The Fame Monster* (Lady Gaga)
 - *The Family Jewels* (Marina and the Diamonds)
 - *good kid, m.A.A.d city* (Kendrick Lamar)
+- *DAMN.* (Kendrick Lamar)
 
 #### Artists
 
@@ -288,7 +294,7 @@ h3, h4 {
 
 ### Buildings
 
-- [111 West 57th Street](https://en.wikipedia.org/wiki/111_West_57th_Street)
+- [111 West 57th Street](https://en.wikipedia.org/wiki/111_West_57th_Street)^[TIL (07/06/26): the modern supertall residential building was actually built over/around the historic Steinway Hall (itself roughly a century old)]
 - [270 Park Avenue (JPMorganChase Tower)](https://en.wikipedia.org/wiki/270_Park_Avenue_(2025%E2%80%93present))
 - [33 Thomas Street (AT&T Long Lines Building)](https://en.wikipedia.org/wiki/33_Thomas_Street)
 - [Brooklyn Tower](https://en.wikipedia.org/wiki/Brooklyn_Tower)
