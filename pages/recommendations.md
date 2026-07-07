@@ -284,6 +284,14 @@ h3, h4 {
 - Ferry Building
 - Japantown, SF
 
+### Buildings
+
+- [Brooklyn Tower](https://en.wikipedia.org/wiki/Brooklyn_Tower)
+- [111 West 57th Street](https://en.wikipedia.org/wiki/111_West_57th_Street)
+- [The Oculus (Westfield World Trade Center)](https://en.wikipedia.org/wiki/Westfield_World_Trade_Center)
+- [33 Thomas Street (AT&T Long Lines Building)](https://en.wikipedia.org/wiki/33_Thomas_Street)
+- [270 Park Avenue (JPMorganChase Tower)](https://en.wikipedia.org/wiki/270_Park_Avenue_(2025%E2%80%93present))
+
 ### Miscellaneous
 
 - [Flatiron Pepper Co](https://www.flatironpepper.com/)^[my favorite variety is the [Chipotle - Roasted Garlic - Toasted Onion](https://www.flatironpepper.com/products/chipotle-roasted-garlic-toasted-onion) mixture]
