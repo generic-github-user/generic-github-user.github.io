@@ -73,8 +73,10 @@ h3, h4 {
 - <https://www.bitsaboutmoney.com/>^+^
 - <https://www.bloomberg.com/account/newsletters/money-stuff>
 - <https://www.haskellforall.com/>
+- <https://www.hudsonrivertrading.com/hrtbeat/>
 - <https://www.owlposting.com/>^[Favorites: <https://www.owlposting.com/p/cancer-has-a-surprising-amount-of>, <https://www.owlposting.com/p/on-creating-new-knobs-of-control>, <https://www.owlposting.com/p/reasons-to-be-pessimistic-and-optimistic>]
 - <https://www.science.org/blogs/pipeline>
+- <https://www.uber.com/us/en/blog/engineering/>
 
 #### Friends & acquaintances
 
@@ -187,6 +189,7 @@ h3, h4 {
 ### Music
 
 - [Requiem in D minor, K. 626](https://en.wikipedia.org/wiki/Requiem_(Mozart)) (Mozart); particularly the [1991 Academy of St. Martin in the Fields recording](https://open.spotify.com/album/2mAq4V9WfnKBIMmKGLS653)^+^
+- [Sinfonia Concertante for Violin, Viola and Orchestra in E♭ major, K. 364](https://en.wikipedia.org/wiki/Sinfonia_Concertante_for_Violin,_Viola_and_Orchestra_(Mozart)) (Mozart)
 - [The Phantom of the Opera](https://en.wikipedia.org/wiki/The_Phantom_of_the_Opera_(1986_musical)) (Andrew Lloyd Webber)
 - [The Planets, Op. 32: IV. Jupiter, the Bringer of Jollity](https://www.youtube.com/watch?v=wvfz23jZz6c) (Gustav Holst)
 
@@ -290,6 +293,16 @@ h3, h4 {
 - [33 Thomas Street (AT&T Long Lines Building)](https://en.wikipedia.org/wiki/33_Thomas_Street)
 - [Brooklyn Tower](https://en.wikipedia.org/wiki/Brooklyn_Tower)
 - [The Oculus (Westfield World Trade Center)](https://en.wikipedia.org/wiki/Westfield_World_Trade_Center)
+
+### YouTube channels
+
+- [Wendover Productions](https://www.youtube.com/@Wendoverproductions)
+- [3Blue1Brown](https://www.youtube.com/@3blue1brown)
+- [ilmango](https://www.youtube.com/@ilmango)
+- [cubicmetre](https://www.youtube.com/@cubicmetre)
+- [Welch Labs](https://www.youtube.com/@WelchLabs)
+- [Tom Scott](https://www.youtube.com/@TomScottGo)
+- [Jane Street](https://www.youtube.com/@janestreet)
 
 ### Miscellaneous
 
