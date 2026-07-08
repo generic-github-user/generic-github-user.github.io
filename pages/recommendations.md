@@ -116,6 +116,7 @@ h3, h4 {
 - [Megalopolis](https://en.wikipedia.org/wiki/Megalopolis_(film))
 - [Memento](https://en.wikipedia.org/wiki/Memento_(film))
 - [Nope](https://en.wikipedia.org/wiki/Nope_(film))
+- [Pirates of the Caribbean (1-3)](https://en.wikipedia.org/wiki/Pirates_of_the_Caribbean_(film_series))
 - [Pulp Fiction](https://en.wikipedia.org/wiki/Pulp_Fiction)
 - [Scarface](https://en.wikipedia.org/wiki/Scarface_(1983_film))
 - [The Godfather Part II](https://en.wikipedia.org/wiki/The_Godfather_Part_II)
@@ -130,7 +131,7 @@ h3, h4 {
 - [Arrested Development](https://en.wikipedia.org/wiki/Arrested_Development)^[As far as I can remember, I have not seen the original cut of season 4, only the Netflix "remix"; despite the mixed reception, I think that on the whole the last two seasons are at least as strong as the first three in most respects] ^+^
 - [BNA: Brand New Animal](https://en.wikipedia.org/wiki/BNA:_Brand_New_Animal)
 - [Better Call Saul](https://en.wikipedia.org/wiki/Better_Call_Saul)^+^
-- [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)
+- [Breaking Bad](https://en.wikipedia.org/wiki/Breaking_Bad)^[see also: *El Camino*]
 - [Dark](https://en.wikipedia.org/wiki/Dark_(TV_series))^[As far as I can remember, the English dub on Netflix is not very good; prefer the original German audio with subtitles]
 - [Mr. Robot](https://en.wikipedia.org/wiki/Mr._Robot)^+^
 - [Neon Genesis Evangelion](https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion)^+^ ^[also *The End of Evangelion*]
@@ -160,7 +161,7 @@ other things I've personally enjoyed watching that really aren't very good:
 - [Grafana](https://grafana.com/)
 - [KDE](https://kde.org/) and [KDE Plasma](https://kde.org/plasma-desktop/)^[I seldom use KDE anymore, for several reasons, but it's generally a robust and well-designed desktop environment. I recommend it over GNOME, even for people new to Linux. I *have* experienced nontrivial performance issues with it, including crashes on certain hardware, but these have been fairly infrequent. I'd advise new users, unless they plan to do a lot of searching for files/dirs in [Dolphin](https://apps.kde.org/dolphin/), to disable the [Baloo](https://community.kde.org/Baloo) search indexer; [fd](https://github.com/sharkdp/fd), [fzf](https://github.com/junegunn/fzf), and [ripgrep](https://github.com/BurntSushi/ripgrep) are fast enough for most use cases.]
 - [LaTeX](https://www.latex-project.org/)
-- [Neovim](https://neovim.io/)^+^
+- [Vim](https://www.vim.org/)/[Neovim](https://neovim.io/)^+^
 - [NixOS](https://nixos.org/)^+^
 - [Obsidian](https://obsidian.md/)
 - [OpenZFS](https://openzfs.github.io/openzfs-docs/)
@@ -359,6 +360,8 @@ other things I've personally enjoyed watching that really aren't very good:
 
 - [Beware of fast-math](https://simonbyrne.github.io/notes/fastmath/)
 - [Eval really is dangerous](https://nedbatchelder.com/blog/201206/eval_really_is_dangerous)
+- [Falsehoods programmers believe about time](https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time)
+- [Falsehoods Programmers Believe About Names](https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/)
 
 ### Miscellaneous
 
