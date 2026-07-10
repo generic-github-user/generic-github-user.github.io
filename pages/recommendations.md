@@ -88,6 +88,7 @@ h3, h4 {
 - <https://www.tweag.io/blog/>
 - <https://www.uber.com/us/en/blog/engineering/>
 - <https://xeiaso.net/>^+^
+- <https://www.kalzumeus.com/archive/>
 
 #### Friends & acquaintances
 
@@ -139,6 +140,7 @@ h3, h4 {
 - [Stranger Things](https://en.wikipedia.org/wiki/Stranger_Things) (season 1 only)
 - [True Detective](https://en.wikipedia.org/wiki/True_Detective) (season 1^[not that I disrecommend the later seasons, but I have not seen them yet])
 - [Twin Peaks](https://en.wikipedia.org/wiki/Twin_Peaks)
+- [30 Rock](https://en.wikipedia.org/wiki/30_Rock)
 
 <details>
     <summary>`slop`</summary>
